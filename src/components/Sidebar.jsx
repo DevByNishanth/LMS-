@@ -1,0 +1,210 @@
+import React, { useEffect, useState } from "react";
+import { Menu, } from "lucide-react";
+import user from "../assets/user.svg";
+import logo from "../assets/clgLogo.svg";
+import semIcon from "../assets/semesterIcon.svg";
+import facultyIcon from "../assets/totalFacultyIcon.svg";
+import facultyActiveIcon from "../assets/facultyActiveIcon.svg";
+import { Link, useLocation } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
+import homeInActive from '../assets/homeInActive.svg'
+
+const Sidebar = () => {
+  const [role, setRole] = useState("");
+  const [collapsed, setCollapsed] = useState(false);
+
+  const location = useLocation();
+  const token = localStorage.getItem("LmsToken");
+
+  useEffect(() => {
+    if (token) {
+      const decoded = jwtDecode(token);
+      setRole(decoded.role);
+    }
+  }, [token]);
+
+  const navItems = [
+    {
+      label: "Dashboard",
+      icon: semIcon,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard",
+      roles: ["admin", "hod", "faculty"],
+    },
+    {
+      label: "Subject Management",
+      icon: semIcon,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/semesterRegistration",
+      roles: ["admin"],
+    },
+    // {
+    //   label: "Subject Planning",
+    //   icon: semIcon,
+    //   activeIcon: facultyActiveIcon,
+    //   link: "/dashboard/semesterRegistration",
+    //   roles: ["admin"],
+    // },
+
+    {
+      label: "Faculty Management",
+      icon: facultyIcon,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/facultyManagement",
+      roles: ["admin"],
+    },
+    {
+      label: "Student Management",
+      icon: user,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/studentManagement",
+      roles: ["admin"],
+    },
+    {
+      label: "Staff Allocation",
+      icon: facultyIcon,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/subjectManagement",
+      roles: ["hod"],
+    },
+    {
+      label: "Class Room",
+      icon: facultyIcon,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/classroom",
+      roles: ["faculty"],
+    },
+    {
+      label: "Section Management",
+      icon: user,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/sectionManagement",
+      roles: ["hod"],
+    },
+    {
+      label: "Subject Planning",
+      icon: semIcon,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/subjectPlanning",
+      roles: ["faculty"],
+    },
+    {
+      label: "Student Attendance",
+      icon: semIcon,
+      activeIcon: facultyActiveIcon,
+      link: "/dashboard/sudentAttendance",
+      roles: ["faculty"],
+    },
+  ];
+
+  const filteredNavItems = navItems.filter((item) =>
+    item.roles.includes(role?.toLowerCase())
+  );
+
+  const isActive = (path) => {
+    if (path === "/dashboard") {
+      return location.pathname === "/dashboard";
+    }
+    return location.pathname.startsWith(path);
+  };
+
+  // logout function
+
+  function handleLogout() {
+    localStorage.removeItem("LmsToken");
+    window.location.href = "/";
+  }
+
+
+  return (
+    <div className="relative hidden md:block">
+      {/* Sidebar */}
+      <div
+        className={`fixed top-0 left-0 h-screen bg-[#D9EBFE] z-50 transition-all duration-300 flex flex-col ${collapsed ? "w-[83px]" : "w-[20%]"
+          }`}
+      >
+        {/* Header */}
+        <div className="flex items-center justify-center p-4">
+          {!collapsed && (
+            <img
+              src={logo}
+              alt="logo"
+              className="w-[140px] object-cover"
+            />
+          )}
+        </div>
+
+        {/* Nav Items */}
+        <div className="flex-1 space-y-1 px-2">
+          {/* <Link
+
+            to={"/dashboard"}
+            className={`flex items-center h-[54px] px-4 rounded-l-[14px] transition-all duration-200 ${isActive("/dashboard") ? "bg-white text-[#18283b]" : "text-black hover:bg-white/50"
+              }`}
+          >
+            <span className="min-w-[3rem] text-center">
+              <img
+                src={homeInActive}
+                alt="icon"
+              />
+            </span>
+
+            {!collapsed && (
+              <span
+                className={`font-semibold whitespace-nowrap ${isActive("/dashboard") ? "text-[#0B56A4]" : "text-[#282526]"
+                  }`}
+              >
+                {"Dashboard"}
+              </span>
+            )}
+          </Link> */}
+          {filteredNavItems.map((item, index) => {
+            const active = isActive(item.link);
+
+            return (
+              <Link
+                key={index}
+                to={item.link}
+                className={`flex items-center h-[54px] px-4 rounded-l-[14px] transition-all duration-200 ${active
+                  ? "bg-white text-[#18283b]"
+                  : "text-black hover:bg-white/50"
+                  }`}
+              >
+                <span className="min-w-[3rem] text-center">
+                  <img
+                    src={active ? item.activeIcon : item.icon}
+                    alt="icon"
+                  />
+                </span>
+
+                {!collapsed && (
+                  <span
+                    className={`font-semibold whitespace-nowrap ${active ? "text-[#0B56A4]" : "text-[#282526]"
+                      }`}
+                  >
+                    {item.label}
+                  </span>
+                )}
+              </Link>
+            );
+          })}
+        </div>
+        <div className="btn-container px-4 py-6 absolute bottom-4 w-full">
+          <button onClick={handleLogout} className="bg-[#0b56a4] text-white px-4 py-2 w-full rounded-lg cursor-pointer hover:bg-[#0b55a4e5]">Logout</button>
+        </div>
+      </div>
+
+      {/* Hamburger */}
+      {collapsed && (
+        <div
+          onClick={() => setCollapsed(false)}
+          className="fixed top-3 left-3 cursor-pointer z-50"
+        >
+          <Menu size={26} />
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Sidebar;
