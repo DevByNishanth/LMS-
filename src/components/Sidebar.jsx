@@ -8,6 +8,13 @@ import facultyActiveIcon from "../assets/facultyActiveIcon.svg";
 import { Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 import homeInActive from '../assets/homeInActive.svg'
+import dbIcon from '../assets/dbIcon.svg'
+import dbActiveIcon from '../assets/dbActive.svg'
+import sectionManagementIcon from '../assets/sectionManagementIcon.svg'
+import activeSectionManagement from '../assets/activeSectionManagement.svg'
+import studManagement from '../assets/studManagement.svg'
+import book from '../assets/book.svg'
+import logoutIcon from '../assets/logoutIcon.svg'
 
 const Sidebar = () => {
   const [role, setRole] = useState("");
@@ -26,37 +33,36 @@ const Sidebar = () => {
   const navItems = [
     {
       label: "Dashboard",
-      icon: semIcon,
-      activeIcon: facultyActiveIcon,
+      icon: dbIcon,
+      activeIcon: dbActiveIcon,
       link: "/dashboard",
       roles: ["admin", "hod", "faculty"],
     },
     {
+      label: "Semester Registration",
+      icon: semIcon,
+      activeIcon: book,
+      link: "/dashboard/adminSemReg",
+      roles: ["admin"],
+    },
+    {
       label: "Subject Management",
       icon: semIcon,
-      activeIcon: facultyActiveIcon,
+      activeIcon: book,
       link: "/dashboard/semesterRegistration",
       roles: ["admin"],
     },
-    // {
-    //   label: "Subject Planning",
-    //   icon: semIcon,
-    //   activeIcon: facultyActiveIcon,
-    //   link: "/dashboard/semesterRegistration",
-    //   roles: ["admin"],
-    // },
-
     {
       label: "Faculty Management",
-      icon: facultyIcon,
-      activeIcon: facultyActiveIcon,
+      icon: studManagement,
+      activeIcon: user,
       link: "/dashboard/facultyManagement",
       roles: ["admin"],
     },
     {
       label: "Student Management",
-      icon: user,
-      activeIcon: facultyActiveIcon,
+      icon: studManagement,
+      activeIcon: user,
       link: "/dashboard/studentManagement",
       roles: ["admin"],
     },
@@ -76,8 +82,8 @@ const Sidebar = () => {
     },
     {
       label: "Section Management",
-      icon: user,
-      activeIcon: facultyActiveIcon,
+      icon: sectionManagementIcon,
+      activeIcon: activeSectionManagement,
       link: "/dashboard/sectionManagement",
       roles: ["hod"],
     },
@@ -190,7 +196,7 @@ const Sidebar = () => {
           })}
         </div>
         <div className="btn-container px-4 py-6 absolute bottom-4 w-full">
-          <button onClick={handleLogout} className="bg-[#0b56a4] text-white px-4 py-2 w-full rounded-lg cursor-pointer hover:bg-[#0b55a4e5]">Logout</button>
+          <button onClick={handleLogout} className="bg-[#0b56a4] flex items-center gap-3 justify-center text-white px-4 py-2 w-full rounded-lg cursor-pointer hover:bg-[#0b55a4e5]"> <span><img src={logoutIcon} alt="" /></span> Logout</button>
         </div>
       </div>
 

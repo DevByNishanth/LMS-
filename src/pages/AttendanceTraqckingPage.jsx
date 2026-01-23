@@ -1,14 +1,10 @@
-import React from 'react'
-import { useEffect, useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { useSearchParams } from 'react-router-dom';
+import axios from 'axios';
 import Sidebar from '../components/Sidebar'
 import notification from '../assets/notification.svg'
-import { Bell, ChevronRight, User } from "lucide-react";
-import bookIcon from '../assets/activeBookIcon.svg'
-import upSideRightArrow from '../assets/upSideRightArrow.svg'
-import { Link } from 'react-router-dom';
+import { Bell, ChevronRight, User, CheckCircle, XCircle } from "lucide-react";
 import { jwtDecode } from 'jwt-decode'
-import { CheckCircle, XCircle } from "lucide-react";
-
 
 const HOURS = [
     "1st Hour (08:40AM - 09:30AM)",
@@ -20,38 +16,21 @@ const HOURS = [
     "7th Hour (03:30PM - 04:30PM)",
 ];
 
-
-const INITIAL_DATA = [
-    {
-        hour: 0,
-        label: "1st Hour (08:40AM - 09:30AM)",
-        students: [
-            { id: 1, rollNo: "0102044541", name: "Surya Chandran" },
-            { id: 2, rollNo: "0102044542", name: "Arun Kumar" },
-        ],
-    },
-    {
-        hour: 1,
-        label: "2nd Hour (09:30AM - 10:30AM)",
-        students: [
-            { id: 3, rollNo: "0102044543", name: "Vignesh" },
-            { id: 4, rollNo: "0102044544", name: "Karthik" },
-        ],
-    },
-];
-
-
-
 const AttendanceTraqckingPage = () => {
+    // router dom hooks
+    const [searchParams] = useSearchParams();
+    const query_data = JSON.parse(searchParams.get("data") || "{}");
+
     // states 
-    const [attendanceData, setAttendanceData] = useState(INITIAL_DATA);
+    const [attendanceData, setAttendanceData] = useState([]);
     const [activeHour, setActiveHour] = useState(0);
     const [search, setSearch] = useState("");
-    const [date, setDate] = useState("");
-    const [selectedRows, setSelectedRows] = useState([]);
-
-
+    const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [firstName, setFirstName] = useState("");
+    const [studentsList, setStudentsList] = useState([]);
+
+    const token = localStorage.getItem("LmsToken");
+    const apiUrl = import.meta.env.VITE_API_URL;
 
     // useEffect call's 
 
@@ -65,7 +44,71 @@ const AttendanceTraqckingPage = () => {
         }
     }, [])
 
+    useEffect(() => {
+        if (query_data.department && query_data.year && query_data.sectionName) {
+            getStudents();
+        }
+    }, [])
+
+    const normalizedSection = query_data.sectionName
+        ?.split(" ")
+        .pop();
+
     // functions 
+    const getStudents = async () => {
+        try {
+            const res = await axios.get(`${apiUrl}api/students/list?department=${query_data.department}&year=${query_data.year}&section=${normalizedSection}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            const fetchedStudents = res.data.students.map(student => ({
+                ...student,
+                id: student._id, // Ensure we have a unique id
+                rollNo: student.rollNumber,
+                name: `${student.firstName} ${student.lastName}`,
+                selected: false,
+                status: "present" // default status
+            }));
+
+            setStudentsList(fetchedStudents);
+
+            // Initialize attendance data for all hours
+            const initialAttendance = HOURS.map((label, index) => ({
+                hour: index,
+                label: label,
+                students: fetchedStudents
+            }));
+            setAttendanceData(initialAttendance);
+
+        } catch (error) {
+            console.error("Error fetching students:", error);
+        }
+    }
+
+    const handleSelectAll = (checked) => {
+        setAttendanceData(prev => prev.map(h => {
+            if (h.hour === activeHour) {
+                return {
+                    ...h,
+                    students: h.students.map(s => ({ ...s, selected: checked }))
+                }
+            }
+            return h;
+        }));
+    };
+
+    const handleRowSelect = (id) => {
+        setAttendanceData(prev => prev.map(h => {
+            if (h.hour === activeHour) {
+                return {
+                    ...h,
+                    students: h.students.map(s => s.id === id ? { ...s, selected: !s.selected } : s)
+                }
+            }
+            return h;
+        }));
+    };
 
     const currentHourData = attendanceData.find(
         (h) => h.hour === activeHour
@@ -73,18 +116,68 @@ const AttendanceTraqckingPage = () => {
 
     const students = currentHourData?.students || [];
 
-
     // Filter by roll no or name
     const filteredStudents = students.filter(
         (s) =>
-            s.rollNo.includes(search) ||
-            s.name.toLowerCase().includes(search.toLowerCase())
+            (s.rollNo && String(s.rollNo).toLowerCase().includes(search.toLowerCase())) ||
+            (s.name && s.name.toLowerCase().includes(search.toLowerCase()))
     );
 
     const isAllSelected =
         filteredStudents.length > 0 &&
         filteredStudents.every((s) => s.selected);
 
+
+    // habndle attendace 
+    const handlePresent = async (student) => {
+        try {
+            const res = await axios.post(`${apiUrl}api/staff/attendance/present`, {
+                rollNo: student.rollNumber,
+                studentId: student._id,
+                name: student.firstName + student.lastName,
+                department: student.department,
+                year: student.year,
+                section: student.section,
+                date: date,
+                hour: activeHour + 1,
+                subjectCode: query_data.subjectCode,
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            console.log("present : ", res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
+
+    const handleAbsent = async (student) => {
+        try {
+            const res = await axios.post(`${apiUrl}api/staff/attendance/absent`, {
+                rollNo: student.rollNumber,
+                studentId: student._id,
+                name: student.firstName + student.lastName,
+                department: student.department,
+                year: student.year,
+                section: student.section,
+                date: date,
+                hour: activeHour + 1,
+                subjectCode: query_data.subjectCode,
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            )
+            console.log("absent : ", res.data)
+        } catch (error) {
+            console.log(error)
+        }
+    }
 
     // jsx 
     return (
@@ -220,11 +313,11 @@ const AttendanceTraqckingPage = () => {
                                                 </td>
 
                                                 <td className="p-3 text-center">
-                                                    <CheckCircle className="text-green-500 inline" />
+                                                    <CheckCircle onClick={() => { handlePresent(student) }} className="cursor-pointer text-green-500 inline" />
                                                 </td>
 
                                                 <td className="p-3 text-center">
-                                                    <XCircle className="text-red-500 inline" />
+                                                    <XCircle onClick={() => { handleAbsent(student) }} className="text-red-500 inline" />
                                                 </td>
 
                                                 <td className="p-3 text-center">

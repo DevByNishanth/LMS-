@@ -147,9 +147,11 @@ const SubjectPlanningPage = () => {
                                 sectionName: item.sectionName,
                                 regulation: item.regulation,
                                 accademicYear: accademicYear,
-                                selectedSemester: selectedSemester
+                                selectedSemester: selectedSemester,
+                                id: item._id,
+                                subjectId: item.subjectId
                             }));
-
+                            console.log("item", item);
                             return (
                                 <div
                                     key={index}

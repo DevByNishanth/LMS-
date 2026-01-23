@@ -15,10 +15,9 @@ const AddSubjectContentPage = () => {
 
     // states 
     const [firstName, setFirstName] = useState("");
-
+    const [selectedUnit, setSelectedUnit] = useState("Unit 1");
 
     // useEffect call's 
-
     useEffect(() => {
         const token = localStorage.getItem("LmsToken");
         if (!token) {
@@ -29,6 +28,7 @@ const AddSubjectContentPage = () => {
         }
     }, [])
 
+    console.log("query_data", query_data);
     return (
         <>
             <section className="w-full h-screen flex">
@@ -44,7 +44,7 @@ const AddSubjectContentPage = () => {
                             <span className="text-gray-600"><ChevronRight /></span>
 
                             <span className="text-[#0B56A4] font-medium text-lg">
-                                {subjectCode} - {" "} {query_data.subject} - {" "} ({query_data.credits} credits)
+                                {subjectCode}  {" "} {query_data.subject}
                             </span>
                         </div>
 
@@ -65,7 +65,7 @@ const AddSubjectContentPage = () => {
                     {/* department-details  */}
                     <div className="department-details-container mt-2">
                         <div className="container-1 flex items-center justify-between">
-                            <h1 className='text-[#0B56A4] font-medium text-lg'>({query_data.year} - {query_data.department} - {query_data.section} section)</h1>
+                            <h1 className='text-[#0B56A4] font-medium text-lg'>{query_data.department} - {query_data.sectionName} </h1>
                             <h1 className='text-[#333333] font-medium text-lg'>{query_data.accademicYear} - ({query_data.selectedSemester})</h1>
                         </div>
                         <div className="container-2"></div>
@@ -73,8 +73,8 @@ const AddSubjectContentPage = () => {
 
                     {/* main body container  */}
                     <div className="main-container w-full flex gap-2 mt-8 max-h-[calc(100vh-160px)]">
-                        <UnitComponent />
-                        <SubjectSubTopicsTable />
+                        <UnitComponent onSelect={(unit) => setSelectedUnit(unit)} />
+                        <SubjectSubTopicsTable selectedUnit={selectedUnit} />
                     </div>
 
                 </div>

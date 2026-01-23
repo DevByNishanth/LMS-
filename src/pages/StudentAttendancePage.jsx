@@ -6,18 +6,17 @@ import bookIcon from '../assets/activeBookIcon.svg'
 import upSideRightArrow from '../assets/upSideRightArrow.svg'
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode'
-
-const allocatedSubjects = [
-    { subjectCode: "CS6801", subject: "Artificial Intelligence and Data Science", credits: 3, classDetails: { year: "3rd Year", department: "B.E CSE", section: "A" } },
-    { subjectCode: "CS6801", subject: "Artificial Intelligence and Data Science", credits: 3, classDetails: { year: "3rd Year", department: "B.E CSE", section: "A" } },
-    { subjectCode: "CS6801", subject: "Artificial Intelligence and Data Science", credits: 3, classDetails: { year: "3rd Year", department: "B.E CSE", section: "A" } },
-    { subjectCode: "CS6801", subject: "Artificial Intelligence and Data Science", credits: 3, classDetails: { year: "3rd Year", department: "B.E CSE", section: "A" } },
-    { subjectCode: "CS6801", subject: "Artificial Intelligence and Data Science", credits: 3, classDetails: { year: "3rd Year", department: "B.E CSE", section: "A" } },
-]
+import axios from 'axios';
 
 const StudentAttendancePage = () => {
+    // Auth 
+    const token = localStorage.getItem("LmsToken");
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    // states 
     const [selectedSemester, setSelectedSemester] = useState("Odd Semester");
     const [accademicYear, setAccademicYear] = useState("2025 - 2026");
+    const [subjectData, setSubjectData] = useState([]);
     const [firstName, setFirstName] = useState("");
 
     // useEffect call's 
@@ -31,6 +30,26 @@ const StudentAttendancePage = () => {
             setFirstName(decoded.name.charAt(0).toUpperCase());
         }
     }, [])
+
+    useEffect(() => {
+        getAllocatedSubjects()
+    }, [selectedSemester, accademicYear])
+
+    // functions 
+    async function getAllocatedSubjects() {
+        try {
+            const res = await axios.get(`${apiUrl}api/staff/subject-planning`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log("attendance subject data : ", res.data.data);
+            setSubjectData(res.data.data);
+        } catch (error) {
+            console.error("Error fetching allocated subjects:", error);
+        }
+    }
+
     return (
         <>
             <section className="w-full h-screen flex ">
@@ -66,7 +85,7 @@ const StudentAttendancePage = () => {
                     <div className="tab-container flex gap-4 items-center justify-end mt-4">
                         <select onChange={(e) => setAccademicYear(e.target.value)} className='border px-4 border-gray-400 py-1 rounded'>
                             <option value="2025-2026">2025 - 2026</option>
-                            <option value="2026-2027">2027 - 2027</option>
+                            <option value="2026-2027">2026 - 2027</option>
                             <option value="2027-2028">2027 - 2028</option>
                         </select>
 
@@ -78,33 +97,51 @@ const StudentAttendancePage = () => {
 
                     {/* main body section  */}
                     <div className="main-container mt-4 max-h-[calc(100vh-170px)] space-y-3 overflow-auto">
-                        {allocatedSubjects.map((item) => {
-                            const queryData = encodeURIComponent(JSON.stringify(
-                                {
-                                    subject: item.subject,
-                                    subjectCode: item.subjectCode,
-                                    department: item.classDetails.department,
-                                    credits: item.credits,
-                                    year: item.classDetails.year,
-                                    section: item.classDetails.section,
-                                    accademicYear: accademicYear,
-                                    selectedSemester: selectedSemester
-                                }
-                            ))
-                            return <div className="card border border-gray-300 bg-[#F9F9F9] p-4 rounded-xl flex items-center gap-2 justify-between">
-                                <div className="first-container flex items-center gap-3">
-                                    <div className="icon-container w-11 h-11 bg-[#0B56A4] flex items-center justify-center rounded-full">
-                                        <img src={bookIcon} className="h-[80%] w-[55%]" />
+                        {subjectData.map((item, index) => {
+                            const queryData = encodeURIComponent(JSON.stringify({
+                                subjectCode: item.subjectCode,
+                                subjectName: item.subjectName,
+                                department: item.department,
+                                semester: item.semester,
+                                semesterType: item.semesterType,
+                                sectionName: item.sectionName,
+                                regulation: item.regulation,
+                                accademicYear: accademicYear,
+                                selectedSemester: selectedSemester,
+                                id: item._id,
+                                year: item.year
+                            }));
+
+                            console.log("item", item);
+                            return (
+                                <div
+                                    key={index}
+                                    className="card border border-gray-300 bg-[#F9F9F9] p-4 rounded-xl flex items-center justify-between"
+                                >
+                                    <div className="flex items-center gap-3">
+                                        <div className="w-11 h-11 bg-[#0B56A4] flex items-center justify-center rounded-full">
+                                            <img src={bookIcon} className="h-[80%] w-[55%]" />
+                                        </div>
+
+                                        <h1 className="text-[#0B56A4] font-medium text-lg">
+                                            {item.subjectCode} - {item.subjectName}
+                                        </h1>
                                     </div>
-                                    <h1 className='text-[#0B56A4] font-medium text-lg'>{item.subjectCode} - {item.subject}</h1>
+
+                                    <div className="flex items-center gap-6 text-lg">
+                                        <h1 className="font-medium">
+                                            ({item.year} - Sem {item.semester} - {item.department} - {item.sectionName})
+                                        </h1>
+
+                                        <Link
+                                            to={`/dashboard/sudentAttendance/${item.subjectCode}/?data=${queryData}`}
+                                            className="w-11 h-11 bg-[#0B56A4] hover:bg-[#0f6fd6] flex items-center justify-center rounded-full"
+                                        >
+                                            <img src={upSideRightArrow} className="h-[80%] w-[55%]" />
+                                        </Link>
+                                    </div>
                                 </div>
-                                <div className="second-container flex items-center gap-6 text-lg">
-                                    <h1 className='font-medium'>({item.classDetails.year} - {item.classDetails.department} - {item.classDetails.section} Section)</h1>
-                                    <Link to={`/dashboard/sudentAttendance/${item.subjectCode}/?data=${queryData}`} className="icon-container cursor-pointer w-11 h-11 hover:bg-[#0f6fd6] bg-[#0B56A4] flex items-center justify-center rounded-full">
-                                        <img src={upSideRightArrow} className="h-[80%] w-[55%]" />
-                                    </Link>
-                                </div>
-                            </div>
+                            );
                         })}
                     </div>
                 </div>

@@ -18,6 +18,7 @@ import ClassRoomPage from "./pages/ClassRoomPage";
 import Classpage from "./pages/Classpage";
 import StudentAttendancePage from "./pages/StudentAttendancePage";
 import AttendanceTraqckingPage from "./pages/AttendanceTraqckingPage";
+import AdminSemesterRegPage from "./pages/AdminSemesterRegPage";
 
 const App = () => {
   return (
@@ -118,6 +119,11 @@ const App = () => {
         <Route path="/dashboard/sudentAttendance" element={
           <ProtectedRoute>
             <StudentAttendancePage />
+          </ProtectedRoute>} />
+
+        <Route path="/dashboard/adminSemReg" element={
+          <ProtectedRoute>
+            <AdminSemesterRegPage />
           </ProtectedRoute>} />
 
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />

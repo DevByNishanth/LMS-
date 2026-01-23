@@ -1,52 +1,67 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus, X } from "lucide-react";
 import axios from "axios";
+import { useSearchParams } from "react-router-dom";
 
-export default function SubjectSubTopicsTable() {
+export default function SubjectSubTopicsTable({ selectedUnit }) {
+    const [searchParams] = useSearchParams();
+    const query_data = JSON.parse(searchParams.get("data") || "{}");
+    const subjectId = query_data.subjectId;
+    console.log("query_data", query_data);
     const token = localStorage.getItem("LmsToken");
     const apiUrl = import.meta.env.VITE_API_URL;
 
-    const [topics, setTopics] = useState([
-        {
-            sno: "1.1",
-            topicName: "Introduction",
-            language: "English",
-            date: "11-07-2021",
-            hours: "45 Minutes",
-            aid: "White Board",
-            reference: "AI / Dr.Prabhakaran",
-        },
-        {
-            sno: "1.2",
-            topicName: "Introduction",
-            language: "English",
-            date: "11-07-2021",
-            hours: "45 Minutes",
-            aid: "Smart Board",
-            reference: "AI / Dr.Prabhakaran",
-        },
-    ]);
+    const [unitData, setUnitData] = useState([]);
+    const [currentTopics, setCurrentTopics] = useState([]);
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState({
-        sno: "",
         topicName: "",
-        language: "English",
+        teachingLanguage: "English",
         date: "",
         hours: "",
-        aid: "",
-        reference: "",
+        teachingAid: "",
+        referenceBook: "",
     });
+
+    useEffect(() => {
+        if (subjectId) {
+            getTopics();
+        }
+    }, [subjectId]);
+
+    useEffect(() => {
+        if (unitData.length > 0) {
+            const selectedUnitData = unitData.find(u => u.unitName === selectedUnit);
+            setCurrentTopics(selectedUnitData ? selectedUnitData.topics : []);
+        } else {
+            setCurrentTopics([]);
+        }
+    }, [selectedUnit, unitData]);
+
+    const getTopics = async () => {
+        console.log("Fetching topics for subjectId:", subjectId);
+        try {
+            const res = await axios.get(`${apiUrl}api/subject-planning/topics/${subjectId}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log("Full backend response:", res.data);
+            setUnitData(res.data.units || []);
+        } catch (error) {
+            console.error("Error fetching topics:", error);
+        }
+    };
 
     const handleAdd = () => {
         setFormData({
-            sno: "",
             topicName: "",
-            language: "English",
+            teachingLanguage: "English",
             date: "",
             hours: "",
-            aid: "",
-            reference: "",
+            teachingAid: "",
+            referenceBook: "",
         });
         setIsModalOpen(true);
     };
@@ -57,15 +72,27 @@ export default function SubjectSubTopicsTable() {
     };
 
     const handleSubmit = async () => {
-        if (!formData.sno || !formData.topicName || !formData.date || !formData.hours || !formData.aid || !formData.reference) {
+        if (!formData.topicName || !formData.date || !formData.hours || !formData.teachingAid || !formData.referenceBook) {
             alert("Please fill all fields");
             return;
         }
 
         try {
+            // Mapping to backend format
+            const dataToSubmit = {
+                subjectId,
+                unitName: selectedUnit,
+                topicName: formData.topicName,
+                teachingLanguage: formData.teachingLanguage,
+                date: formData.date,
+                hours: formData.hours,
+                teachingAid: formData.teachingAid,
+                referenceBook: formData.referenceBook
+            };
+
             const response = await axios.post(
                 `${apiUrl}api/staff/subject-planning/topic`,
-                formData,
+                dataToSubmit,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -76,7 +103,7 @@ export default function SubjectSubTopicsTable() {
 
             if (response.status === 200 || response.status === 201) {
                 alert("Topic added successfully!");
-                setTopics([...topics, formData]);
+                getTopics(); // Re-fetch topics after adding
                 setIsModalOpen(false);
             }
         } catch (error) {
@@ -106,18 +133,6 @@ export default function SubjectSubTopicsTable() {
                         <div className="space-y-4 max-h-[500px] overflow-y-auto">
                             <div className="grid grid-cols-2 gap-4">
                                 <div>
-                                    <label className="text-sm font-medium">S.No</label>
-                                    <input
-                                        type="text"
-                                        name="sno"
-                                        value={formData.sno}
-                                        onChange={handleInputChange}
-                                        className="w-full mt-1 border border-gray-300 rounded px-3 py-2 outline-none focus:border-1"
-                                        placeholder="e.g., 1.1"
-                                    />
-                                </div>
-
-                                <div>
                                     <label className="text-sm font-medium">Topic Name</label>
                                     <input
                                         type="text"
@@ -132,8 +147,8 @@ export default function SubjectSubTopicsTable() {
                                 <div>
                                     <label className="text-sm font-medium">Teaching Language</label>
                                     <select
-                                        name="language"
-                                        value={formData.language}
+                                        name="teachingLanguage"
+                                        value={formData.teachingLanguage}
                                         onChange={handleInputChange}
                                         className="w-full mt-1 border border-gray-300 rounded px-3 py-2 outline-none focus:border-1"
                                     >
@@ -169,8 +184,8 @@ export default function SubjectSubTopicsTable() {
                                     <label className="text-sm font-medium">Teaching Aid</label>
                                     <input
                                         type="text"
-                                        name="aid"
-                                        value={formData.aid}
+                                        name="teachingAid"
+                                        value={formData.teachingAid}
                                         onChange={handleInputChange}
                                         className="w-full mt-1 border border-gray-300 rounded px-3 py-2 outline-none focus:border-1"
                                         placeholder="e.g., White Board"
@@ -181,8 +196,8 @@ export default function SubjectSubTopicsTable() {
                                     <label className="text-sm font-medium">Reference Book</label>
                                     <input
                                         type="text"
-                                        name="reference"
-                                        value={formData.reference}
+                                        name="referenceBook"
+                                        value={formData.referenceBook}
                                         onChange={handleInputChange}
                                         className="w-full mt-1 border border-gray-300 rounded px-3 py-2 outline-none focus:border-1"
                                         placeholder="e.g., AI / Dr.Prabhakaran"
@@ -224,18 +239,18 @@ export default function SubjectSubTopicsTable() {
                     </thead>
 
                     <tbody>
-                        {topics.map((item, index) => (
+                        {currentTopics?.map((item, index) => (
                             <tr
                                 key={index}
                                 className={`${index % 2 !== 0 ? "bg-[#E6E9F5]" : "bg-white"} text-[14px]`}
                             >
-                                <td className="px-4 py-3">{item.sno}</td>
+                                <td className="px-4 py-3">{index + 1}</td>
                                 <td className="px-4 py-3">{item.topicName}</td>
-                                <td className="px-4 py-3">{item.language}</td>
+                                <td className="px-4 py-3">{item.teachingLanguage}</td>
                                 <td className="px-4 py-3">{item.date}</td>
                                 <td className="px-4 py-3">{item.hours}</td>
-                                <td className="px-4 py-3">{item.aid}</td>
-                                <td className="px-4 py-3">{item.reference}</td>
+                                <td className="px-4 py-3">{item.teachingAid}</td>
+                                <td className="px-4 py-3">{item.referenceBook}</td>
                             </tr>
                         ))}
 
