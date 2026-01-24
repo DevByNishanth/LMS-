@@ -5,6 +5,11 @@ import Sidebar from '../components/Sidebar'
 import notification from '../assets/notification.svg'
 import { Bell, ChevronRight, User, CheckCircle, XCircle } from "lucide-react";
 import { jwtDecode } from 'jwt-decode'
+import presentIcon from '../assets/presentIcon.svg'
+import absentIcon from '../assets/absentIcon.svg'
+import onDutyIcon from '../assets/onDutyIcon.svg'
+
+
 
 const HOURS = [
     "1st Hour (08:40AM - 09:30AM)",
@@ -48,7 +53,8 @@ const AttendanceTraqckingPage = () => {
         if (query_data.department && query_data.year && query_data.sectionName) {
             getStudents();
         }
-    }, [])
+    }, [activeHour, date])
+
 
     const normalizedSection = query_data.sectionName
         ?.split(" ")
@@ -57,29 +63,54 @@ const AttendanceTraqckingPage = () => {
     // functions 
     const getStudents = async () => {
         try {
-            const res = await axios.get(`${apiUrl}api/students/list?department=${query_data.department}&year=${query_data.year}&section=${normalizedSection}`, {
+            const hourLabel = HOURS[activeHour].split(" (")[0].replace(" ", "");
+            const res = await axios.get(`${apiUrl}api/attendance/students`, {
+                params: {
+                    department: query_data.department,
+                    year: query_data.year,
+                    section: normalizedSection,
+                    subjectId: query_data.subjectId,
+                    date: date,
+                    hour: hourLabel
+                },
                 headers: {
                     Authorization: `Bearer ${token}`
                 }
             });
+
+            console.log(res.data);
             const fetchedStudents = res.data.students.map(student => ({
                 ...student,
                 id: student._id, // Ensure we have a unique id
                 rollNo: student.rollNumber,
-                name: `${student.firstName} ${student.lastName}`,
+                name: student.name,
                 selected: false,
-                status: "present" // default status
+                status: student.status || "present" // default status
             }));
 
             setStudentsList(fetchedStudents);
 
-            // Initialize attendance data for all hours
-            const initialAttendance = HOURS.map((label, index) => ({
-                hour: index,
-                label: label,
-                students: fetchedStudents
-            }));
-            setAttendanceData(initialAttendance);
+            // Update attendance data for the current hour
+            setAttendanceData(prev => {
+                const hourLabelFull = HOURS[activeHour];
+                const updatedData = [...prev];
+                const existingHourIndex = updatedData.findIndex(h => h.hour === activeHour);
+
+                if (existingHourIndex > -1) {
+                    updatedData[existingHourIndex] = {
+                        ...updatedData[existingHourIndex],
+                        students: fetchedStudents
+                    };
+                } else {
+                    updatedData.push({
+                        hour: activeHour,
+                        label: hourLabelFull,
+                        students: fetchedStudents
+                    });
+                }
+                // Sort by hour if needed, though usually handled by find
+                return updatedData;
+            });
 
         } catch (error) {
             console.error("Error fetching students:", error);
@@ -129,18 +160,20 @@ const AttendanceTraqckingPage = () => {
 
 
     // habndle attendace 
-    const handlePresent = async (student) => {
+    const markAttendance = async (student, status) => {
         try {
-            const res = await axios.post(`${apiUrl}api/staff/attendance/present`, {
-                rollNo: student.rollNumber,
+            const hourLabel = HOURS[activeHour].split(" (")[0].replace(" ", "");
+            const res = await axios.post(`${apiUrl}api/attendance/mark`, {
                 studentId: student._id,
-                name: student.firstName + student.lastName,
-                department: student.department,
-                year: student.year,
-                section: student.section,
+                rollNumber: student.rollNumber,
+                name: student.name,
+                department: query_data.department,
+                year: query_data.year,
+                section: normalizedSection,
+                subjectId: query_data.subjectId,
                 date: date,
-                hour: activeHour + 1,
-                subjectCode: query_data.subjectCode,
+                hour: hourLabel,
+                status: status,
             },
                 {
                     headers: {
@@ -148,34 +181,13 @@ const AttendanceTraqckingPage = () => {
                     }
                 }
             )
-            console.log("present : ", res.data)
-        } catch (error) {
-            console.log(error)
-        }
-    }
+            console.log(`${status} marked: `, res.data)
 
-    const handleAbsent = async (student) => {
-        try {
-            const res = await axios.post(`${apiUrl}api/staff/attendance/absent`, {
-                rollNo: student.rollNumber,
-                studentId: student._id,
-                name: student.firstName + student.lastName,
-                department: student.department,
-                year: student.year,
-                section: student.section,
-                date: date,
-                hour: activeHour + 1,
-                subjectCode: query_data.subjectCode,
-            },
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                }
-            )
-            console.log("absent : ", res.data)
+            // Re-fetch or update local state to show current status
+            getStudents();
+
         } catch (error) {
-            console.log(error)
+            console.error(`Error marking ${status}:`, error);
         }
     }
 
@@ -183,13 +195,14 @@ const AttendanceTraqckingPage = () => {
     return (
         <>
             <section className="w-full h-screen flex ">
-                <div className="w-[20%]">
+                <div className="w-[20%] hidden md:block">
                     <Sidebar />
                 </div>
 
                 {/* main container  */}
 
-                <div className="container-2 w-[80%] h-full px-6 ">
+                <div className="container-2 w-full md:w-[80%] h-full px-6 ">
+
                     {/* header section  */}
                     <div className="w-full flex items-center justify-between  bg-white">
                         <div className="w-full flex items-center justify-between py-4  bg-white">
@@ -218,7 +231,7 @@ const AttendanceTraqckingPage = () => {
                         {/* Header */}
                         <div className="flex justify-between items-center mb-4">
                             <h2 className="text-lg font-medium text-[#333333]">
-                                04 DEC 2025 - <span className="text-[#0B56A4]">(Monday)</span>
+                                {new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()} - <span className="text-[#0B56A4]">({new Date(date).toLocaleDateString('en-GB', { weekday: 'long' })})</span>
                             </h2>
 
                             <div className="flex gap-3">
@@ -313,15 +326,51 @@ const AttendanceTraqckingPage = () => {
                                                 </td>
 
                                                 <td className="p-3 text-center">
-                                                    <CheckCircle onClick={() => { handlePresent(student) }} className="cursor-pointer text-green-500 inline" />
+                                                    {student.status === "Present" ? (
+                                                        <img
+                                                            src={presentIcon}
+                                                            onClick={() => markAttendance(student, "Present")}
+                                                            className="w-7 h-7 cursor-pointer inline transition-all scale-125"
+                                                            alt="Present"
+                                                        />
+                                                    ) : (
+                                                        <CheckCircle
+                                                            onClick={() => markAttendance(student, "Present")}
+                                                            className="cursor-pointer text-green-500 inline opacity-50 hover:opacity-100 transition-opacity"
+                                                        />
+                                                    )}
                                                 </td>
 
                                                 <td className="p-3 text-center">
-                                                    <XCircle onClick={() => { handleAbsent(student) }} className="text-red-500 inline" />
+                                                    {student.status === "Absent" ? (
+                                                        <img
+                                                            src={absentIcon}
+                                                            onClick={() => markAttendance(student, "Absent")}
+                                                            className="w-7 h-7 cursor-pointer inline transition-all scale-125"
+                                                            alt="Absent"
+                                                        />
+                                                    ) : (
+                                                        <XCircle
+                                                            onClick={() => markAttendance(student, "Absent")}
+                                                            className="cursor-pointer text-red-500 inline opacity-50 hover:opacity-100 transition-opacity"
+                                                        />
+                                                    )}
                                                 </td>
 
                                                 <td className="p-3 text-center">
-                                                    <CheckCircle className="text-blue-500 inline" />
+                                                    {student.status === "On-Duty" ? (
+                                                        <img
+                                                            src={onDutyIcon}
+                                                            onClick={() => markAttendance(student, "On-Duty")}
+                                                            className="w-7 h-7 cursor-pointer inline transition-all scale-125"
+                                                            alt="On-Duty"
+                                                        />
+                                                    ) : (
+                                                        <CheckCircle
+                                                            onClick={() => markAttendance(student, "On-Duty")}
+                                                            className="cursor-pointer text-blue-500 inline opacity-50 hover:opacity-100 transition-opacity"
+                                                        />
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

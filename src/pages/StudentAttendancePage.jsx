@@ -109,6 +109,7 @@ const StudentAttendancePage = () => {
                                 accademicYear: accademicYear,
                                 selectedSemester: selectedSemester,
                                 id: item._id,
+                                subjectId: item.subjectId,
                                 year: item.year
                             }));
 
