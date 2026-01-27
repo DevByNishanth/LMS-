@@ -15,6 +15,8 @@ import activeSectionManagement from '../assets/activeSectionManagement.svg'
 import studManagement from '../assets/studManagement.svg'
 import book from '../assets/book.svg'
 import logoutIcon from '../assets/logoutIcon.svg'
+import timeTableActive from '../assets/timeTableActive.svg'
+
 
 const Sidebar = () => {
   const [role, setRole] = useState("");
@@ -88,6 +90,13 @@ const Sidebar = () => {
       roles: ["hod"],
     },
     {
+      label: "Timetable Management",
+      icon: sectionManagementIcon,
+      activeIcon: timeTableActive,
+      link: "/dashboard/timetableManagement",
+      roles: ["hod"],
+    },
+    {
       label: "Subject Planning",
       icon: semIcon,
       activeIcon: facultyActiveIcon,
@@ -142,28 +151,6 @@ const Sidebar = () => {
 
         {/* Nav Items */}
         <div className="flex-1 space-y-1 px-2">
-          {/* <Link
-
-            to={"/dashboard"}
-            className={`flex items-center h-[54px] px-4 rounded-l-[14px] transition-all duration-200 ${isActive("/dashboard") ? "bg-white text-[#18283b]" : "text-black hover:bg-white/50"
-              }`}
-          >
-            <span className="min-w-[3rem] text-center">
-              <img
-                src={homeInActive}
-                alt="icon"
-              />
-            </span>
-
-            {!collapsed && (
-              <span
-                className={`font-semibold whitespace-nowrap ${isActive("/dashboard") ? "text-[#0B56A4]" : "text-[#282526]"
-                  }`}
-              >
-                {"Dashboard"}
-              </span>
-            )}
-          </Link> */}
           {filteredNavItems.map((item, index) => {
             const active = isActive(item.link);
 
@@ -171,7 +158,7 @@ const Sidebar = () => {
               <Link
                 key={index}
                 to={item.link}
-                className={`flex items-center h-[54px] px-4 rounded-l-[14px] transition-all duration-200 ${active
+                className={`flex items-center h-[54px] px-2 rounded-l-[14px] transition-all duration-200 ${active
                   ? "bg-white text-[#18283b]"
                   : "text-black hover:bg-white/50"
                   }`}
