@@ -4,6 +4,7 @@ import { jwtDecode } from "jwt-decode";
 import { Plus, X } from "lucide-react";
 import deleteIcon from "../assets/delete.svg";
 import editIcon from "../assets/edit.svg";
+import TimetableDeleteModal from "./TimetableDeleteModal";
 
 const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
@@ -15,7 +16,8 @@ export default function TimeTable() {
     const [tableData, setTableData] = useState({});
     const [showModal, setShowModal] = useState(false);
     const [isSaving, setIsSaving] = useState(false);
-    const [modalData, setModalData] = useState({ day: "", time: "" });
+    const [isEditing, setIsEditing] = useState(false);
+    const [modalData, setModalData] = useState({ day: "", time: "", oldTime: "" });
     const [faculties, setFaculties] = useState([]);
     const [subjects, setSubjects] = useState([]);
     const [modalInputs, setModalInputs] = useState({
@@ -24,6 +26,8 @@ export default function TimeTable() {
         subjectId: "",
         facultyId: ""
     });
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteData, setDeleteData] = useState(null);
 
     const fetchTimetable = async () => {
         try {
@@ -102,7 +106,8 @@ export default function TimeTable() {
     };
 
     const openModal = (day, time) => {
-        setModalData({ day, time });
+        setIsEditing(false);
+        setModalData({ day, time, oldTime: time });
         setModalInputs({
             subjectName: "",
             facultyName: "",
@@ -110,6 +115,35 @@ export default function TimeTable() {
             facultyId: ""
         });
         setShowModal(true);
+    };
+
+    const handleEdit = (day, time, entry) => {
+        setIsEditing(true);
+        setModalData({ day, time, oldTime: time });
+        setModalInputs({
+            subjectName: entry.subjectName,
+            facultyName: entry.facultyName,
+            subjectId: entry.subjectId,
+            facultyId: entry.facultyId
+        });
+        setShowModal(true);
+    };
+
+    const openDeleteModal = (day, time) => {
+        const token = localStorage.getItem("LmsToken");
+        if (!token) return;
+        const decoded = jwtDecode(token);
+        const department = decoded.department || "CSE";
+
+        setDeleteData({
+            department,
+            year: filters.year,
+            semester: parseInt(filters.semester),
+            section: filters.section,
+            day,
+            time
+        });
+        setShowDeleteModal(true);
     };
 
     const handleModalInputChange = (e) => {
@@ -142,7 +176,7 @@ export default function TimeTable() {
             setModalInputs({
                 ...modalInputs,
                 facultyId: staffId,
-                facultyName: staff.name
+                facultyName: staff.firstName || staff.name || ""
             });
         } else {
             setModalInputs({
@@ -168,16 +202,32 @@ export default function TimeTable() {
                 semester: parseInt(filters.semester),
                 section: filters.section,
                 day: modalData.day,
-                time: modalData.time,
                 subjectId: modalInputs.subjectId,
                 subjectName: modalInputs.subjectName,
                 facultyId: modalInputs.facultyId,
                 facultyName: modalInputs.facultyName
             };
 
-            await axios.post(`${import.meta.env.VITE_API_URL}api/timetable/save`, payload, {
-                headers: { Authorization: `Bearer ${token}` }
-            });
+            if (isEditing) {
+                // Update Payload
+                const updatePayload = {
+                    ...payload,
+                    oldTime: modalData.oldTime,
+                    newTime: modalData.time
+                };
+                await axios.put(`${import.meta.env.VITE_API_URL}api/timetable/update`, updatePayload, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            } else {
+                // Save Payload
+                const savePayload = {
+                    ...payload,
+                    time: modalData.time
+                };
+                await axios.post(`${import.meta.env.VITE_API_URL}api/timetable/save`, savePayload, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+            }
 
             setShowModal(false);
             fetchTimetable(); // Refresh data
@@ -243,8 +293,18 @@ export default function TimeTable() {
                                                 <div className="flex items-center justify-center gap-3">
                                                     <span className="font-semibold">{tableData[time][day].subjectName}</span>
                                                     <span className="flex items-center gap-3">
-                                                        <img src={editIcon} className="w-4.5 h-4.5 cursor-pointer hover:scale-110" alt="Edit" />
-                                                        <img src={deleteIcon} className="w-4.5 h-4.5 cursor-pointer hover:scale-110" alt="Delete" />
+                                                        <img
+                                                            src={editIcon}
+                                                            className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
+                                                            alt="Edit"
+                                                            onClick={() => handleEdit(day, time, tableData[time][day])}
+                                                        />
+                                                        <img
+                                                            src={deleteIcon}
+                                                            className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
+                                                            alt="Delete"
+                                                            onClick={() => openDeleteModal(day, time)}
+                                                        />
                                                     </span>
                                                 </div>
                                             </div>
@@ -273,7 +333,7 @@ export default function TimeTable() {
                 <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
                     <div className="bg-white md:w-[40%] rounded-lg p-5">
                         <div className="flex justify-between items-center mb-4">
-                            <h2 className="text-lg font-semibold">Add Time Table Entry</h2>
+                            <h2 className="text-lg font-semibold">{isEditing ? "Edit Time Table Entry" : "Add Time Table Entry"}</h2>
                             <X className="cursor-pointer" onClick={() => setShowModal(false)} />
                         </div>
 
@@ -289,7 +349,7 @@ export default function TimeTable() {
                                     >
                                         <option value="">Choose Subject</option>
                                         {subjects.map((sub) => (
-                                            <option key={sub._id} value={sub}>
+                                            <option key={sub._id} value={sub._id}>
                                                 {sub.subject}
                                             </option>
                                         ))}
@@ -324,6 +384,14 @@ export default function TimeTable() {
                         </div>
                     </div>
                 </div>
+            )}
+
+            {showDeleteModal && (
+                <TimetableDeleteModal
+                    setIsDelete={setShowDeleteModal}
+                    deleteData={deleteData}
+                    onSuccess={fetchTimetable}
+                />
             )}
         </div>
     );
