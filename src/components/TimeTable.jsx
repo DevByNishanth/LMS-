@@ -28,8 +28,10 @@ export default function TimeTable() {
     });
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteData, setDeleteData] = useState(null);
+    const [loading, setLoading] = useState(false);
 
     const fetchTimetable = async () => {
+        setLoading(true);
         try {
             const token = localStorage.getItem("LmsToken");
             if (!token) return;
@@ -58,6 +60,8 @@ export default function TimeTable() {
             setTableData(data || {});
         } catch (err) {
             console.error("Error fetching timetable:", err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -278,51 +282,68 @@ export default function TimeTable() {
                             ))}
                         </tr>
                     </thead>
-                    <tbody>
-                        {Object.keys(tableData).map((time, index) => (
-                            <tr
-                                key={time}
-                                className={`${index % 2 === 1 ? "bg-[#E6E9F5]" : ""} border border-gray-200`}
-                            >
-                                <td className="p-3 font-medium text-[#333333]">{time}</td>
-
-                                {days.map((day) => (
-                                    <td key={day} className="p-4 text-center">
-                                        {tableData[time]?.[day] ? (
-                                            <div className="text-xs flex flex-col items-center gap-1 font-medium text-[#333333]">
-                                                <div className="flex items-center justify-center gap-3">
-                                                    <span className="font-semibold">{tableData[time][day].subjectName}</span>
-                                                    <span className="flex items-center gap-3">
-                                                        <img
-                                                            src={editIcon}
-                                                            className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
-                                                            alt="Edit"
-                                                            onClick={() => handleEdit(day, time, tableData[time][day])}
-                                                        />
-                                                        <img
-                                                            src={deleteIcon}
-                                                            className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
-                                                            alt="Delete"
-                                                            onClick={() => openDeleteModal(day, time)}
-                                                        />
-                                                    </span>
-                                                </div>
-                                            </div>
-                                        ) : (
-                                            <button
-                                                onClick={() => openModal(day, time)}
-                                                className="inline-flex cursor-pointer items-center gap-2 text-black"
-                                            >
-                                                Add
-                                                <span className="bg-[#0B56A4] hover:bg-[#0b55a4e7] rounded-full w-6 h-6 flex items-center justify-center text-white">
-                                                    <Plus className="text-white w-4 h-4" />
-                                                </span>
-                                            </button>
-                                        )}
-                                    </td>
-                                ))}
+                    <tbody className="border border-gray-200">
+                        {loading ? (
+                            <tr>
+                                <td colSpan={days.length + 1} className="p-10 text-center">
+                                    <div className="flex flex-col items-center justify-center gap-3">
+                                        <div className="w-10 h-10 border-4 border-[#0B56A4] border-t-transparent rounded-full animate-spin"></div>
+                                        <p className="text-gray-500 font-medium">Fetching Timetable...</p>
+                                    </div>
+                                </td>
                             </tr>
-                        ))}
+                        ) : Object.keys(tableData).length > 0 ? (
+                            Object.keys(tableData).map((time, index) => (
+                                <tr
+                                    key={time}
+                                    className={`${index % 2 === 1 ? "bg-[#E6E9F5]" : ""} border border-gray-200`}
+                                >
+                                    <td className="p-3 font-medium text-[#333333]">{time}</td>
+
+                                    {days.map((day) => (
+                                        <td key={day} className="p-4 text-center">
+                                            {tableData[time]?.[day] ? (
+                                                <div className="text-xs flex flex-col items-center gap-1 font-medium text-[#333333]">
+                                                    <div className="flex items-center justify-center gap-3">
+                                                        <span className="font-semibold">{tableData[time][day].subjectName}</span>
+                                                        <span className="flex items-center gap-3">
+                                                            <img
+                                                                src={editIcon}
+                                                                className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
+                                                                alt="Edit"
+                                                                onClick={() => handleEdit(day, time, tableData[time][day])}
+                                                            />
+                                                            <img
+                                                                src={deleteIcon}
+                                                                className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
+                                                                alt="Delete"
+                                                                onClick={() => openDeleteModal(day, time)}
+                                                            />
+                                                        </span>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <button
+                                                    onClick={() => openModal(day, time)}
+                                                    className="inline-flex cursor-pointer items-center gap-2 text-black"
+                                                >
+                                                    Add
+                                                    <span className="bg-[#0B56A4] hover:bg-[#0b55a4e7] rounded-full w-6 h-6 flex items-center justify-center text-white">
+                                                        <Plus className="text-white w-4 h-4" />
+                                                    </span>
+                                                </button>
+                                            )}
+                                        </td>
+                                    ))}
+                                </tr>
+                            ))
+                        ) : (
+                            <tr>
+                                <td colSpan={days.length + 1} className="p-10 text-center text-gray-500 font-medium italic">
+                                    No data found for the selected filters.
+                                </td>
+                            </tr>
+                        )}
                     </tbody>
 
                 </table>

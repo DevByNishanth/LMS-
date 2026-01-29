@@ -4,6 +4,7 @@ import notification from '../assets/notification.svg'
 import { Bell, ChevronRight, User } from "lucide-react";
 import bookIcon from '../assets/activeBookIcon.svg'
 import upSideRightArrow from '../assets/upSideRightArrow.svg'
+import noDataImg from '../assets/noData.svg'
 import { Link } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
 import axios from 'axios';
@@ -28,6 +29,7 @@ const SubjectPlanningPage = () => {
     const [accademicYear, setAccademicYear] = useState("2025 - 2026");
     const [subjectData, setSubjedData] = useState([]);
     const [firstName, setFirstName] = useState("");
+    const [loading, setLoading] = useState(false);
 
     // useEffect call's 
 
@@ -48,13 +50,20 @@ const SubjectPlanningPage = () => {
 
     // functions 
     async function getAllocatedSubjects() {
-        const res = await axios.get(`${apiUrl}api/staff/subject-planning`, {
-            headers: {
-                Authorization: `Bearer ${token}`
-            }
-        });
-        console.log("subject planning data : ", res.data.data);
-        setSubjedData(res.data.data);
+        setLoading(true);
+        try {
+            const res = await axios.get(`${apiUrl}api/staff/subject-planning`, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                }
+            });
+            console.log("subject planning data : ", res.data.data);
+            setSubjedData(res.data.data);
+        } catch (error) {
+            console.error("Error fetching allocated subjects:", error);
+        } finally {
+            setLoading(false);
+        }
     }
     return (
         <>
@@ -137,51 +146,67 @@ const SubjectPlanningPage = () => {
                     </div> */}
 
                     <div className="main-container mt-4 max-h-[calc(100vh-170px)] space-y-3 overflow-auto">
-                        {subjectData.map((item, index) => {
-                            const queryData = encodeURIComponent(JSON.stringify({
-                                subjectCode: item.subjectCode,
-                                subjectName: item.subjectName,
-                                department: item.department,
-                                semester: item.semester,
-                                semesterType: item.semesterType,
-                                sectionName: item.sectionName,
-                                regulation: item.regulation,
-                                accademicYear: accademicYear,
-                                selectedSemester: selectedSemester,
-                                id: item._id,
-                                subjectId: item.subjectId
-                            }));
-                            console.log("item", item);
-                            return (
-                                <div
-                                    key={index}
-                                    className="card border border-gray-300 bg-[#F9F9F9] p-4 rounded-xl flex items-center justify-between"
-                                >
-                                    <div className="flex items-center gap-3">
-                                        <div className="w-11 h-11 bg-[#0B56A4] flex items-center justify-center rounded-full">
-                                            <img src={bookIcon} className="h-[80%] w-[55%]" />
+                        {loading ? (
+                            <div className="w-full h-80 flex items-center justify-center">
+                                <div className="flex flex-col items-center gap-3">
+                                    <div className="w-10 h-10 border-4 border-[#0B56A4] border-t-transparent rounded-full animate-spin"></div>
+                                    <p className="text-gray-500 font-medium italic">Fetching Allocated Subjects...</p>
+                                </div>
+                            </div>
+                        ) : subjectData.length > 0 ? (
+                            subjectData.map((item, index) => {
+                                const queryData = encodeURIComponent(JSON.stringify({
+                                    subjectCode: item.subjectCode,
+                                    subjectName: item.subjectName,
+                                    department: item.department,
+                                    semester: item.semester,
+                                    semesterType: item.semesterType,
+                                    sectionName: item.sectionName,
+                                    regulation: item.regulation,
+                                    accademicYear: accademicYear,
+                                    selectedSemester: selectedSemester,
+                                    id: item._id,
+                                    subjectId: item.subjectId
+                                }));
+                                console.log("item", item);
+                                return (
+                                    <div
+                                        key={index}
+                                        className="card border border-gray-300 bg-[#F9F9F9] p-4 rounded-xl flex items-center justify-between transition-all hover:border-[#0B56A4]"
+                                    >
+                                        <div className="flex items-center gap-3">
+                                            <div className="w-11 h-11 bg-[#0B56A4] flex items-center justify-center rounded-full">
+                                                <img src={bookIcon} className="h-[80%] w-[55%]" />
+                                            </div>
+
+                                            <h1 className="text-[#0B56A4] font-medium text-lg">
+                                                {item.subjectCode} - {item.subjectName}
+                                            </h1>
                                         </div>
 
-                                        <h1 className="text-[#0B56A4] font-medium text-lg">
-                                            {item.subjectCode} - {item.subjectName}
-                                        </h1>
-                                    </div>
+                                        <div className="flex items-center gap-6 text-lg">
+                                            <h1 className="font-medium text-gray-700">
+                                                (Sem {item.semester} - {item.department} - {item.sectionName})
+                                            </h1>
 
-                                    <div className="flex items-center gap-6 text-lg">
-                                        <h1 className="font-medium">
-                                            (Sem {item.semester} - {item.department} - {item.sectionName})
-                                        </h1>
-
-                                        <Link
-                                            to={`/dashboard/subjectPlanning/${item.subjectCode}/?data=${queryData}`}
-                                            className="w-11 h-11 bg-[#0B56A4] hover:bg-[#0f6fd6] flex items-center justify-center rounded-full"
-                                        >
-                                            <img src={upSideRightArrow} className="h-[80%] w-[55%]" />
-                                        </Link>
+                                            <Link
+                                                to={`/dashboard/subjectPlanning/${item.subjectCode}/?data=${queryData}`}
+                                                className="w-11 h-11 bg-[#0B56A4] hover:bg-[#0f6fd6] flex items-center justify-center rounded-full transition-colors shadow-md"
+                                            >
+                                                <img src={upSideRightArrow} className="h-[80%] w-[55%]" />
+                                            </Link>
+                                        </div>
                                     </div>
-                                </div>
-                            );
-                        })}
+                                );
+                            })
+                        ) : (
+                            <div className="w-full h-80 flex flex-col items-center justify-center gap-4">
+                                <img src={noDataImg} className="w-48 h-48 opacity-80" alt="No Data Found" />
+                                <p className="text-gray-500 font-medium italic text-lg text-center">
+                                    No subjects allocated for the selected semester/year.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
 
