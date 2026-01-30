@@ -3,8 +3,9 @@ import folderIcon from "../assets/folderIcon.svg";
 import archiveIcon from '../assets/archiveIcon.svg'
 import { Link } from "react-router-dom";
 import noDatafoundImg from '../assets/noDatafoundImg.svg'
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddClassModal from "../components/AddClassModal";
+import axios from "axios";
 
 // const classes = [
 //     {
@@ -61,11 +62,19 @@ import AddClassModal from "../components/AddClassModal";
 const classes = []
 
 const ClassRoomHomepage = () => {
+    // Auth 
+    const apiUrl = import.meta.env.VITE_API_URL; // from .env file
 
+    // states 
     const [isOpen, setIsOpen] = useState(false);
+    const [classes, setClasses] = useState([]);
+
+    // useEffect calls 
+    useEffect(() => {
+        fetchClasses();
+    }, []);
 
     // functions 
-
     function onClose() {
         setIsOpen(false);
     }
@@ -73,10 +82,25 @@ const ClassRoomHomepage = () => {
     function onSuccess() {
         setIsOpen(false);
     }
+
+    async function fetchClasses() {
+        try {
+            const response = await axios.get(`${apiUrl}api/staff/classroom`, {
+                headers: {
+                    "Authorization": `Bearer ${localStorage.getItem("LmsToken")}`,
+                }
+            });
+            const data = await response.data.data;
+            console.log(data);
+            setClasses(data);
+        } catch (error) {
+            console.error("Error fetching classes:", error);
+        }
+    }
+
+
     return (
         <>
-
-
             <div className="px-6 ">
                 {/* Header */}
                 {classes.length > 0 ? <div className="mt-2 flex items-center justify-between mb-4">

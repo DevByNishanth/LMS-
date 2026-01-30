@@ -2,6 +2,10 @@ import { X } from "lucide-react";
 import { useState } from "react";
 
 export default function AddClassModal({ isOpen, onClose, onSuccess }) {
+    // Auth
+    const apiUrl = import.meta.env.VITE_API_URL; // from .env file
+    const token = localStorage.getItem("LmsToken");
+
     const [formData, setFormData] = useState({
         className: "",
         section: "",
@@ -18,10 +22,11 @@ export default function AddClassModal({ isOpen, onClose, onSuccess }) {
 
     const handleSubmit = async () => {
         try {
-            const res = await fetch("http://localhost:5000/api/staff/classroom", {
+            const res = await fetch(`${apiUrl}api/staff/classroom`, {
                 method: "POST",
                 headers: {
                     "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`,
                 },
                 body: JSON.stringify(formData),
             });
@@ -60,7 +65,7 @@ export default function AddClassModal({ isOpen, onClose, onSuccess }) {
                             name="className"
                             value={formData.className}
                             onChange={handleChange}
-                            placeholder="Eg: BSc IT"
+                            placeholder="Eg: CSE"
                             className="w-full rounded-md border border-gray-400 px-3 py-2 focus:border-blackfocus:outline-none"
                         />
                     </div>
