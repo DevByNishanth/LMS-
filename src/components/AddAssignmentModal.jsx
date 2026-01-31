@@ -117,7 +117,7 @@ export default function AddAssignmentModal({ onClose, setIsAssignmentModalOpen }
 
                 </form>
                 {/* Footer Buttons */}
-                <div className="flex justify-end gap-3 py-5 px-6 ">
+                <div className="flex justify-end gap-3 py-5 px-6 absolute bottom-0 w-full ">
                     <button
                         type="button"
                         onClick={onClose}

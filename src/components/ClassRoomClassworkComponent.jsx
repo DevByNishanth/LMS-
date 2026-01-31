@@ -53,11 +53,11 @@ const ClassRoomClassworkComponent = () => {
 
                                 <div ref={dropdownRef} className="btn-container relative">
                                     <button onClick={() => setIsDropdown(!isDropdown)} className={`bg-[#0B56A4] text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit cursor-pointer hover:bg-[#0b55a4db] ${isDropdown ? '' : ''}`}><Plus className={`text-white ${isDropdown ? 'rotate-135' : 'rotate-0'} transition-all duration-300`} />Create new Classwork</button>
-                                    {isDropdown && <div className="dropdown-container transition-all duration-300 w-full absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
-                                        <button onClick={() => setIsAssignmentModalOpen(true)} className='flex items-center gap-2 py-2 px-3 cursor-pointer hover:bg-gray-100 w-full'><FileText className='text-gray-600' />Assignment</button>
-                                        <button className='flex items-center gap-2 py-2 px-3 cursor-pointer hover:bg-gray-100 w-full'><ClipboardCheck className='text-gray-600' />Quiz Assignment</button>
-                                        <button className='flex items-center gap-2 py-2 px-3 cursor-pointer hover:bg-gray-100 w-full'><FileQuestionMark className='text-gray-600' />Question</button>
-                                        <button className='flex items-center gap-2 py-2 px-3 cursor-pointer hover:bg-gray-100 w-full'><BookOpenIcon className='text-gray-600' />Material</button>
+                                    {isDropdown && <div className="dropdown-container transition-all duration-300 space-y-3 w-full absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
+                                        <button onClick={() => setIsAssignmentModalOpen(true)} className='flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full'><FileText className='text-gray-600' />Assignment</button>
+                                        <button className='flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full'><ClipboardCheck className='text-gray-600' />Quiz Assignment</button>
+                                        <button className='flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full'><FileQuestionMark className='text-gray-600' />Question</button>
+                                        <button className='flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full'><BookOpenIcon className='text-gray-600' />Material</button>
                                     </div>}
                                 </div>
 
