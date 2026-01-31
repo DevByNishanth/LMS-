@@ -6,6 +6,12 @@ import noDatafoundImg from '../assets/noDatafoundImg.svg'
 import { useEffect, useState } from "react";
 import AddClassModal from "../components/AddClassModal";
 import axios from "axios";
+import banner1 from '../assets/banner1.svg'
+import banner2 from '../assets/banner2.svg'
+import banner3 from '../assets/banner3.svg'
+import { jwtDecode } from "jwt-decode";
+
+
 
 // const classes = [
 //     {
@@ -58,12 +64,25 @@ import axios from "axios";
 //     },
 // ];
 
+// Array of classroom/educational themed images
+const classroomImages = [
+    banner1,
+    banner2,
+    banner3,
+];
 
-const classes = []
+// Helper function to get a random image
+const getRandomImage = () => {
+    return classroomImages[Math.floor(Math.random() * classroomImages.length)];
+};
 
 const ClassRoomHomepage = () => {
     // Auth 
     const apiUrl = import.meta.env.VITE_API_URL; // from .env file
+    const token = localStorage.getItem("LmsToken");
+    const decoded = jwtDecode(token);
+    const staffName = decoded.name;
+    console.log(decoded)
 
     // states 
     const [isOpen, setIsOpen] = useState(false);
@@ -77,6 +96,8 @@ const ClassRoomHomepage = () => {
     // functions 
     function onClose() {
         setIsOpen(false);
+        fetchClasses()
+
     }
 
     function onSuccess() {
@@ -123,20 +144,20 @@ const ClassRoomHomepage = () => {
                     {classes.length > 0 ? (
                         classes.map((cls) => {
                             return <Link
-                                to={`/dashboard/classroom/class/${cls.id}`}
+                                to={`/dashboard/classroom/class/${cls._id}`}
                                 key={cls.id}
-                                className="rounded-lg cursor-pointer rounded-t-xl bg-white shadow hover:shadow-lg transition"
+                                className="rounded-lg cursor-pointer rounded-t-xl bg-white border border-gray-200 hover:shadow-lg transition"
                             >
                                 {/* Card Header */}
                                 <div className="relative" >
                                     <div className="background-img relative ">
-                                        <img src={cls.image} className="h-36 rounded-t-xl object-cover w-full" />
-                                        <div className="absolute top-0 rounded-t-xl right-0 bottom-0 left-0 tint"></div>
+                                        <img src={getRandomImage()} className="h-36 rounded-t-xl object-cover w-full" />
+                                        <div className="absolute top-0 rounded-t-xl right-0 bottom-0 left-0 bg-black/20"></div>
                                     </div>
-                                    <div className="text-container text-white absolute top-[20%] left-[4%] ">
-                                        <p className="text-sm opacity-90">{cls.section}</p>
+                                    <div className="text-container text-black absolute top-[20%] left-[4%] ">
+                                        <p className="text-sm font-medium">{cls.className}</p>
                                         <h2 className="text-xl font-semibold mt-1">
-                                            {cls.subject}
+                                            {cls.subjectName}
                                         </h2>
                                     </div>
                                 </div>
@@ -149,8 +170,8 @@ const ClassRoomHomepage = () => {
                                             alt="teacher"
                                             className="w-10 h-10 rounded-full"
                                         />
-                                        <p className="text-sm font-medium text-gray-700">
-                                            {cls.teacher}
+                                        <p className="text-md font-medium text-gray-700">
+                                            {staffName ? staffName : ""}
                                         </p>
                                     </div>
 
