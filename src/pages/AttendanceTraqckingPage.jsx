@@ -33,6 +33,8 @@ const AttendanceTraqckingPage = () => {
     const [date, setDate] = useState(new Date().toISOString().split('T')[0]);
     const [firstName, setFirstName] = useState("");
     const [studentsList, setStudentsList] = useState([]);
+    const [showBulkModal, setShowBulkModal] = useState(false);
+    const [bulkLoading, setBulkLoading] = useState(false);
 
     const token = localStorage.getItem("LmsToken");
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -158,6 +160,9 @@ const AttendanceTraqckingPage = () => {
         filteredStudents.length > 0 &&
         filteredStudents.every((s) => s.selected);
 
+    // Get count of selected students
+    const selectedStudentsCount = students.filter(s => s.selected).length;
+
 
     // habndle attendace 
     const markAttendance = async (student, status) => {
@@ -188,6 +193,51 @@ const AttendanceTraqckingPage = () => {
 
         } catch (error) {
             console.error(`Error marking ${status}:`, error);
+        }
+    }
+
+    // Handle bulk attendance marking
+    const handleBulkAttendance = async (status) => {
+        const selectedStudents = students.filter(s => s.selected);
+        
+        if (selectedStudents.length === 0) {
+            alert("Please select at least one student");
+            return;
+        }
+
+        setBulkLoading(true);
+        try {
+            const hourLabel = HOURS[activeHour].split(" (")[0].replace(" ", "");
+            const records = selectedStudents.map(student => ({
+                studentId: student._id,
+                status: status
+            }));
+
+            const res = await axios.post(`${apiUrl}api/attendance/bulk`, {
+                subjectId: query_data.subjectId,
+                date: date,
+                hour: hourLabel,
+                records: records
+            },
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+
+            console.log("Bulk attendance marked: ", res.data);
+            alert("Attendance marked successfully!");
+            setShowBulkModal(false);
+            
+            // Re-fetch students to update the attendance status
+            getStudents();
+
+        } catch (error) {
+            console.error("Error marking bulk attendance:", error);
+            alert(error.response?.data?.message || "Failed to mark bulk attendance");
+        } finally {
+            setBulkLoading(false);
         }
     }
 
@@ -234,7 +284,7 @@ const AttendanceTraqckingPage = () => {
                                 {new Date(date).toLocaleDateString('en-GB', { day: '2-digit', month: 'short', year: 'numeric' }).toUpperCase()} - <span className="text-[#0B56A4]">({new Date(date).toLocaleDateString('en-GB', { weekday: 'long' })})</span>
                             </h2>
 
-                            <div className="flex gap-3">
+                            <div className="flex gap-3 items-center">
                                 <input
                                     type="text"
                                     placeholder="Search Roll no and Name"
@@ -243,12 +293,21 @@ const AttendanceTraqckingPage = () => {
                                     onChange={(e) => setSearch(e.target.value)}
                                 />
 
-                                <input
+                                {/* <input
                                     type="date"
                                     className="border border-gray-300 text-gray-600 rounded px-3 py-2"
                                     value={date}
                                     onChange={(e) => setDate(e.target.value)}
-                                />
+                                /> */}
+
+                                {selectedStudentsCount > 0 && (
+                                    <button
+                                        onClick={() => setShowBulkModal(true)}
+                                        className="bg-[#0B56A4] text-white px-4 py-2 rounded hover:bg-[#084282] transition-all shadow-md font-semibold text-sm whitespace-nowrap"
+                                    >
+                                        Bulk Attendance ({selectedStudentsCount})
+                                    </button>
+                                )}
                             </div>
                         </div>
 
@@ -381,6 +440,61 @@ const AttendanceTraqckingPage = () => {
                     </div>
 
                 </div>
+
+                {/* Bulk Attendance Modal */}
+                {showBulkModal && (
+                    <>
+                        {/* Overlay */}
+                        <div
+                            className="fixed inset-0 bg-black/40 z-60"
+                            onClick={() => setShowBulkModal(false)}
+                        ></div>
+
+                        {/* Modal */}
+                        <div className="fixed top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white rounded-xl shadow-2xl z-70 p-8 w-96">
+                            <h3 className="text-xl font-semibold text-gray-800 mb-6">
+                                Mark Attendance for {selectedStudentsCount} Student{selectedStudentsCount !== 1 ? 's' : ''}
+                            </h3>
+
+                            <div className="flex flex-col gap-3">
+                                <button
+                                    onClick={() => handleBulkAttendance("Present")}
+                                    disabled={bulkLoading}
+                                    className="flex items-center gap-3 w-full p-4 border-2 border-green-500 rounded-lg hover:bg-green-50 transition-all disabled:opacity-50"
+                                >
+                                    <CheckCircle className="text-green-500" size={24} />
+                                    <span className="font-semibold text-gray-800">Mark Present</span>
+                                </button>
+
+                                <button
+                                    onClick={() => handleBulkAttendance("Absent")}
+                                    disabled={bulkLoading}
+                                    className="flex items-center gap-3 w-full p-4 border-2 border-red-500 rounded-lg hover:bg-red-50 transition-all disabled:opacity-50"
+                                >
+                                    <XCircle className="text-red-500" size={24} />
+                                    <span className="font-semibold text-gray-800">Mark Absent</span>
+                                </button>
+
+                                <button
+                                    onClick={() => handleBulkAttendance("On-Duty")}
+                                    disabled={bulkLoading}
+                                    className="flex items-center gap-3 w-full p-4 border-2 border-blue-500 rounded-lg hover:bg-blue-50 transition-all disabled:opacity-50"
+                                >
+                                    <CheckCircle className="text-blue-500" size={24} />
+                                    <span className="font-semibold text-gray-800">Mark On-Duty</span>
+                                </button>
+                            </div>
+
+                            <button
+                                onClick={() => setShowBulkModal(false)}
+                                disabled={bulkLoading}
+                                className="w-full mt-6 p-3 border border-gray-300 rounded-lg text-gray-600 font-semibold hover:bg-gray-50 transition-all disabled:opacity-50"
+                            >
+                                Cancel
+                            </button>
+                        </div>
+                    </>
+                )}
             </section>
         </>
     )

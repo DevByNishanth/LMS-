@@ -86,6 +86,7 @@ const AddStudentCanvas = ({
     }
   };
 
+  console.log("student form data : ", formData);
   return (
     <>
       {/* Background blur */}
@@ -193,10 +194,10 @@ const AddStudentCanvas = ({
                   className="w-full mt-1 border border-gray-400 px-3 py-2 rounded-lg"
                 >
                   <option value="">Select Year</option>
-                  <option>First Year</option>
-                  <option>Second Year</option>
-                  <option>Third Year</option>
-                  <option>Fourth Year</option>
+                  <option>1st Year</option>
+                  <option>2nd Year</option>
+                  <option>3rd Year</option>
+                  <option>4th Year</option>
                 </select>
               </div>
 
