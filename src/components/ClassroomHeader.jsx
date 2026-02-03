@@ -8,6 +8,15 @@ import homeInActive from '../assets/homeInActive.svg'
 import calendarActive from '../assets/calendarActive.svg'
 import archiveActive from '../assets/archiveActive.svg'
 import { jwtDecode } from "jwt-decode";
+import classWorkIcon from '../assets/classWorkIcon.svg'
+import peopleIcon from '../assets/peopleIcon.svg'
+import gradeIcon from '../assets/gradesIcon.svg'
+import activeSteamIcon from '../assets/activeSteamIcon.svg'
+
+
+
+
+
 const ClassroomHeader = ({ activeTab, setActiveTab }) => {
     const [firstLetter, setFirstLetter] = useState("");
 
@@ -37,23 +46,15 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
 
             <div className="w-full flex items-center justify-between px-6 py-3 bg-white ">
                 <div className="tabs flex items-center gap-4">
-                    <button onClick={() => setActiveTab("home")} className={`${activeTab.toLowerCase() == "home" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "home" ? activeHomeIcon : homeInActive} className="w-6 h-6" /></span>Home</button>
-                    <button onClick={() => setActiveTab("calendar")} className={`${activeTab.toLowerCase() == "calendar" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "calendar" ? calendarActive : calendarIcon} className="w-6 h-6" /></span>Calendar</button>
-                    <button onClick={() => setActiveTab("archived classes")} className={`${activeTab.toLowerCase() == "archived classes" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "archived classes" ? archiveActive : archiveIcon} className="w-6 h-6" /></span>Archived Classes</button>
+                    <button onClick={() => setActiveTab("stream")} className={`${activeTab.toLowerCase() == "stream" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "stream" ? activeSteamIcon : homeInActive} className="w-6 h-6" /></span>Stream</button>
+                    <button onClick={() => setActiveTab("classwork")} className={`${activeTab.toLowerCase() == "classwork" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "classwork" ? calendarActive : classWorkIcon} className="w-6 h-6" /></span>Classwork</button>
+                    <button onClick={() => setActiveTab("people")} className={`${activeTab.toLowerCase() == "people" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "people" ? archiveActive : peopleIcon} className="w-6 h-6" /></span>Peoples</button>
+                    <button onClick={() => setActiveTab("grades")} className={`${activeTab.toLowerCase() == "grades" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "grades" ? archiveActive : gradeIcon} className="w-6 h-6" /></span>Grades</button>
+                    <button onClick={() => setActiveTab("attendance")} className={`${activeTab.toLowerCase() == "attendance" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "attendance" ? archiveActive : gradeIcon} className="w-6 h-6" /></span>Attendance</button>
+                    <button onClick={() => setActiveTab("subjectPlanning")} className={`${activeTab.toLowerCase() == "subjectPlanning" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}><span><img src={activeTab.toLowerCase() == "subjectPlanning" ? archiveActive : gradeIcon} className="w-6 h-6" /></span>Subject Planning</button>
                 </div>
 
-                {/* Right - Icons */}
-                <div className="flex items-center gap-3">
-                    {/* Notification Icon */}
-                    <div className="p-2 rounded-full bg-gray-50 shadow-sm hover:shadow-md transition">
-                        <img src={notificationIcon} className="w-4 h-4" />
-                    </div>
-
-                    {/* Profile Image */}
-                    <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
-                        {firstLetter}
-                    </div>
-                </div>
+               
             </div>
 
         </>

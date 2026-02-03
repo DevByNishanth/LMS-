@@ -10,6 +10,7 @@ import banner1 from '../assets/banner1.svg'
 import banner2 from '../assets/banner2.svg'
 import banner3 from '../assets/banner3.svg'
 import { jwtDecode } from "jwt-decode";
+import notification from '../assets/notification.svg'
 
 
 
@@ -85,10 +86,25 @@ const ClassRoomHomepage = () => {
     console.log(decoded)
 
     // states 
+    const [firstName, setFirstName] = useState("");
+
     const [isOpen, setIsOpen] = useState(false);
     const [classes, setClasses] = useState([]);
 
     // useEffect calls 
+
+
+    // useEffect call's 
+
+    useEffect(() => {
+        const token = localStorage.getItem("LmsToken");
+        if (!token) {
+            return
+        } else {
+            const decoded = jwtDecode(token);
+            setFirstName(decoded.name.charAt(0).toUpperCase());
+        }
+    }, [])
     useEffect(() => {
         fetchClasses();
     }, []);
@@ -134,9 +150,24 @@ const ClassRoomHomepage = () => {
                         <Search className="text-gray-400" />
                     </div>
 
-                    <button onClick={() => setIsOpen(true)} className="bg-[#0B56A4] text-white flex items-center gap-2 px-4 py-2 rounded-md hover:bg-[#0b55a4ce] cursor-pointer transition">
-                        <Plus /> Create new Class
-                    </button>
+                    {/* header section  */}
+                    <div className="flex items-center justify-between  bg-white">
+                        <div className="w-full flex items-center justify-between py-4  bg-white">
+
+                            {/* Right: Icons */}
+                            <div className="flex items-center gap-4">
+                                {/* Notification */}
+                                <div className="p-2 rounded-full bg-gray-50 shadow-sm hover:shadow-md transition">
+                                    <img src={notification} className="w-4 h-4" />
+                                </div>
+
+                                {/* Profile Image */}
+                                <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+                                    {firstName}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div> : ""}
 
                 {/* Cards Grid */}

@@ -12,7 +12,7 @@ const ClassRoomPage = () => {
                     <Sidebar />
                 </div>
                 <div className="container-2 w-[80%] h-[100%]">
-                    <ClassroomHeader activeTab={activeTab} setActiveTab={setActiveTab} />
+                    {/* <ClassroomHeader activeTab={activeTab} setActiveTab={setActiveTab} /> */}
                     {activeTab.toLowerCase() == "home" && (<ClassRoomHomepage></ClassRoomHomepage>)}
                 </div>
             </section>

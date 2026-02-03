@@ -89,7 +89,7 @@ export default function AddAssignmentModal({
                 <div className="icon-container bg-[#FAFAFA] border border-gray-400 rounded-full w-10 h-10 flex items-center justify-center">
                   <Link className="w-4 h-4" />
                 </div>
-            
+
                 Link
               </div>
               <div
@@ -153,8 +153,8 @@ export default function AddAssignmentModal({
         <div className="flex justify-end gap-3 py-5 px-6 absolute bottom-0 w-full ">
           <button
             type="button"
-            onClick={onClose}
-            className="px-4 py-2 rounded cursor-pointer bg-[#FAFAFA] text-black hover:opacity-90"
+            onClick={() => setIsAssignmentModalOpen(false)}
+            className="px-4 py-2 border border-gray-400 rounded cursor-pointer bg-[#FAFAFA] text-black hover:opacity-90"
           >
             Cancel
           </button>

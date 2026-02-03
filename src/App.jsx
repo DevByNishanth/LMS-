@@ -134,8 +134,6 @@ const App = () => {
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
         <Route path="/dashboard/classroom/class/:classId" element={<Classpage />} />
 
-
-
       </Routes>
     </>
   );

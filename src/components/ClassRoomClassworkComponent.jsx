@@ -13,18 +13,19 @@ import assignmentWorkIcon from "../assets/assignmentWorkIcon.svg";
 import AddAssignmentModal from "./AddAssignmentModal";
 import QuizAssignmentCanvas from "./QuizAssignmentCanvas";
 
-const classWorkData1 = [
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-];
-const classWorkData2 = [];
+// const classWorkData1 = [
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+//   { title: "Assignment Work", postedOn: "11:42AM" },
+// ];
+const classWorkData1 = [];
+
 
 const ClassRoomClassworkComponent = () => {
   // states
@@ -164,7 +165,7 @@ const ClassRoomClassworkComponent = () => {
           </>
         ) : (
           <>
-            <div className="w-full h-full flex flex-col justify-center items-center gap-4">
+            <div className="w-full h-full flex flex-col justify-center items-center gap-4 relative">
               <div className="img-container h-[260px]">
                 <img src={noDataImg} className="w-[300px] h-full m-auto" />
               </div>
@@ -176,10 +177,38 @@ const ClassRoomClassworkComponent = () => {
                   Start by adding classwork to share lessons, assignments, and
                   resources with your class.
                 </h1>
-                <button className="bg-[#0B56A4] text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit m-auto mt-2">
-                  <Plus className="text-white" />
-                  Create new Classwork
-                </button>
+                <div ref={dropdownRef} className="btn-container absolute top-0 right-0">
+                  <button onClick={() => setIsDropdown(!isDropdown)} className="bg-[#0B56A4]  hover:bg-[#0b55a4db] cursor-pointer transition-all duration-300 text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit m-auto mt-2">
+                    <Plus c className={`text-white ${isDropdown ? "rotate-135" : "rotate-0"} transition-all duration-300`} />
+                    Create new Classwork
+                  </button>
+                  {isDropdown && (
+                    <div className="dropdown-container transition-all duration-300 space-y-3 w-full absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
+                      <button
+                        onClick={() => setIsAssignmentModalOpen(true)}
+                        className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full"
+                      >
+                        <FileText className="text-gray-600" />
+                        Assignment
+                      </button>
+                      <button
+                        onClick={() => setIsQuizAssignmentModalOpen(true)}
+                        className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full"
+                      >
+                        <ClipboardCheck className="text-gray-600" />
+                        Quiz Assignment
+                      </button>
+                      <button className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full">
+                        <FileQuestionMark className="text-gray-600" />
+                        Question
+                      </button>
+                      <button className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full">
+                        <BookOpenIcon className="text-gray-600" />
+                        Material
+                      </button>
+                    </div>
+                  )}
+                </div>
               </div>
             </div>
           </>
@@ -188,6 +217,7 @@ const ClassRoomClassworkComponent = () => {
       {isAssignmentModalOpen && (
         <AddAssignmentModal
           setIsAssignmentModalOpen={setIsAssignmentModalOpen}
+          onClose={() => setIsAssignmentModalOpen(false)}
         />
       )}
 
