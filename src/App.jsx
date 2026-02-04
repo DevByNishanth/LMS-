@@ -24,8 +24,6 @@ import TimeTableManagementPage from "./pages/TimeTableManagementPage";
 const App = () => {
   return (
     <>
-      {/* <TitanicPie /> */}
-
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route
@@ -117,23 +115,37 @@ const App = () => {
           }
         />
 
-        <Route path="/dashboard/sudentAttendance" element={
-          <ProtectedRoute>
-            <StudentAttendancePage />
-          </ProtectedRoute>} />
+        <Route
+          path="/dashboard/sudentAttendance"
+          element={
+            <ProtectedRoute>
+              <StudentAttendancePage />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/dashboard/adminSemReg" element={
-          <ProtectedRoute>
-            <AdminSemesterRegPage />
-          </ProtectedRoute>} />
-        <Route path="/dashboard/timetableManagement" element={
-          <ProtectedRoute>
-            <TimeTableManagementPage />
-          </ProtectedRoute>} />
+        <Route
+          path="/dashboard/adminSemReg"
+          element={
+            <ProtectedRoute>
+              <AdminSemesterRegPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/timetableManagement"
+          element={
+            <ProtectedRoute>
+              <TimeTableManagementPage />
+            </ProtectedRoute>
+          }
+        />
 
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
-        <Route path="/dashboard/classroom/class/:classId" element={<Classpage />} />
-
+        <Route
+          path="/dashboard/classroom/class/:classId"
+          element={<Classpage />}
+        />
       </Routes>
     </>
   );

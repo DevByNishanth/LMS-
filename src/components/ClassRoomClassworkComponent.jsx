@@ -13,18 +13,18 @@ import assignmentWorkIcon from "../assets/assignmentWorkIcon.svg";
 import AddAssignmentModal from "./AddAssignmentModal";
 import QuizAssignmentCanvas from "./QuizAssignmentCanvas";
 
-// const classWorkData1 = [
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-//   { title: "Assignment Work", postedOn: "11:42AM" },
-// ];
-const classWorkData1 = [];
+const classWorkData1 = [
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+  { title: "Assignment Work", postedOn: "11:42AM" },
+];
+// const classWorkData1 = [];
 
 
 const ClassRoomClassworkComponent = () => {

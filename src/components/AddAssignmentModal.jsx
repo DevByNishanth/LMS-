@@ -9,6 +9,8 @@ export default function AddAssignmentModal({
   const [selectedAttachmentOption, setSelectedAttachmentOption] =
     useState(null);
 
+  const [openingFrom, setOpeningFrom] = useState("AssignmentModal");
+
   const [formData, setFormData] = useState({
     title: "",
     instruction: "",
@@ -89,7 +91,6 @@ export default function AddAssignmentModal({
                 <div className="icon-container bg-[#FAFAFA] border border-gray-400 rounded-full w-10 h-10 flex items-center justify-center">
                   <Link className="w-4 h-4" />
                 </div>
-
                 Link
               </div>
               <div
@@ -173,6 +174,8 @@ export default function AddAssignmentModal({
         <AssignmentResourceModal
           selectedAttachmentOption={selectedAttachmentOption}
           setSelectedAttachmentOption={setSelectedAttachmentOption}
+          openingFrom={openingFrom}
+          setOpeningFrom={setOpeningFrom}
         />
       )}
     </div>

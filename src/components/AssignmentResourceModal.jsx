@@ -4,12 +4,16 @@ import React from "react";
 const AssignmentResourceModal = ({
   selectedAttachmentOption,
   setSelectedAttachmentOption,
+  openingFrom,
+  setOpeningFrom,
 }) => {
   return (
     <>
-      <div className="tint-container fixed inset-0 bg-black/50"></div>
+      <div
+        className={`tint-container fixed inset-0 bg-black/50 ${openingFrom !== "AssignmentModal" ? "z-120" : "z-50"} `}
+      ></div>
       <section
-        className={`assignment-resource-modal absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 bg-white w-[30%] h-[300px] rounded-lg z-50`}
+        className={`assignment-resource-modal absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 bg-white w-[25%] h-[240px] rounded-lg ${openingFrom !== "AssignmentModal" ? "z-120" : "z-50"} `}
       >
         {/* header  */}
         <div className="header border-b border-gray-300">
@@ -34,14 +38,16 @@ const AssignmentResourceModal = ({
         {selectedAttachmentOption == "upload" ? (
           <>
             <div className="file-input-container mx-4 mt-4 ">
-              <div className="border-2 rounded-xl border-dashed border-gray-400 w-full h-[140px] relative">
+              <div className="rounded-lg  w-full h-[50px] relative">
                 <input
                   type="file"
-                  className="opacity-0 absolute top-0 right-0 bottom-0 left-0"
+                  className="opacity-0 absolute top-0 right-0 bottom-0 left-0 "
                 />
-                <div className="image-contaienr text-center mt-6">
-                  <Upload className="w-10 h-10 text-black-900 mx-auto mt-8" />
-                  <h1 className="mt-2">Upload files here</h1>
+                <div className="image-contaienr text-center border-2 border-dashed py-4 border-gray-400  ">
+                  <Upload className="w-6 h-6 text-gray-600 mx-auto" />
+                  <h1 className="mt-2 text-sm text-gray-800 cursor-pointer hover:text-black ">
+                    Upload files here
+                  </h1>
                 </div>
               </div>
             </div>
