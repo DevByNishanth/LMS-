@@ -84,6 +84,7 @@ const ClassRoomHomepage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
   const [classes, setClasses] = useState([]);
+  const [loading, setLoading] = useState(false);
 
   // useEffect calls
 
@@ -98,9 +99,11 @@ const ClassRoomHomepage = () => {
       setFirstName(decoded.name.charAt(0).toUpperCase());
     }
   }, []);
+
   useEffect(() => {
-    fetchClasses();
-  }, []);
+    // fetchClasses();
+    getAllocatedSubjects();
+  }, [token]);
 
   // functions
   function onClose() {
@@ -125,6 +128,28 @@ const ClassRoomHomepage = () => {
     } catch (error) {
       console.error("Error fetching classes:", error);
     }
+  }
+
+  async function getAllocatedSubjects() {
+    setLoading(true);
+    try {
+      const res = await axios.get(`${apiUrl}api/staff/subject-planning`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("subject planning data : ", res.data.data);
+      setClasses(res.data.data);
+    } catch (error) {
+      console.error("Error fetching allocated subjects:", error);
+    } finally {
+      setLoading(false);
+    }
+  }
+
+  function generateImageUrl(link) {
+    const cleanedLink = link.replace("/", "");
+    return apiUrl + cleanedLink;
   }
 
   return (
@@ -172,7 +197,7 @@ const ClassRoomHomepage = () => {
             classes.map((cls) => {
               return (
                 <Link
-                  to={`/dashboard/classroom/class/${cls._id}`}
+                  to={`/dashboard/classroom/class/${cls.subjectId}`}
                   key={cls.id}
                   className="rounded-lg cursor-pointer rounded-t-xl bg-white border border-gray-200 hover:shadow-lg transition"
                 >
@@ -180,27 +205,33 @@ const ClassRoomHomepage = () => {
                   <div className="relative">
                     <div className="background-img relative ">
                       <img
-                        src={getRandomImage()}
+                        src={generateImageUrl(cls.image)}
                         className="h-36 rounded-t-xl object-cover w-full"
                       />
-                      <div className="absolute top-0 rounded-t-xl right-0 bottom-0 left-0 bg-black/20"></div>
+                      {/* <div className="absolute top-0 rounded-t-xl right-0 bottom-0 left-0 bg-black/20"></div> */}
                     </div>
                     <div className="text-container text-black absolute top-[20%] left-[4%] ">
-                      <p className="text-sm font-medium">{cls.className}</p>
                       <h2 className="text-xl font-semibold mt-1">
                         {cls.subjectName}
                       </h2>
+                      <p className="text-sm font-medium">{cls.sectionName}</p>
                     </div>
                   </div>
 
                   {/* Card Footer */}
                   <div className="flex items-center justify-between p-4 ">
                     <div className="flex items-center gap-3">
-                      <img
-                        src="https://i.pravatar.cc/40"
-                        alt="teacher"
-                        className="w-10 h-10 rounded-full"
-                      />
+                      {cls.profileImg ? (
+                        <img
+                          src="https://i.pravatar.cc/40"
+                          alt="teacher"
+                          className="w-10 h-10 rounded-full"
+                        />
+                      ) : (
+                        <p className="bg-black text-white w-6 h-6 flex items-center justify-center rounded-full">
+                          {staffName.slice(0, 1)}
+                        </p>
+                      )}
                       <p className="text-md font-medium text-gray-700">
                         {staffName ? staffName : ""}
                       </p>

@@ -5,15 +5,54 @@ import profileImg from "../assets/profileImg.svg";
 import copyIcon from "../assets/copyIcon.svg";
 import { Plus } from "lucide-react";
 import postBadge from "../assets/postBadge.svg";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import AddAnnouncementModal from "./AddAnnouncementModal";
 import Fab from "@mui/material/Fab";
 import commentIcon from "../assets/commentIcon.svg";
+import axios from "axios";
+import { useParams } from "react-router-dom";
+import { jwtDecode } from "jwt-decode";
 
 const ClassRoomStreamComponent = () => {
+  // Auth
+  const token = localStorage.getItem("LmsToken");
+
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  //   params
+  const { classId } = useParams();
+
   // states
   const [isAnnouncementModal, setIsAnnouncementModal] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
+  const [streamData, setStreamData] = useState({});
+
+  // useEffect calls
+
+  const [firstLetter, setFirstLetter] = useState("");
+
+  useEffect(() => {
+    const token = localStorage.getItem("LmsToken");
+
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const name =
+          decoded?.name || decoded?.username || decoded?.user?.name || "";
+
+        console.log("name : ", name);
+        if (name) {
+          setFirstLetter(name);
+        }
+      } catch (error) {
+        console.error("Invalid token");
+      }
+    }
+  }, []);
+
+  useEffect(() => {
+    getStreamDetails();
+  }, []);
 
   // functions
   async function handleCopyText(textToCopy) {
@@ -29,9 +68,27 @@ const ClassRoomStreamComponent = () => {
     }
   }
 
+  //   fetch stream details
+  async function getStreamDetails() {
+    try {
+      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setStreamData(res.data);
+      console.log("stream data : ", res.data);
+    } catch (err) {
+      console.error(
+        "Error occured while fetching Classroom stream details : ",
+        err.message,
+      );
+    }
+  }
+
   return (
     <>
-      <section className="w-full h-full">
+      <section className="w-full h-full ">
         <div className="w-full h-full rounded-t-xl border border-gray-200 bg-white">
           <div className="top-banner-section h-[30%] relative">
             <div className="img-container w-full relative h-full">
@@ -42,9 +99,11 @@ const ClassRoomStreamComponent = () => {
               <div className="absolute rounded-t-xl inset-0 bg-black/10"></div>
             </div>
             <div className="content-container absolute top-4 left-6 ">
-              <h1 className="font-medium text-xl text-[#00000]">|||_CSE _ A</h1>
+              <h1 className="font-medium text-xl text-[#00000]">
+                {streamData?.subjectName}
+              </h1>
               <h1 className="font- mt-2 text-lg text-[#00000]">
-                Crypto and Encryption
+                {streamData?.sectionName}
               </h1>
             </div>
 
@@ -53,7 +112,7 @@ const ClassRoomStreamComponent = () => {
                 <span>
                   <img src={profileImg} className="w-8 h-8" />
                 </span>{" "}
-                Surya Chandran
+                {firstLetter}
               </h1>
             </div>
           </div>
@@ -66,10 +125,10 @@ const ClassRoomStreamComponent = () => {
               <h1 className="flex items-center gap-2 font-medium">
                 Class Code :{" "}
                 <span className="flex items-center text-[#0B56A4] gap-2 relative ">
-                  7K8H8K{" "}
+                  {streamData?.classCode}{" "}
                   <img
                     onClick={() => {
-                      handleCopyText("7K8H8K");
+                      handleCopyText(streamData?.classCode);
                     }}
                     src={copyIcon}
                     className="w-6 h-6 cursor-pointer"
@@ -184,7 +243,6 @@ const ClassRoomStreamComponent = () => {
                   </div>
                 </div>
               </div>{" "}
-              
             </div>
           </div>
         </div>
