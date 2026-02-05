@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import ClassroomHeader from "../components/ClassroomHeader";
 import { ChevronRight } from "lucide-react";
@@ -11,8 +12,10 @@ import ClassRoomClassworkComponent from "../components/ClassRoomClassworkCompone
 import ClassroompeopleContainer from "../components/ClassroompeopleContainer";
 import notificationIcon from "../assets/notification.svg";
 import { jwtDecode } from "jwt-decode";
+import ClassroomSubjectPlanningComponent from "../components/ClassroomSubjectPlanningComponent";
 
 const Classpage = () => {
+  const { classId } = useParams();
   const [activeTab, setActiveTab] = useState("stream");
   // const [activeItem, setActiveItem] = useState('Stream');
   const [firstLetter, setFirstLetter] = useState("");
@@ -82,6 +85,9 @@ const Classpage = () => {
               )}
               {activeTab == "people" && (
                 <ClassroompeopleContainer activeTab={activeTab} />
+              )}
+              {activeTab == "subjectPlanning" && (
+                <ClassroomSubjectPlanningComponent activeTab={activeTab} subjectId={classId} />
               )}
             </div>
           </section>

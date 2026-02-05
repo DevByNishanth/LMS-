@@ -26,6 +26,7 @@ const ClassRoomStreamComponent = () => {
   const [isAnnouncementModal, setIsAnnouncementModal] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [streamData, setStreamData] = useState({});
+  const [feedData, setFeedData] = useState([])
 
   // useEffect calls
 
@@ -77,7 +78,7 @@ const ClassRoomStreamComponent = () => {
         },
       });
       setStreamData(res.data);
-      console.log("stream data : ", res.data);
+      setFeedData(res.data.stream)
     } catch (err) {
       console.error(
         "Error occured while fetching Classroom stream details : ",
@@ -86,6 +87,8 @@ const ClassRoomStreamComponent = () => {
     }
   }
 
+
+  console.log("feed data : ", feedData);
   return (
     <>
       <section className="w-full h-full ">
@@ -125,10 +128,10 @@ const ClassRoomStreamComponent = () => {
               <h1 className="flex items-center gap-2 font-medium">
                 Class Code :{" "}
                 <span className="flex items-center text-[#0B56A4] gap-2 relative ">
-                  {streamData?.classCode}{" "}
+                  {streamData?.classroomCode}{" "}
                   <img
                     onClick={() => {
-                      handleCopyText(streamData?.classCode);
+                      handleCopyText(streamData?.classroomCode);
                     }}
                     src={copyIcon}
                     className="w-6 h-6 cursor-pointer"
@@ -187,62 +190,78 @@ const ClassRoomStreamComponent = () => {
 
             {/* feed section  */}
             <div className="announcement-container mt-2 w-full space-y-2">
-              <div className="w-full bg-white border border-gray-200 rounded-md p-4">
-                {/* Header */}
-                <div className="flex justify-between items-start">
-                  <div className="flex gap-2">
-                    {/* Avatar */}
-                    <div className="">
-                      {/* <img
-                        src="https://via.placeholder.com/40"
-                        alt="avatar"
-                        className="w-full h-full object-cover"
-                      /> */}
+              {feedData.length === 0 ? (
+                <div className="text-center py-4">
+                  <h1 className="text-gray-500">No data found!</h1>
+                </div>
+              ) : (
+                feedData.map((item, index) => (
+                  <div
+                    key={item._id || index}
+                    className="w-full bg-white border border-gray-200 rounded-md p-4"
+                  >
+                    {/* Header */}
+                    <div className="flex justify-between items-start">
+                      <div className="flex gap-2">
+                        {/* Avatar */}
+                        <div>
+                          <p className="bg-[#0B56A4] text-white w-10 h-10 flex items-center justify-center rounded-full">
+                            S
+                          </p>
+                        </div>
 
-                      <p className="bg-[#0B56A4] text-white w-10 h-10 flex items-center justify-center rounded-full">
-                        S
-                      </p>
+                        {/* Name & date */}
+                        <div>
+                          <p className="text-sm font-semibold text-gray-900">
+                            {/* Assuming item.postedBy or similar exists, falling back to static for now or generic */}
+                            {firstLetter}
+                          </p>
+                          <p className="text-xs text-gray-500">
+                            Posted on {new Date(item.createdAt).toLocaleDateString('en-GB')} at {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                          </p>
+                        </div>
+                      </div>
+
+                      {/* Three dots */}
+                      <div className="text-gray-400 cursor-pointer select-none">
+                        ⋮
+                      </div>
                     </div>
 
-                    {/* Name & date */}
-                    <div>
-                      <p className="text-sm font-semibold text-gray-900">
-                        Surya Chandran
+                    {/* Content */}
+                    <div className="mt-3">
+                      <p className="text-sm text-gray-700 leading-relaxed">
+                        {item.message}
                       </p>
-                      <p className="text-xs text-gray-500">
-                        Posted on 30/1/2026 at 11:42AM
-                      </p>
+                      {/* Attachments (Link/Youtube) */}
+                      {(item.link || item.youtubeLink) && (
+                        <div className="mt-2 flex flex-col gap-1 text-blue-600 text-sm">
+                          {item.link && (
+                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                              {item.link}
+                            </a>
+                          )}
+                          {item.youtubeLink && (
+                            <a href={item.youtubeLink} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                              {item.youtubeLink}
+                            </a>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Footer */}
+                    <div className="mt-4 pt-3 border-t border-gray-200">
+                      <div className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                        <span>
+                          <img src={commentIcon} className="w-5 h-5" />
+                        </span>
+                        <span className="text-black font-medium">Comments</span>
+                      </div>
                     </div>
                   </div>
-
-                  {/* Three dots */}
-                  <div className="text-gray-400 cursor-pointer select-none">
-                    ⋮
-                  </div>
-                </div>
-
-                {/* Content */}
-                <div className="mt-3">
-                  <p className="text-sm text-gray-700 leading-relaxed">
-                    Lorem Ipsum is simply dummy text of the printing and
-                    typesetting industry. Lorem Ipsum has been the industry's
-                    standard dummy text ever since the 1500s Lorem Ipsum is
-                    simply dummy text of the printing and typesetting industry.
-                    Lorem Ipsum has been the industry's standard dummy text ever
-                    since the 1500s
-                  </p>
-                </div>
-
-                {/* Footer */}
-                <div className="mt-4 pt-3 border-t border-gray-200">
-                  <div className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
-                    <span>
-                      <img src={commentIcon} className="w-5 h-5" />
-                    </span>
-                    <span className="text-black font-medium">Comments</span>
-                  </div>
-                </div>
-              </div>{" "}
+                ))
+              )}
             </div>
           </div>
         </div>

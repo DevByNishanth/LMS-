@@ -6,10 +6,10 @@ import deleteIcon from "../assets/delete.svg";
 import editIcon from "../assets/edit.svg";
 import TopicDeleteModal from "./TopicDeleteModal";
 
-export default function SubjectSubTopicsTable({ selectedUnit }) {
+export default function SubjectSubTopicsTable({ selectedUnit, subjectId: propSubjectId }) {
   const [searchParams] = useSearchParams();
   const query_data = JSON.parse(searchParams.get("data") || "{}");
-  const subjectId = query_data.subjectId;
+  const subjectId = propSubjectId || query_data.subjectId;
   console.log("query_data", query_data);
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -310,12 +310,12 @@ export default function SubjectSubTopicsTable({ selectedUnit }) {
             <tr className="bg-[#08384F] text-white text-left">
               <th className="px-4 py-3">S.No</th>
               <th className="px-4 py-3">Topic Name</th>
-              <th className="px-4 py-3">Teaching Language</th>
+              <th className="px-4 py-3"> Language</th>
               <th className="px-4 py-3">Date</th>
               <th className="px-4 py-3">Hours</th>
               <th className="px-4 py-3">Teaching Aid</th>
               <th className="px-4 py-3">Reference Book</th>
-              {/* <th className="px-4 py-3">Actions</th> */}
+              <th className="px-4 py-3">Actions</th>
             </tr>
           </thead>
 
@@ -323,7 +323,7 @@ export default function SubjectSubTopicsTable({ selectedUnit }) {
             {currentTopics?.map((item, index) => (
               <tr
                 key={index}
-                className={`${index % 2 !== 0 ? "bg-[#E6E9F5]" : "bg-white"} text-[14px]`}
+                className={`${index % 2 !== 0 ? "bg-[#E6E9F5]" : "bg-white"} text-[13px]`}
               >
                 <td className="px-4 py-3">{index + 1}</td>
                 <td className="px-4 py-3">{item.topicName}</td>
@@ -332,22 +332,22 @@ export default function SubjectSubTopicsTable({ selectedUnit }) {
                 <td className="px-4 py-3">{item.hours}</td>
                 <td className="px-4 py-3">{item.teachingAid}</td>
                 <td className="px-4 py-3">{item.referenceBook}</td>
-                {/* <td className="px-4 py-3">
+                <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEdit(item)}
-                      className=" cursor-pointer hover:bg-gray-100 rounded-full p-2 "
+                      className=" cursor-pointer hover:bg-gray-100 rounded-full"
                     >
                       <img src={editIcon} className="w-5 h-5" />
                     </button>
                     <button
                       onClick={() => handleDelete(item._id)}
-                      className="cursor-pointer hover:bg-gray-100 rounded-full p-2"
+                      className="cursor-pointer hover:bg-gray-100 rounded-full "
                     >
                       <img src={deleteIcon} className="w-6 h-6" />
                     </button>
                   </div>
-                </td> */}
+                </td>
               </tr>
             ))}
 
