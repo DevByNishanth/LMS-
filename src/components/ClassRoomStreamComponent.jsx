@@ -3,9 +3,9 @@ import folderIcon from "../assets/folderIcon.svg";
 import archiveIcon from "../assets/archiveIcon.svg";
 import profileImg from "../assets/profileImg.svg";
 import copyIcon from "../assets/copyIcon.svg";
-import { Plus } from "lucide-react";
+import { Edit, File, Pencil, Plus, Trash } from "lucide-react";
 import postBadge from "../assets/postBadge.svg";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import AddAnnouncementModal from "./AddAnnouncementModal";
 import Fab from "@mui/material/Fab";
 import commentIcon from "../assets/commentIcon.svg";
@@ -27,6 +27,11 @@ const ClassRoomStreamComponent = () => {
   const [copiedText, setCopiedText] = useState(false);
   const [streamData, setStreamData] = useState({});
   const [feedData, setFeedData] = useState([])
+  const [actionDropdown, setActionDropdown] = useState(null)
+  const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+
+  // ref 
+  const actionDropdownRef = useRef(null)
 
   // useEffect calls
 
@@ -54,6 +59,32 @@ const ClassRoomStreamComponent = () => {
   useEffect(() => {
     getStreamDetails();
   }, []);
+
+  const handleEdit = (item) => {
+    setSelectedAnnouncement(item);
+    setIsAnnouncementModal(true);
+    setActionDropdown(null);
+  }
+
+  const handleDelete = (item) => {
+    // Logic for delete will go here
+    setActionDropdown(null);
+    console.log("Deleting item", item);
+  }
+
+  useEffect(() => {
+    function handleClickOutside(e) {
+      if (actionDropdownRef.current && !actionDropdownRef.current.contains(e.target)) {
+        setActionDropdown(false)
+      }
+    }
+    document.addEventListener('mousedown', handleClickOutside)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+
+  }, [])
 
   // functions
   async function handleCopyText(textToCopy) {
@@ -87,8 +118,6 @@ const ClassRoomStreamComponent = () => {
     }
   }
 
-
-  console.log("feed data : ", feedData);
   return (
     <>
       <section className="w-full h-full ">
@@ -124,7 +153,7 @@ const ClassRoomStreamComponent = () => {
 
           <div className="post-container w-full max-h-[64%] overflow-y-auto px-4 mt-4">
             {/* header  */}
-            <div className="header flex items-center justify-between sticky top-0 bg-white">
+            <div className="header flex items-center justify-between sticky top-0 z-20 bg-white">
               <h1 className="flex items-center gap-2 font-medium">
                 Class Code :{" "}
                 <span className="flex items-center text-[#0B56A4] gap-2 relative ">
@@ -222,9 +251,42 @@ const ClassRoomStreamComponent = () => {
                         </div>
                       </div>
 
-                      {/* Three dots */}
-                      <div className="text-gray-400 cursor-pointer select-none">
-                        ⋮
+                      {/* Three dots Action dropdpwn*/}
+                      <div className="text-gray-400 cursor-pointer select-none relative">
+                        <svg
+                          onClick={() => setActionDropdown(actionDropdown === item._id ? null : item._id)}
+                          xmlns="http://www.w3.org/2000/svg"
+                          width="16"
+                          height="16"
+                          fill="black"
+                          className="bi bi-three-dots-vertical"
+                          viewBox="0 0 16 16"
+                        >
+                          <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                        </svg>
+
+                        {/* dropdown  */}
+                        {actionDropdown === item._id && (
+                          <div
+                            ref={actionDropdownRef}
+                            className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                          >
+                            <div className="">
+                              <button
+                                onClick={() => handleEdit(item)}
+                                className="w-full text-black cursor-pointer text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2"
+                              >
+                                <Pencil className="w-4 h-4 text-green-800" /> Edit
+                              </button>
+                              <button
+                                onClick={() => handleDelete(item)}
+                                className="w-full text-black cursor-pointer text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2"
+                              >
+                                <Trash className="w-4 h-4 text-red-800" /> Delete
+                              </button>
+                            </div>
+                          </div>
+                        )}
                       </div>
                     </div>
 
@@ -248,6 +310,23 @@ const ClassRoomStreamComponent = () => {
                           )}
                         </div>
                       )}
+                      {/* attachments container  */}
+                      <div className="file-container mt-4 ">
+                        {item.attachments && (
+                          <>
+                            <div className="file-container ">
+                              {item.attachments.map((file, index) => {
+                                return (
+                                  <a key={index} target="_blank" href={file} rel="noopener noreferrer" className="flex items-center gap-2 border border-gray-300 rounded-md py-2 px-4 bg-gray-50 cursor-pointer">
+                                    <File className="w-4 h-4 text-black-400" />
+                                    <span>{file}</span>
+                                  </a>
+                                )
+                              })}
+                            </div>
+                          </>
+                        )}
+                      </div>
                     </div>
 
                     {/* Footer */}
@@ -269,7 +348,13 @@ const ClassRoomStreamComponent = () => {
 
       {/* modal section  */}
       {isAnnouncementModal && (
-        <AddAnnouncementModal setIsAnnouncementModal={setIsAnnouncementModal} />
+        <AddAnnouncementModal
+          setIsAnnouncementModal={(val) => {
+            setIsAnnouncementModal(val);
+            if (!val) setSelectedAnnouncement(null);
+          }}
+          initialData={selectedAnnouncement}
+        />
       )}
     </>
   );

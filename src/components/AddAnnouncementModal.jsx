@@ -1,21 +1,28 @@
 import { X } from "lucide-react";
 import React, { useState } from "react";
-import { Paperclip, Link, Youtube, Plus, Upload } from "lucide-react";
+import { Paperclip, Link, Youtube, Plus, Upload, File as FileIcon } from "lucide-react";
 import AssignmentResourceModal from "./AssignmentResourceModal";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const AddAnnouncementModal = ({ setIsAnnouncementModal }) => {
+const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) => {
   // States
   const [selectedAttachmentOption, setSelectedAttachmentOption] =
     useState(null);
   const [openingFrom, setOpeningFrom] = useState("AnnouncementModal");
 
-  const [message, setMessage] = useState("");
-  const [link, setLink] = useState("");
-  const [youtubeLink, setYoutubeLink] = useState("");
-  const [file, setFile] = useState(null);
+  const [message, setMessage] = useState(initialData?.message || "");
+  const [link, setLink] = useState(initialData?.link || "");
+  const [youtubeLink, setYoutubeLink] = useState(initialData?.youtubeLink || "");
+  const [file, setFile] = useState(null); // New file to upload
+  // Logic for existing files could be complex, assuming we just show them for now or allow clearing?
+  // User prompt implies "edit all fields... attachments". 
+  // Handling existing *uploaded* attachments vs new files is key./
+  
+  const [existingAttachments, setExistingAttachments] = useState(initialData?.attachments || []);
   const { classId } = useParams(); // Using classId from URL params as subjectId
+
+  // Auth ---------- 
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -40,18 +47,38 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal }) => {
     e.preventDefault();
     try {
       const formData = new FormData();
-      formData.append("subjectId", classId);
+      if (!initialData) {
+        formData.append("subjectId", classId);
+      }
       formData.append("message", message);
       formData.append("link", link);
       formData.append("youtubeLink", youtubeLink);
+
+      // For editing: we need to tell backend which old attachments to keep
+      if (initialData) {
+        formData.append("attachments", JSON.stringify(existingAttachments));
+      }
 
       if (file) {
         formData.append("attachments", file);
       }
 
       console.log("Submitting announcement payload (FormData)");
+      for (const pair of formData.entries()) {
+        console.log("FormData Entry:", pair[0], pair[1]);
+      }
 
-      const response = await axios.post(`${apiUrl}api/staff/stream`, formData, {
+      const isEdit = !!initialData;
+      const url = isEdit
+        ? `${apiUrl}api/staff/stream/${initialData._id}`
+        : `${apiUrl}api/staff/stream`;
+
+      const method = isEdit ? "put" : "post";
+
+      const response = await axios({
+        method,
+        url,
+        data: formData,
         headers: {
           Authorization: `Bearer ${token}`,
           // Content-Type is left to axios to set multipart/form-data with boundary
@@ -59,14 +86,18 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal }) => {
       });
 
       if (response.status === 200 || response.status === 201) {
-        alert("Announcement posted successfully!");
+        alert(
+          isEdit
+            ? "Announcement updated successfully!"
+            : "Announcement posted successfully!",
+        );
         setIsAnnouncementModal(false);
         // Optionally refresh parent Data here if a callback was provided
         window.location.reload(); // Simple reload to show new data for now
       }
     } catch (error) {
       console.error("Error posting announcement:", error);
-      alert("Failed to post announcement.");
+      alert(initialData ? "Failed to update announcement." : "Failed to post announcement.");
     }
   };
 
@@ -77,7 +108,7 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal }) => {
         {/* header  */}
         <header className="px-4 py-2 pb-3 flex items-center justify-between border-b border-gray-200">
           <h1 className="font-medium text-lg text-[#333333]">
-            New Announcement
+            {initialData ? "Edit Announcement" : "New Announcement"}
           </h1>
           <button
             onClick={() => {
@@ -99,18 +130,53 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal }) => {
           ></textarea>
 
           {/* Show attached links if any */}
-          {(link || youtubeLink || file) && (
+          {(link || youtubeLink || file || existingAttachments.length > 0) && (
             <div className="mt-2 text-sm text-black space-y-2">
               {link && (
-                <div className="flex items-center gap-1">
-                  <Link className="w-3 h-3 " />  <span > Link Attached :</span> <span className="text-blue-600">{link}</span>
+                <div className="flex items-center justify-between gap-1">
+                  <div className="flex items-center gap-1">
+                    <Link className="w-3 h-3 " />  <span > Link Attached :</span> <span className="text-blue-600 truncate max-w-[200px]">{link}</span>
+                  </div>
+                  <X className="w-4 h-4 cursor-pointer hover:text-red-500" onClick={() => setLink("")} />
                 </div>
               )}
               {youtubeLink && (
-                <div className="flex items-center gap-1">
-                  <Youtube className="w-3 h-3" />  <span > Youtube :</span> <span className="text-blue-600">{youtubeLink}</span>
+                <div className="flex items-center justify-between gap-1">
+                  <div className="flex items-center gap-1">
+                    <Youtube className="w-3 h-3" />  <span > Youtube :</span> <span className="text-blue-600 truncate max-w-[200px]">{youtubeLink}</span>
+                  </div>
+                  <X className="w-4 h-4 cursor-pointer hover:text-red-500" onClick={() => setYoutubeLink("")} />
                 </div>
               )}
+              {/* Existing Uploaded Files */}
+              {existingAttachments.map((att, index) => (
+                <div key={index} className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-gray-50">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    <div className="bg-blue-100 p-2 rounded text-blue-600">
+                      <FileIcon className="w-5 h-5" />
+                    </div>
+                    <div className="flex flex-col truncate">
+                      <span className="text-sm font-medium text-gray-700 truncate max-w-[200px]">
+                        {att.split("/").pop()}
+                      </span>
+                      <span className="text-xs text-gray-500">
+                        Existing Attachment
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => {
+                      const newAtts = existingAttachments.filter((_, i) => i !== index);
+                      setExistingAttachments(newAtts);
+                    }}
+                    className="p-1 text-gray-500 hover:bg-gray-200 rounded-full transition"
+                  >
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+
+              {/* New File to Upload */}
               {file && (
                 <div className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-gray-50">
                   <div className="flex items-center gap-2 overflow-hidden">
@@ -197,10 +263,10 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal }) => {
             onClick={handleSubmit}
             className="px-4 py-2 cursor-pointer rounded bg-[#0B56A4] text-white hover:opacity-90"
           >
-            Save
+            {initialData ? "Update" : "Save"}
           </button>
         </div>
-      </div >
+      </div>
 
       {/* modals  */}
       {

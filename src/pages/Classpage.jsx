@@ -13,15 +13,24 @@ import ClassroompeopleContainer from "../components/ClassroompeopleContainer";
 import notificationIcon from "../assets/notification.svg";
 import { jwtDecode } from "jwt-decode";
 import ClassroomSubjectPlanningComponent from "../components/ClassroomSubjectPlanningComponent";
+import axios from "axios";
 
 const Classpage = () => {
+  // Auth 
+  const token = localStorage.getItem("LmsToken");
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  // states 
   const { classId } = useParams();
   const [activeTab, setActiveTab] = useState("stream");
   // const [activeItem, setActiveItem] = useState('Stream');
   const [firstLetter, setFirstLetter] = useState("");
+  const [streamData, setStreamData] = useState({});
+
+
+  // useEffect call's 
 
   useEffect(() => {
-    const token = localStorage.getItem("LmsToken");
 
     if (token) {
       try {
@@ -37,6 +46,30 @@ const Classpage = () => {
       }
     }
   }, []);
+
+  useEffect(() => {
+    getStreamDetails();
+  }, []);
+
+  // functions 
+
+  //   fetch stream details
+  async function getStreamDetails() {
+    try {
+      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setStreamData(res.data);
+      // setFeedData(res.data.stream)
+    } catch (err) {
+      console.error(
+        "Error occured while fetching Classroom stream details : ",
+        err.message,
+      );
+    }
+  }
 
   return (
     <>
@@ -54,7 +87,7 @@ const Classpage = () => {
                   <ChevronRight className="w-6 h-6" />
                 </span>{" "}
                 <span className="text-[#0B56A4] font-medium">
-                  |||_CSE _ A - Crypto and Encryption{" "}
+                  {streamData?.subjectName}{" "}
                 </span>
               </h1>
             </div>
