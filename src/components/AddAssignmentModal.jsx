@@ -1,11 +1,14 @@
 import { useState } from "react";
-import { X, Paperclip, Link, Youtube, Plus, Upload } from "lucide-react";
+import { X, Paperclip, Link, Youtube, Plus, Upload, Trash2, FileText } from "lucide-react";
 import AssignmentResourceModal from "./AssignmentResourceModal";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 
 export default function AddAssignmentModal({
   onClose,
   setIsAssignmentModalOpen,
 }) {
+  const { classId } = useParams();
   const [selectedAttachmentOption, setSelectedAttachmentOption] =
     useState(null);
 
@@ -15,10 +18,11 @@ export default function AddAssignmentModal({
     title: "",
     instruction: "",
     dueDate: "",
-    assignTo: "All Students",
-
-    attachments: [],
   });
+
+  const [resources, setResources] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [errors, setErrors] = useState({});
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -26,16 +30,82 @@ export default function AddAssignmentModal({
       ...prev,
       [name]: value,
     }));
+    // Clear error when user types
+    if (errors[name]) {
+      setErrors((prev) => ({ ...prev, [name]: "" }));
+    }
   };
 
-  const handleSubmit = (e) => {
+  const handleResourceSubmit = (resource) => {
+    setResources((prev) => [...prev, resource]);
+    setSelectedAttachmentOption(null);
+  };
+
+  const removeResource = (index) => {
+    setResources((prev) => prev.filter((_, i) => i !== index));
+  };
+
+  const validate = () => {
+    const newErrors = {};
+    if (!formData.title.trim()) newErrors.title = "Title is required";
+    if (!formData.instruction.trim()) newErrors.instruction = "Instruction is required";
+    if (!formData.dueDate) newErrors.dueDate = "Due Date is required";
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    console.log("Assignment Data:", formData);
+    if (!validate()) return;
+
+    setLoading(true);
+    const data = new FormData();
+    data.append("subjectId", classId);
+    data.append("title", formData.title);
+    data.append("instruction", formData.instruction);
+    data.append("dueDate", formData.dueDate);
+
+    // Separate resources
+    const linkResource = resources.find(r => r.type === 'link');
+    const youtubeResource = resources.find(r => r.type === 'youtube link');
+
+    if (linkResource) {
+      data.append("link", linkResource.value);
+    }
+
+    if (youtubeResource) {
+      data.append("youtubeLink", youtubeResource.value);
+    }
+
+    // Append files
+    resources.forEach(r => {
+      if (r.type === 'upload') {
+        data.append("attachments", r.value);
+      }
+    });
+
+    try {
+      const token = localStorage.getItem("LmsToken");
+      await axios.post(`${import.meta.env.VITE_API_URL}api/assignment`, data, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`
+        }
+      });
+      // Success
+      setIsAssignmentModalOpen(false);
+      if (onClose) onClose();
+    } catch (error) {
+      console.error("Error creating assignment:", error);
+      alert("Failed to create assignment");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-      <div className="bg-white absolute top-0 right-0 w-[40%] h-full">
+      <div className="bg-white absolute top-0 right-0 w-[90%] md:w-[40%] h-full">
         {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 sticky top-0 bg-white">
           <h2 className="text-lg font-medium">Assignment</h2>
@@ -62,8 +132,9 @@ export default function AddAssignmentModal({
               name="title"
               value={formData.title}
               onChange={handleChange}
-              className="w-full border border-gray-400 rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]"
+              className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />
+            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
           </div>
 
           {/* Instruction */}
@@ -76,8 +147,9 @@ export default function AddAssignmentModal({
               value={formData.instruction}
               onChange={handleChange}
               rows={5}
-              className="w-full border border-gray-400 rounded px-3 py-2 mt-1 resize-none focus:outline-none focus:ring-1 focus:ring-[#000000]"
+              className={`w-full border ${errors.instruction ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 resize-none focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />
+            {errors.instruction && <p className="text-red-500 text-xs mt-1">{errors.instruction}</p>}
           </div>
 
           {/* Attach */}
@@ -123,6 +195,33 @@ export default function AddAssignmentModal({
             </div>
           </div>
 
+          {/* Resources Preview */}
+          {resources.length > 0 && (
+            <div className="space-y-2">
+              <p className="text-sm font-medium text-gray-600">Attached Resources</p>
+              {resources.map((res, idx) => (
+                <div key={idx} className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded p-2">
+                  <div className="flex items-center gap-2 overflow-hidden">
+                    {res.type === 'link' && <Link className="w-4 h-4 text-blue-500 shrink-0" />}
+                    {res.type === 'youtube link' && <Youtube className="w-4 h-4 text-red-500 shrink-0" />}
+                    {res.type === 'upload' && <FileText className="w-4 h-4 text-gray-500 shrink-0" />}
+
+                    <span className="text-sm text-gray-700 truncate">
+                      {res.type === 'upload' ? res.value.name : res.value}
+                    </span>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => removeResource(idx)}
+                    className="text-gray-400 hover:text-red-500 transition-colors"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
           {/* Due Date */}
           <div>
             <label className="text-sm text-gray-600 mb-2">Due Date</label>
@@ -131,24 +230,13 @@ export default function AddAssignmentModal({
               name="dueDate"
               value={formData.dueDate}
               onChange={handleChange}
-              className="w-full border border-gray-400 rounded px-3 py-2 mt-1 focus:outline-none"
+              className={`w-full border ${errors.dueDate ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none`}
             />
+            {errors.dueDate && <p className="text-red-500 text-xs mt-1">{errors.dueDate}</p>}
           </div>
 
           {/* Assign To */}
-          <div>
-            <label className="text-sm text-gray-600 mb-2">Assign to</label>
-            <select
-              name="assignTo"
-              value={formData.assignTo}
-              onChange={handleChange}
-              className="w-full border border-gray-400 rounded px-3 py-2 mt-1 focus:outline-none"
-            >
-              <option>All Students</option>
-              <option>Section A</option>
-              <option>Section B</option>
-            </select>
-          </div>
+
         </form>
         {/* Footer Buttons */}
         <div className="flex justify-end gap-3 py-5 px-6 absolute bottom-0 w-full ">
@@ -160,10 +248,12 @@ export default function AddAssignmentModal({
             Cancel
           </button>
           <button
+            onClick={handleSubmit}
             type="submit"
-            className="px-4 py-2 cursor-pointer rounded bg-[#0B56A4] text-white hover:opacity-90"
+            className="px-4 py-2 cursor-pointer rounded bg-[#0B56A4] text-white hover:opacity-90 disabled:opacity-50"
+            disabled={loading}
           >
-            Save
+            {loading ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
@@ -176,6 +266,7 @@ export default function AddAssignmentModal({
           setSelectedAttachmentOption={setSelectedAttachmentOption}
           openingFrom={openingFrom}
           setOpeningFrom={setOpeningFrom}
+          onSubmit={handleResourceSubmit}
         />
       )}
     </div>

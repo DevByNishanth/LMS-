@@ -1,4 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 import noDataImg from "../assets/noData.svg";
 import {
   BookOpenIcon,
@@ -13,22 +15,14 @@ import assignmentWorkIcon from "../assets/assignmentWorkIcon.svg";
 import AddAssignmentModal from "./AddAssignmentModal";
 import QuizAssignmentCanvas from "./QuizAssignmentCanvas";
 
-const classWorkData1 = [
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-  { title: "Assignment Work", postedOn: "11:42AM" },
-];
+
 // const classWorkData1 = [];
 
 
 const ClassRoomClassworkComponent = () => {
   // states
+  const { classId } = useParams();
+  const [assignments, setAssignments] = useState([]);
   const [isDropdown, setIsDropdown] = useState(false);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [quizAssignmentModalOpen, setIsQuizAssignmentModalOpen] =
@@ -38,6 +32,23 @@ const ClassRoomClassworkComponent = () => {
   const dropdownRef = useRef(null);
 
   // useEffect calls
+
+  const fetchAssignments = async () => {
+    try {
+      const token = localStorage.getItem("LmsToken");
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/assignment/${classId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log(response.data.data);
+      setAssignments(response.data.data);
+    } catch (error) {
+      console.error("Error fetching assignments:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchAssignments();
+  }, [classId]);
 
   // dropdown click outside
   useEffect(() => {
@@ -57,7 +68,7 @@ const ClassRoomClassworkComponent = () => {
   return (
     <>
       <section className="w-full p-6 h-full border border-[#DBDBDB] rounded-lg">
-        {classWorkData1.length !== 0 ? (
+        {assignments.length !== 0 ? (
           <>
             <div className="header-container  mb-4">
               <div className="section-1 flex items-center justify-between ">
@@ -76,7 +87,7 @@ const ClassRoomClassworkComponent = () => {
                     Create new Classwork
                   </button>
                   {isDropdown && (
-                    <div className="dropdown-container transition-all duration-300 space-y-3 w-full absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
+                    <div className="dropdown-container transition-all duration-300 space-y-3 w-full absolute top-full left-0 bg-[#ffffff] z-30 border border-gray-200 shadow-lg rounded">
                       <button
                         onClick={() => setIsAssignmentModalOpen(true)}
                         className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full"
@@ -114,51 +125,56 @@ const ClassRoomClassworkComponent = () => {
                   <Search className="text-gray-400" />
                 </div>
 
-                <div className="filter-container border border-gray-300 rounded-lg w-[34%]  px-2 py-2 flex items-center justify-between  cursor-pointer">
+                <div className="filter-container relative border border-gray-300 rounded-lg w-[34%]  px-2 py-2 flex items-center justify-between  cursor-pointer">
                   <h1>Assignment</h1>
                   <span>
-                    <ChevronDown />
+                    <ChevronDown className={`rotate-0 transition-all duration-300 ${isDropdown ? "rotate-180" : "rotate-0"}`} />
                   </span>
+
+                  <div className="dropdown-container absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
+                    <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Assignment</button>
+                    <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Quiz Assignment</button>
+                    <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Question</button>
+                    <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Material</button>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* card section  */}
             <div className="card-container space-y-2 max-h-[calc(100vh-320px)] overflow-auto ">
-              {classWorkData1.map((item, index) => {
+              {assignments.map((item, index) => {
                 return (
-                  <>
-                    <div
-                      className="card flex items-center rounded-xl bg-[#F9F9F9] px-4 justify-between border border-gray-300 py-4"
-                      key={index}
-                    >
-                      <div className="flex items-center gap-3 ">
-                        <div className="img-container bg-[#0B56A4] w-9 h-9 rounded-full flex items-center justify-center">
-                          <img src={assignmentWorkIcon} className="w-6 h-6" />
-                        </div>
-                        <h1 className="font-medium">{item.title}</h1>
+                  <div
+                    className="card cursor-pointer hover:border-[#0B56A4] flex items-center rounded-xl bg-[#F9F9F9] px-4 justify-between border border-gray-300 py-4"
+                    key={index}
+                  >
+                    <div className="flex items-center gap-3 ">
+                      <div className="img-container bg-[#0B56A4] w-9 h-9 rounded-full flex items-center justify-center">
+                        <img src={assignmentWorkIcon} className="w-6 h-6" />
                       </div>
-                      <div className="flex items-center gap-2">
-                        <h1 className="text-[#646464]">
-                          Posted on : {item.postedOn}
-                        </h1>
-                        <button className="hover:text-gray-700 cursor-pointer">
-                          <span className="">
-                            <svg
-                              xmlns="http://www.w3.org/2000/svg"
-                              width="18"
-                              height="18"
-                              fill="black"
-                              class="bi bi-three-dots-vertical"
-                              viewBox="0 0 16 16"
-                            >
-                              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                            </svg>
-                          </span>
-                        </button>
-                      </div>
+                      <h1 className="font-medium">{item.title}</h1>
                     </div>
-                  </>
+                    <div className="flex items-center gap-2">
+                      <h1 className="text-[#646464]">
+                        Posted on : {new Date(item.createdAt || Date.now()).toLocaleDateString()}
+                      </h1>
+                      <button className="hover:text-gray-700 cursor-pointer">
+                        <span className="">
+                          <svg
+                            xmlns="http://www.w3.org/2000/svg"
+                            width="18"
+                            height="18"
+                            fill="black"
+                            className="bi bi-three-dots-vertical"
+                            viewBox="0 0 16 16"
+                          >
+                            <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                          </svg>
+                        </span>
+                      </button>
+                    </div>
+                  </div>
                 );
               })}
             </div>
@@ -217,7 +233,10 @@ const ClassRoomClassworkComponent = () => {
       {isAssignmentModalOpen && (
         <AddAssignmentModal
           setIsAssignmentModalOpen={setIsAssignmentModalOpen}
-          onClose={() => setIsAssignmentModalOpen(false)}
+          onClose={() => {
+            setIsAssignmentModalOpen(false);
+            fetchAssignments();
+          }}
         />
       )}
 
