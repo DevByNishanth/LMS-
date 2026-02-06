@@ -14,6 +14,7 @@ import {
 import assignmentWorkIcon from "../assets/assignmentWorkIcon.svg";
 import AddAssignmentModal from "./AddAssignmentModal";
 import QuizAssignmentCanvas from "./QuizAssignmentCanvas";
+import QuestionAssignmentCanvas from "./QuestionAssignmentCanvas";
 
 
 // const classWorkData1 = [];
@@ -24,9 +25,12 @@ const ClassRoomClassworkComponent = () => {
   const { classId } = useParams();
   const [assignments, setAssignments] = useState([]);
   const [isDropdown, setIsDropdown] = useState(false);
+  const [filterDropdown, setFilterDropdown] = useState(false);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [quizAssignmentModalOpen, setIsQuizAssignmentModalOpen] =
     useState(false);
+
+  const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
   // refs
   const dropdownRef = useRef(null);
@@ -102,7 +106,7 @@ const ClassRoomClassworkComponent = () => {
                         <ClipboardCheck className="text-gray-600" />
                         Quiz Assignment
                       </button>
-                      <button className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full">
+                      <button onClick={()=>setIsQuestionModalOpen(true)} className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full">
                         <FileQuestionMark className="text-gray-600" />
                         Question
                       </button>
@@ -125,18 +129,18 @@ const ClassRoomClassworkComponent = () => {
                   <Search className="text-gray-400" />
                 </div>
 
-                <div className="filter-container relative border border-gray-300 rounded-lg w-[34%]  px-2 py-2 flex items-center justify-between  cursor-pointer">
-                  <h1>Assignment</h1>
-                  <span>
-                    <ChevronDown className={`rotate-0 transition-all duration-300 ${isDropdown ? "rotate-180" : "rotate-0"}`} />
-                  </span>
-
-                  <div className="dropdown-container absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
+                <div className="filter-container relative border border-gray-300 rounded-lg w-[34%] flex items-center justify-between">
+                  <button onClick={() => setFilterDropdown(!filterDropdown)} className="w-full flex py-2 px-3 cursor-pointer items-center justify-between">
+                    Assignment <span>
+                      <ChevronDown className={`rotate-0 transition-all duration-300 ${filterDropdown ? "rotate-180" : "rotate-0"}`} />
+                    </span>
+                  </button>
+                  {filterDropdown && <div className="dropdown-container absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
                     <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Assignment</button>
                     <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Quiz Assignment</button>
                     <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Question</button>
                     <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Material</button>
-                  </div>
+                  </div>}
                 </div>
               </div>
             </div>
@@ -239,6 +243,8 @@ const ClassRoomClassworkComponent = () => {
           }}
         />
       )}
+
+      {isQuestionModalOpen && <QuestionAssignmentCanvas setIsAssignmentModalOpen={setIsQuestionModalOpen} />}
 
       {quizAssignmentModalOpen && <QuizAssignmentCanvas setIsAssignmentModalOpen={setIsQuizAssignmentModalOpen} />}
     </>
