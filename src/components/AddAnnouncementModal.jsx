@@ -18,7 +18,7 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
   // Logic for existing files could be complex, assuming we just show them for now or allow clearing?
   // User prompt implies "edit all fields... attachments". 
   // Handling existing *uploaded* attachments vs new files is key./
-  
+
   const [existingAttachments, setExistingAttachments] = useState(initialData?.attachments || []);
   const { classId } = useParams(); // Using classId from URL params as subjectId
 
@@ -207,7 +207,7 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
           <div className="attachment-container mt-4">
             <h1 className="text-gray-800 font-medium">Attach Any</h1>
             <div className="flex gap-6 text-xs text-gray-600 mt-4">
-              <div
+              <div  
                 onClick={() => setSelectedAttachmentOption("link")}
                 className="flex flex-col items-center gap-1 cursor-pointer hover:text-black hover:font-medium"
               >
