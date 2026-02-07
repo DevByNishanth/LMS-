@@ -20,6 +20,11 @@ import StudentAttendancePage from "./pages/StudentAttendancePage";
 import AttendanceTraqckingPage from "./pages/AttendanceTraqckingPage";
 import AdminSemesterRegPage from "./pages/AdminSemesterRegPage";
 import TimeTableManagementPage from "./pages/TimeTableManagementPage";
+import StudentLayout from "./components/Student_Layout";
+import StudentDashboard from "./pages/StudentDashboard";
+import StudentClassroomDetails from "./components/Student_ClassroomDetails";
+import StudentClassroom from "./pages/Student_Classroom";
+import InvitationPage from "./pages/InvitationPage";
 
 const App = () => {
   return (
@@ -115,25 +120,74 @@ const App = () => {
           }
         />
 
-        <Route path="/dashboard/sudentAttendance" element={
-          <ProtectedRoute>
-            <StudentAttendancePage />
-          </ProtectedRoute>} />
+        <Route
+          path="/dashboard/sudentAttendance"
+          element={
+            <ProtectedRoute>
+              <StudentAttendancePage />
+            </ProtectedRoute>
+          }
+        />
 
-        <Route path="/dashboard/adminSemReg" element={
-          <ProtectedRoute>
-            <AdminSemesterRegPage />
-          </ProtectedRoute>} />
-        <Route path="/dashboard/timetableManagement" element={
-          <ProtectedRoute>
-            <TimeTableManagementPage />
-          </ProtectedRoute>} />
+        <Route
+          path="/dashboard/adminSemReg"
+          element={
+            <ProtectedRoute>
+              <AdminSemesterRegPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/timetableManagement"
+          element={
+            <ProtectedRoute>
+              <TimeTableManagementPage />
+            </ProtectedRoute>
+          }
+        />
 
+        <Route
+          path="/dashboard/sudentAttendance"
+          element={
+            <ProtectedRoute>
+              <StudentAttendancePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/adminSemReg"
+          element={
+            <ProtectedRoute>
+              <AdminSemesterRegPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/timetableManagement"
+          element={
+            <ProtectedRoute>
+              <TimeTableManagementPage />
+            </ProtectedRoute>
+          }
+        />
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
-        <Route path="/dashboard/classroom/class/:classId" element={<Classpage />} />
+        <Route
+          path="/dashboard/classroom/class/:classId"
+          element={<Classpage />}
+        />
+        <Route path="/invitation/verify" element={<InvitationPage />} />
+        <Route
+          path="/dashboard/classroom/class/:classId"
+          element={<Classpage />}
+        />
+        <Route path="/student" element={<StudentLayout />}>
+          <Route index element={<StudentDashboard />} />
 
-
-
+          <Route path="classroom">
+            <Route index element={<StudentClassroom />} />
+            <Route path=":id" element={<StudentClassroomDetails />} />
+          </Route>
+        </Route>
       </Routes>
     </>
   );
