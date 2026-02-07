@@ -20,6 +20,7 @@ import StudentAttendancePage from "./pages/StudentAttendancePage";
 import AttendanceTraqckingPage from "./pages/AttendanceTraqckingPage";
 import AdminSemesterRegPage from "./pages/AdminSemesterRegPage";
 import TimeTableManagementPage from "./pages/TimeTableManagementPage";
+import InvitationPage from "./pages/InvitationPage";
 
 const App = () => {
   return (
@@ -146,6 +147,7 @@ const App = () => {
           path="/dashboard/classroom/class/:classId"
           element={<Classpage />}
         />
+        <Route path="/invitation/verify" element={<InvitationPage />} />
       </Routes>
     </>
   );

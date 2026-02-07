@@ -82,7 +82,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/20 z-50"></div>
+      <div className="fixed inset-0 bg-black/50 z-50"></div>
       <section
         ref={canvasRef}
         className="w-[90%] bg-white h-[95vh] rounded-lg z-[60] fixed left-[50%] translate-x-[-50%] top-[50%] translate-y-[-50%] shadow-2xl flex flex-col overflow-hidden"
@@ -102,8 +102,8 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="p-5 shrink-0">
             <div className="flex gap-6 items-start">
-              <div className="w-[140px] h-[140px] shrink-0 border border-sky-100 bg-[#f8f7ff] rounded-xl flex items-center justify-center">
-                <span className="text-5xl font-bold text-sky-300">
+              <div className="w-[120px] h-[120px] shrink-0 border border-slate-900 bg-gray-50 rounded-xl flex items-center justify-center">
+                <span className="text-5xl font-medium text-slate-800">
                   {canvasData?.firstName?.slice(0, 1) || "A"}
                 </span>
               </div>
@@ -137,10 +137,10 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex flex-col">
-                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
                       {item.label}
                     </span>
-                    <span className="text-sm font-semibold text-gray-700 truncate">
+                    <span className="text-sm font-medium text-gray-700 truncate">
                       {item.value}
                     </span>
                   </div>
@@ -150,12 +150,12 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
             <div className="mt-5">
               <div className="flex items-center gap-2 mb-3">
                 <div className="w-1 h-5 bg-sky-600 rounded-full"></div>
-                <h3 className="text-base font-bold text-gray-800">
+                <h3 className="text-base font-medium text-gray-800">
                   Employee Details
                 </h3>
               </div>
 
-              <div className="grid grid-cols-5 gap-y-4 gap-x-2">
+              <div className="grid grid-cols-5 gap-y-4 gap-x-2 mt-4 ">
                 {[
                   {
                     icon: IdCardLanyard,
@@ -201,7 +201,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                   <div key={idx} className="flex items-start gap-2">
                     <item.icon className="w-4 h-4 text-sky-500 mt-0.5 shrink-0" />
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase">
+                      <span className="text-[10px] font-medium text-gray-400 uppercase">
                         {item.label}
                       </span>
                       <span className="text-sm text-gray-600 font-medium">
@@ -238,7 +238,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
               )}
             </div>
 
-            <div className="flex-1 border border-gray-100 rounded-xl overflow-auto shadow-sm bg-white">
+            <div className="flex-1 border border-gray-100 rounded-md overflow-auto shadow-sm bg-white">
               <table className="w-full text-left text-sm border-collapse">
                 <thead className="sticky top-0 bg-[#0c3a4d] text-white z-10">
                   {activeTab === "Attendance" && (
@@ -275,12 +275,12 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                     attendanceData.map((row, i) => (
                       <tr
                         key={i}
-                        className="even:bg-gray-50 hover:bg-blue-50/50 transition-colors"
+                        className="even:bg-gray-50 hover:bg-blue-50/50 transition-colors "
                       >
                         <td className="p-3 text-gray-600">{row.date}</td>
                         <td className="p-3 text-gray-500">{row.clockIn}</td>
                         <td className="p-3 text-gray-500">{row.clockOut}</td>
-                        <td className="p-3 text-gray-800 font-bold">
+                        <td className="p-3 text-gray-800 font-">
                           {row.hours}
                         </td>
                       </tr>
