@@ -20,9 +20,6 @@ const FacultyManagementPage = () => {
 
   const [loading, setLoading] = useState(true);
 
-  // functions
-
-  // Handle department change
   const handleDepartment = (dept) => {
     setSelectedDepartment(dept);
     setDepartment(false);
@@ -52,9 +49,6 @@ const FacultyManagementPage = () => {
     }
   };
 
-  // useEffect call's
-
-  // Initial load — fetch ECE department data
   useEffect(() => {
     fetchDepartmentData("ECE");
   }, []);
@@ -77,7 +71,6 @@ const FacultyManagementPage = () => {
         </div>
         <div className="container-2 w-[80%] h-[100%]">
           <HeaderComponent title={"Faculty Management"} />
-          {/* header container ------------------------------------------------------  */}
           <div className="header-container px-6 flex gap-4">
             <div className="container-1 w-[50%]">
               <FacultyManagementStatCard />
@@ -126,7 +119,6 @@ const FacultyManagementPage = () => {
               <PieChartWithCustomizedLabel chartData={chartData} />
             </div>
           </div>
-          {/* table-container -----------------------------------------  */}
           <div className="table-container mt-4">
             <FacultyTable />
           </div>

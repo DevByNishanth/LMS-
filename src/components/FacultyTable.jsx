@@ -124,7 +124,6 @@ const FacultyTable = () => {
         </div>
       </div>
 
-      {/* Table */}
       <div className="overflow-auto h-[calc(100vh-390px)] border border-gray-300 rounded-t-lg">
         <table className="min-w-full border-collapse  rounded-lg ">
           <thead className="sticky top-0 ">
