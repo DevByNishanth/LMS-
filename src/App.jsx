@@ -149,7 +149,6 @@ const App = () => {
         />
         <Route path="/invitation/verify" element={<InvitationPage />} />
       </Routes>
-      
     </>
   );
 };

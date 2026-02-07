@@ -18,6 +18,7 @@ const StudentYearComponent = ({ years, selectedYear, setSelectedYear, setSelecte
                         className={`w-6 h-6 ${selectedYear === year.year ? "text-white" : "text-gray-500"
                             }`}
                     />
+                    
                 </button>
             ))}
         </div>
