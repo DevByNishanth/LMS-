@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react';
 import React, { useState } from 'react'
 import profileImg from '../assets/profileImg.svg';
+import ClassroomAddStudentsModal from './ClassroomAddStudentsModal';
 
 const teachersList = [
     { name: "Surya Chandran" },
@@ -18,7 +19,11 @@ const studentsList = [
 ]
 
 const ClassroompeopleContainer = () => {
+    // states 
     const [selectedTab, setSelectedTab] = useState('Teachers');
+    const [showAddModal, setShowAddModal] = useState(false);
+
+
     return (
         <section className='w-full p-6 h-full border border-[#DBDBDB] rounded-lg'>
             {/* tab container  */}
@@ -28,9 +33,17 @@ const ClassroompeopleContainer = () => {
                 <button onClick={() => { setSelectedTab("Students") }} className={`w-1/2 py-2 cursor-pointer px-3 rounded-full ${selectedTab == "Students" ? "bg-[#0B56A4] text-white" : "text-black"}`}>Students</button>
             </div>
 
-            <header className='mt-4 flex items-center justify-between'>
+            <header className='mt-4 flex items-center justify-between relative'>
                 <h1 className='font-medium text-lg'>{selectedTab} List <span className='text-[#0B56A4]'>(3)</span></h1>
-                <button className='flex items-center gap-3 text-white bg-[#0B56A4] px-3 py-2 rounded-lg'><Plus className="text-white"></Plus> Add</button>
+                <div className="btn-container">
+                    <button onClick={() => setShowAddModal(true)} className='flex items-center cursor-pointer gap-3 text-white bg-[#0B56A4] px-7 py-2 rounded-lg'><Plus className="text-white"></Plus> Add</button>
+                    <div className="dropdown-contanier absolute top-full right-0">
+                        {showAddModal && <ClassroomAddStudentsModal onClose={() => {
+                            setShowAddModal(false)
+                        }} />}
+                    </div>
+                </div>
+
             </header>
 
             {/* people-list  */}
@@ -65,7 +78,7 @@ const ClassroompeopleContainer = () => {
                                 className="w-8 h-8 rounded-full object-cover"
                             />
                             <p className="text-sm font-medium text-gray-800">
-                            {item.name}
+                                {item.name}
                             </p>
                         </div>
 

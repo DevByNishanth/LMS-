@@ -315,7 +315,7 @@ export default function SubjectSubTopicsTable({ selectedUnit, subjectId: propSub
               <th className="px-4 py-3">Hours</th>
               <th className="px-4 py-3">Teaching Aid</th>
               <th className="px-4 py-3">Reference Book</th>
-              <th className="px-4 py-3">Actions</th>
+              {/* <th className="px-4 py-3">Actions</th> */}
             </tr>
           </thead>
 
@@ -332,7 +332,7 @@ export default function SubjectSubTopicsTable({ selectedUnit, subjectId: propSub
                 <td className="px-4 py-3">{item.hours}</td>
                 <td className="px-4 py-3">{item.teachingAid}</td>
                 <td className="px-4 py-3">{item.referenceBook}</td>
-                <td className="px-4 py-3">
+                {/* <td className="px-4 py-3">
                   <div className="flex items-center gap-2">
                     <button
                       onClick={() => handleEdit(item)}
@@ -347,7 +347,7 @@ export default function SubjectSubTopicsTable({ selectedUnit, subjectId: propSub
                       <img src={deleteIcon} className="w-6 h-6" />
                     </button>
                   </div>
-                </td>
+                </td> */}
               </tr>
             ))}
 

@@ -14,6 +14,7 @@ const LoginPage = () => {
 
   //   router
   const navigate = useNavigate();
+  const location = useLocation();
   // useEffect(() => {
   //   if (token) {
   //     navigate("/dashboard");
@@ -47,32 +48,32 @@ const LoginPage = () => {
 
   // new submit function 
   const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const response = await axios.post(`${apiUrl}api/auth/login`, {
-      email,
-      password,
-    });
+    try {
+      const response = await axios.post(`${apiUrl}api/auth/login`, {
+        email,
+        password,
+      });
 
-    // store token FIRST
-    localStorage.setItem("LmsToken", response.data.token);
+      // store token FIRST
+      localStorage.setItem("LmsToken", response.data.token);
 
-    // smart redirect
-    const redirectTo = location.state?.redirectTo || "/dashboard";
-    navigate(redirectTo, { replace: true });
+      // smart redirect
+      const redirectTo = location.state?.redirectTo || "/dashboard";
+      navigate(redirectTo, { replace: true });
 
-  } catch (error) {
-    console.error("Login error:", error);
-    alert(
-      error.response?.data?.message ||
-      "Invalid credentials. Please try again."
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+    } catch (error) {
+      console.error("Login error:", error);
+      alert(
+        error.response?.data?.message ||
+        "Invalid credentials. Please try again."
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
 
   return (
