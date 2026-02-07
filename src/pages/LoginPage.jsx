@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import loginBg from "../assets/loginBg.svg";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -14,35 +14,66 @@ const LoginPage = () => {
 
   //   router
   const navigate = useNavigate();
-  useEffect(() => {
-    if (token) {
-      navigate("/dashboard");
-    }
-  }, []);
+  // useEffect(() => {
+  //   if (token) {
+  //     navigate("/dashboard");
+  //   }
+  // }, []);
 
+  // old submit function 
+  // const handleSubmit = async (e) => {
+  //   e.preventDefault();
+  //   setLoading(true);
+
+  //   try {
+  //     const response = await axios.post(`${apiUrl}api/auth/login`, {
+  //       email,
+  //       password,
+  //     });
+  //     navigate("/dashboard");
+  //     // ✅ You can store token in localStorage if backend returns it
+  //     localStorage.setItem("LmsToken", response.data.token);
+  //     navigate("/dashboard");
+  //   } catch (error) {
+  //     console.error("Login error:", error);
+  //     alert(
+  //       error.response?.data?.message ||
+  //       "Invalid credentials. Please try again."
+  //     );
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+
+  // new submit function 
   const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      const response = await axios.post(`${apiUrl}api/auth/login`, {
-        email,
-        password,
-      });
-      navigate("/dashboard");
-      // ✅ You can store token in localStorage if backend returns it
-      localStorage.setItem("LmsToken", response.data.token);
-      navigate("/dashboard");
-    } catch (error) {
-      console.error("Login error:", error);
-      alert(
-        error.response?.data?.message ||
-        "Invalid credentials. Please try again."
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    const response = await axios.post(`${apiUrl}api/auth/login`, {
+      email,
+      password,
+    });
+
+    // store token FIRST
+    localStorage.setItem("LmsToken", response.data.token);
+
+    // smart redirect
+    const redirectTo = location.state?.redirectTo || "/dashboard";
+    navigate(redirectTo, { replace: true });
+
+  } catch (error) {
+    console.error("Login error:", error);
+    alert(
+      error.response?.data?.message ||
+      "Invalid credentials. Please try again."
+    );
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   return (
     <section className="w-full h-[100vh] p-4 md:flex justify-between">
