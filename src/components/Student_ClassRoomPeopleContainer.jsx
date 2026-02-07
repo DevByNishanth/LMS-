@@ -23,20 +23,30 @@ const Student_ClassroomPeopleContainer = () => {
 
   return (
     <section className="w-full p-6 h-full border border-[#DBDBDB] rounded-lg bg-white">
-      <div className="tab-container px-4 py-2 flex items-center gap-2 bg-[#E6E9F5] rounded-full max-w-md mx-auto">
+      {/* Tab container now fills the full available width of the parent section */}
+      <div className="tab-container px-2 py-2 flex items-center gap-2 bg-[#E6E9F5] rounded-full w-full">
         <button
           onClick={() => setSelectedTab("Teachers")}
-          className={`w-1/2 py-2 px-3 cursor-pointer rounded-full transition-all duration-200 ${selectedTab === "Teachers" ? "bg-[#0B56A4] text-white shadow-md" : "text-gray-600 hover:text-black"}`}
+          className={`w-1/2 py-2 px-3 cursor-pointer rounded-full transition-all duration-200 font-medium ${
+            selectedTab === "Teachers"
+              ? "bg-[#0B56A4] text-white shadow-md"
+              : "text-gray-600 hover:text-black"
+          }`}
         >
           Teachers
         </button>
         <button
           onClick={() => setSelectedTab("Students")}
-          className={`w-1/2 py-2 cursor-pointer px-3 rounded-full transition-all duration-200 ${selectedTab === "Students" ? "bg-[#0B56A4] text-white shadow-md" : "text-gray-600 hover:text-black"}`}
+          className={`w-1/2 py-2 cursor-pointer px-3 rounded-full transition-all duration-200 font-medium ${
+            selectedTab === "Students"
+              ? "bg-[#0B56A4] text-white shadow-md"
+              : "text-gray-600 hover:text-black"
+          }`}
         >
           Classmates
         </button>
       </div>
+
       <header className="mt-8 mb-4 border-b border-[#0B56A4] pb-2">
         <h1 className="font-medium text-xl text-[#282526]">
           {selectedTab === "Teachers" ? "Faculties" : "Classmates"}
