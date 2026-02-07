@@ -71,14 +71,12 @@ const classroomImages = [
     banner3,
 ];
 
-// Helper function to get a random image
 const getRandomImage = () => {
     return classroomImages[Math.floor(Math.random() * classroomImages.length)];
 };
 
 const ClassRoomHomepage = () => {
-    // Auth 
-    const apiUrl = import.meta.env.VITE_API_URL; // from .env file
+    const apiUrl = import.meta.env.VITE_API_URL; 
     const token = localStorage.getItem("LmsToken");
     const decoded = jwtDecode(token);
     const staffName = decoded.name;
