@@ -20,10 +20,10 @@ import StudentAttendancePage from "./pages/StudentAttendancePage";
 import AttendanceTraqckingPage from "./pages/AttendanceTraqckingPage";
 import AdminSemesterRegPage from "./pages/AdminSemesterRegPage";
 import TimeTableManagementPage from "./pages/TimeTableManagementPage";
-import StudentLayout from "./components/StudentLayout";
+import StudentLayout from "./components/Student_Layout";
 import StudentDashboard from "./pages/StudentDashboard";
-import StudentClassroomDetails from "./components/StudentClassroomDetails";
-import StudentClassroom from "./pages/StudentClassroom";
+import StudentClassroomDetails from "./components/Student_ClassroomDetails";
+import StudentClassroom from "./pages/Student_Classroom";
 
 const App = () => {
   return (
