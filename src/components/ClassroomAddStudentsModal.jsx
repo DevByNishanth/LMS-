@@ -1,32 +1,17 @@
 import { Clipboard, Search, X } from "lucide-react";
-import { useMemo, useState, useEffect } from "react";
-import axios from 'axios';
+import { useMemo, useState } from "react";
 import copyIcon from "../assets/copyIcon.svg";
 
 const ClassroomAddStudentsModal = ({ onClose }) => {
     const [search, setSearch] = useState("");
     const [selectedStudentId, setSelectedStudentId] = useState(null);
-    const [studentsData, setStudentsData] = useState([]);
-
-    const token = localStorage.getItem("LmsToken");
-    const apiUrl = import.meta.env.VITE_API_URL;
-
-    useEffect(() => {
-        getStudents();
-    }, [])
-
-    const getStudents = async () => {
-        try {
-            const res = await axios.get(`${apiUrl}api/student/allStudents`, {
-                headers: {
-                    Authorization: `Bearer ${token}`
-                }
-            })
-            setStudentsData(res.data)
-        } catch (error) {
-            console.log(error);
-        }
-    }
+    const [studentsData, setStudentsData] = useState([
+        { id: 1, name: "Alice Johnson", email: "alice.johnson@example.com", avatar: "https://i.pravatar.cc/150?img=1" },
+        { id: 2, name: "Bob Smith", email: "bob.smith@example.com", avatar: "https://i.pravatar.cc/150?img=2" },
+        { id: 3, name: "Carla Gomez", email: "carla.gomez@example.com", avatar: "https://i.pravatar.cc/150?img=3" },
+        { id: 4, name: "David Lee", email: "david.lee@example.com", avatar: "https://i.pravatar.cc/150?img=4" },
+        { id: 5, name: "Emma Williams", email: "emma.williams@example.com", avatar: "https://i.pravatar.cc/150?img=5" }
+    ]);
 
     // 🔍 Search logic (name OR email)
     const filteredStudents = useMemo(() => {

@@ -96,20 +96,20 @@ const Sidebar = () => {
       link: "/dashboard/timetableManagement",
       roles: ["hod"],
     },
-    {
-      label: "Subject Planning",
-      icon: semIcon,
-      activeIcon: facultyActiveIcon,
-      link: "/dashboard/subjectPlanning",
-      roles: ["faculty"],
-    },
-    {
-      label: "Student Attendance",
-      icon: semIcon,
-      activeIcon: facultyActiveIcon,
-      link: "/dashboard/sudentAttendance",
-      roles: ["faculty"],
-    },
+    // {
+    //   label: "Subject Planning",
+    //   icon: semIcon,
+    //   activeIcon: facultyActiveIcon,
+    //   link: "/dashboard/subjectPlanning",
+    //   roles: ["faculty"],
+    // },
+    // {
+    //   label: "Student Attendance",
+    //   icon: semIcon,
+    //   activeIcon: facultyActiveIcon,
+    //   link: "/dashboard/sudentAttendance",
+    //   roles: ["faculty"],
+    // },
   ];
 
   const filteredNavItems = navItems.filter((item) =>
