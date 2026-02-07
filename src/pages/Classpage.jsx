@@ -14,6 +14,7 @@ import notificationIcon from "../assets/notification.svg";
 import { jwtDecode } from "jwt-decode";
 import ClassroomSubjectPlanningComponent from "../components/ClassroomSubjectPlanningComponent";
 import axios from "axios";
+import ClassroomAttendanceComponent from "../components/ClassroomAttendanceComponent";
 
 const Classpage = () => {
   // Auth 
@@ -121,6 +122,9 @@ const Classpage = () => {
               )}
               {activeTab == "subjectPlanning" && (
                 <ClassroomSubjectPlanningComponent activeTab={activeTab} subjectId={classId} />
+              )}
+              {activeTab == "attendance" && (
+                <ClassroomAttendanceComponent streamData={streamData} subjectId={classId} />
               )}
             </div>
           </section>

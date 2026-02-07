@@ -24,6 +24,7 @@ const ClassRoomClassworkComponent = () => {
   // states
   const { classId } = useParams();
   const [assignments, setAssignments] = useState([]);
+  const [questions, setQuestions] = useState([]);
   const [isDropdown, setIsDropdown] = useState(false);
   const [filterDropdown, setFilterDropdown] = useState(false);
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
@@ -34,6 +35,7 @@ const ClassRoomClassworkComponent = () => {
 
   // refs
   const dropdownRef = useRef(null);
+  const filterRef = useRef(null);
 
   // useEffect calls
 
@@ -43,22 +45,48 @@ const ClassRoomClassworkComponent = () => {
       const response = await axios.get(`${import.meta.env.VITE_API_URL}api/assignment/${classId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log(response.data.data);
+      console.log("Assignments:", response.data.data);
       setAssignments(response.data.data);
     } catch (error) {
       console.error("Error fetching assignments:", error);
     }
   };
 
-  useEffect(() => {
+  const fetchQuestions = async () => {
+    try {
+      const token = localStorage.getItem("LmsToken");
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/staff/questions/${classId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+      console.log("Questions:", response.data.data);
+      setQuestions(response.data.data);
+    } catch (error) {
+      console.error("Error fetching questions:", error);
+    }
+  };
+
+  const fetchAllClasswork = () => {
     fetchAssignments();
+    fetchQuestions();
+  }
+
+  useEffect(() => {
+    fetchAllClasswork();
   }, [classId]);
+
+  // Combine and sort assignments and questions
+  const classworkList = [...assignments, ...questions].sort((a, b) => {
+    return new Date(b.createdAt) - new Date(a.createdAt);
+  });
 
   // dropdown click outside
   useEffect(() => {
     function handleClickOutside(e) {
       if (dropdownRef.current && !dropdownRef.current.contains(e.target)) {
         setIsDropdown(false);
+      }
+      if (filterRef.current && !filterRef.current.contains(e.target)) {
+        setFilterDropdown(false);
       }
     }
 
@@ -72,7 +100,7 @@ const ClassRoomClassworkComponent = () => {
   return (
     <>
       <section className="w-full p-6 h-full border border-[#DBDBDB] rounded-lg">
-        {assignments.length !== 0 ? (
+        {classworkList.length !== 0 ? (
           <>
             <div className="header-container  mb-4">
               <div className="section-1 flex items-center justify-between ">
@@ -99,14 +127,7 @@ const ClassRoomClassworkComponent = () => {
                         <FileText className="text-gray-600" />
                         Assignment
                       </button>
-                      <button
-                        onClick={() => setIsQuizAssignmentModalOpen(true)}
-                        className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full"
-                      >
-                        <ClipboardCheck className="text-gray-600" />
-                        Quiz Assignment
-                      </button>
-                      <button onClick={()=>setIsQuestionModalOpen(true)} className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full">
+                      <button onClick={() => setIsQuestionModalOpen(true)} className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full">
                         <FileQuestionMark className="text-gray-600" />
                         Question
                       </button>
@@ -129,15 +150,14 @@ const ClassRoomClassworkComponent = () => {
                   <Search className="text-gray-400" />
                 </div>
 
-                <div className="filter-container relative border border-gray-300 rounded-lg w-[34%] flex items-center justify-between">
+                <div ref={filterRef} className="filter-container relative border border-gray-300 rounded-lg w-[34%] flex items-center justify-between">
                   <button onClick={() => setFilterDropdown(!filterDropdown)} className="w-full flex py-2 px-3 cursor-pointer items-center justify-between">
                     Assignment <span>
                       <ChevronDown className={`rotate-0 transition-all duration-300 ${filterDropdown ? "rotate-180" : "rotate-0"}`} />
                     </span>
                   </button>
-                  {filterDropdown && <div className="dropdown-container absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
+                  {filterDropdown && <div className="dropdown-container w-full absolute top-full left-0 bg-[#ffffff] border border-gray-200 shadow-lg rounded">
                     <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Assignment</button>
-                    <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Quiz Assignment</button>
                     <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Question</button>
                     <button className="w-full px-2 py-3 hover:bg-gray-50 cursor-pointer text-left">Material</button>
                   </div>}
@@ -147,7 +167,11 @@ const ClassRoomClassworkComponent = () => {
 
             {/* card section  */}
             <div className="card-container space-y-2 max-h-[calc(100vh-320px)] overflow-auto ">
-              {assignments.map((item, index) => {
+              {classworkList.map((item, index) => {
+                // Determine icon based on item type (you might want to add a type field or check properties)
+                const isQuestion = item.questionType !== undefined; // Heuristic: assignments usually don't have questionType at root
+                const IconToRender = isQuestion ? FileQuestionMark : assignmentWorkIcon;
+
                 return (
                   <div
                     className="card cursor-pointer hover:border-[#0B56A4] flex items-center rounded-xl bg-[#F9F9F9] px-4 justify-between border border-gray-300 py-4"
@@ -155,7 +179,7 @@ const ClassRoomClassworkComponent = () => {
                   >
                     <div className="flex items-center gap-3 ">
                       <div className="img-container bg-[#0B56A4] w-9 h-9 rounded-full flex items-center justify-center">
-                        <img src={assignmentWorkIcon} className="w-6 h-6" />
+                        {isQuestion ? <FileQuestionMark className="text-white w-6 h-6" /> : <img src={assignmentWorkIcon} className="w-6 h-6" />}
                       </div>
                       <h1 className="font-medium">{item.title}</h1>
                     </div>
@@ -244,7 +268,13 @@ const ClassRoomClassworkComponent = () => {
         />
       )}
 
-      {isQuestionModalOpen && <QuestionAssignmentCanvas setIsAssignmentModalOpen={setIsQuestionModalOpen} />}
+      {isQuestionModalOpen && <QuestionAssignmentCanvas
+        setIsAssignmentModalOpen={setIsQuestionModalOpen}
+        onClose={() => {
+          setIsQuestionModalOpen(false);
+          fetchQuestions(); // Refresh questions list
+        }}
+      />}
 
       {quizAssignmentModalOpen && <QuizAssignmentCanvas setIsAssignmentModalOpen={setIsQuizAssignmentModalOpen} />}
     </>
