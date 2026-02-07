@@ -2,7 +2,13 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { X } from "lucide-react";
 
-const AddStudentCanvas = ({ onClose, isEdit, setIsEdit, editData, handleApicall }) => {
+const AddStudentCanvas = ({
+  onClose,
+  isEdit,
+  setIsEdit,
+  editData,
+  handleApicall,
+}) => {
   // Authorization
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -56,23 +62,19 @@ const AddStudentCanvas = ({ onClose, isEdit, setIsEdit, editData, handleApicall 
           formData,
           {
             headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
+              Authorization: `Bearer ${token}`,
+            },
+          },
         );
         alert("Student updated successfully!");
-        handleApicall()
+        handleApicall();
       } else {
         // ADD MODE - POST request
-        const res = await axios.post(
-          `${apiUrl}api/students/add`,
-          formData,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`
-            }
-          }
-        );
+        const res = await axios.post(`${apiUrl}api/students/add`, formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         alert("Student added successfully!");
       }
       onClose();
@@ -84,6 +86,7 @@ const AddStudentCanvas = ({ onClose, isEdit, setIsEdit, editData, handleApicall 
     }
   };
 
+  console.log("student form data : ", formData);
   return (
     <>
       {/* Background blur */}
@@ -91,43 +94,49 @@ const AddStudentCanvas = ({ onClose, isEdit, setIsEdit, editData, handleApicall 
 
       {/* Canvas */}
       <section className="w-[40%] bg-white p-6 absolute right-0 top-0 h-screen z-60 ">
-
         {/* Header */}
         <div className="flex justify-between items-center mb-6 border-b pb-2">
-          <h2 className="text-xl font-medium">{isEdit ? "Edit Student Details" : "Add Student Details"}</h2>
+          <h2 className="text-xl font-medium">
+            {isEdit ? "Edit Student Details" : "Add Student Details"}
+          </h2>
           <button onClick={onClose}>
             <X size={22} className="text-gray-700 hover:text-black" />
           </button>
         </div>
 
         {/* Tabs */}
-        {!isEdit && <div className="flex bg-gray-100 p-1 rounded-full w-full mb-3">
-          <button
-            className={`px-6 py-3 rounded-full text-sm w-[50%] font-medium ${activeTab === "single"
-              ? "bg-[#0B56A4] text-white"
-              : "text-gray-600"
+        {!isEdit && (
+          <div className="flex bg-gray-100 p-1 rounded-full w-full mb-3">
+            <button
+              className={`px-6 py-3 rounded-full text-sm w-[50%] font-medium ${
+                activeTab === "single"
+                  ? "bg-[#0B56A4] text-white"
+                  : "text-gray-600"
               }`}
-            onClick={() => setActiveTab("single")}
-          >
-            Single Entry
-          </button>
+              onClick={() => setActiveTab("single")}
+            >
+              Single Entry
+            </button>
 
-          <button
-            className={`px-6 py-2 rounded-full text-sm w-[50%] font-medium ${activeTab === "multiple"
-              ? "bg-[#0B56A4] text-white"
-              : "text-gray-600"
+            <button
+              className={`px-6 py-2 rounded-full text-sm w-[50%] font-medium ${
+                activeTab === "multiple"
+                  ? "bg-[#0B56A4] text-white"
+                  : "text-gray-600"
               }`}
-            onClick={() => setActiveTab("multiple")}
-          >
-            Multiple Upload
-          </button>
-        </div>}
+              onClick={() => setActiveTab("multiple")}
+            >
+              Multiple Upload
+            </button>
+          </div>
+        )}
 
         {/* ------------------ SINGLE ENTRY FORM ------------------ */}
         {activeTab === "single" && (
           <>
-            <div className={`space-y-4 ${isEdit ? "max-h-[calc(100vh-140px)]" : "max-h-[calc(100vh-200px)]"}  overflow-y-auto`}>
-
+            <div
+              className={`space-y-4 ${isEdit ? "max-h-[calc(100vh-220px)]" : "max-h-[calc(100vh-220px)]"}  overflow-y-auto`}
+            >
               <div>
                 <label className="text-sm font-medium">First Name</label>
                 <input
@@ -185,10 +194,10 @@ const AddStudentCanvas = ({ onClose, isEdit, setIsEdit, editData, handleApicall 
                   className="w-full mt-1 border border-gray-400 px-3 py-2 rounded-lg"
                 >
                   <option value="">Select Year</option>
-                  <option>First Year</option>
-                  <option>Second Year</option>
-                  <option>Third Year</option>
-                  <option>Fourth Year</option>
+                  <option>1st Year</option>
+                  <option>2nd Year</option>
+                  <option>3rd Year</option>
+                  <option>4th Year</option>
                 </select>
               </div>
 
@@ -258,9 +267,8 @@ const AddStudentCanvas = ({ onClose, isEdit, setIsEdit, editData, handleApicall 
               </div>
 
               {/* Buttons */}
-
             </div>
-            <div className="flex justify-end gap-3 mt-2">
+            <div className="flex justify-end gap-3 mt-2 absolute bottom-0 right-2 p-4">
               <button
                 className="px-4 py-2 border rounded-lg cursor-pointer"
                 onClick={onClose}
@@ -275,16 +283,16 @@ const AddStudentCanvas = ({ onClose, isEdit, setIsEdit, editData, handleApicall 
               </button>
             </div>
           </>
-
-
-
         )}
 
         {/* ------------------ MULTIPLE UPLOAD ------------------ */}
         {activeTab === "multiple" && (
           <div className="mt-4">
             <div className="border-2 border-dashed border-gray-400 rounded-lg p-10 text-center">
-              <p className="text-gray-500 mb-2">Drag & drop files or <span className="text-blue-600 cursor-pointer">Browse</span></p>
+              <p className="text-gray-500 mb-2">
+                Drag & drop files or{" "}
+                <span className="text-blue-600 cursor-pointer">Browse</span>
+              </p>
             </div>
 
             <div className="flex justify-end gap-3 mt-5">

@@ -1,94 +1,133 @@
-import React, { useState } from 'react'
-import Sidebar from '../components/Sidebar'
-import ClassroomHeader from '../components/ClassroomHeader'
-import { ChevronRight } from 'lucide-react';
-import classWorkIcon from '../assets/classWorkIcon.svg'
-import peopleIcon from '../assets/peopleIcon.svg'
-import gradeIcon from '../assets/gradesIcon.svg'
-import activeSteamIcon from '../assets/activeSteamIcon.svg'
-import ClassRoomStreamComponent from '../components/ClassRoomStreamComponent';
-import ClassRoomClassworkComponent from '../components/ClassRoomClassworkComponent';
-import ClassroompeopleContainer from '../components/ClassroompeopleContainer';
+import React, { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import Sidebar from "../components/Sidebar";
+import ClassroomHeader from "../components/ClassroomHeader";
+import { ChevronRight } from "lucide-react";
+import classWorkIcon from "../assets/classWorkIcon.svg";
+import peopleIcon from "../assets/peopleIcon.svg";
+import gradeIcon from "../assets/gradesIcon.svg";
+import activeSteamIcon from "../assets/activeSteamIcon.svg";
+import ClassRoomStreamComponent from "../components/ClassRoomStreamComponent";
+import ClassRoomClassworkComponent from "../components/ClassRoomClassworkComponent";
+import ClassroompeopleContainer from "../components/ClassroompeopleContainer";
+import notificationIcon from "../assets/notification.svg";
+import { jwtDecode } from "jwt-decode";
+import ClassroomSubjectPlanningComponent from "../components/ClassroomSubjectPlanningComponent";
+import axios from "axios";
 
 const Classpage = () => {
-    const [activeTab, setActiveTab] = useState('home');
-    const [activeItem, setActiveItem] = useState('Stream');
+  // Auth 
+  const token = localStorage.getItem("LmsToken");
+  const apiUrl = import.meta.env.VITE_API_URL;
+
+  // states 
+  const { classId } = useParams();
+  const [activeTab, setActiveTab] = useState("stream");
+  // const [activeItem, setActiveItem] = useState('Stream');
+  const [firstLetter, setFirstLetter] = useState("");
+  const [streamData, setStreamData] = useState({});
 
 
-    return (
-        <>
-            <section className="w-full h-screen flex">
-                <div className="w-[20%]">
-                    <Sidebar />
-                </div>
-                <div className="container-2 w-[80%] h-[100%]">
-                    <ClassroomHeader activeTab={activeTab} setActiveTab={setActiveTab} />
-                    {/* Breadcrumbs   */}
-                    <div className="main-content-container p-6">
-                        <div className="breadcrumsb-container">
-                            <h1 className='flex items-center '>Class <span><ChevronRight className='w-6 h-6' /></span> <span className='text-[#0B56A4] font-medium'>|||_CSE _ A - Crypto and Encryption </span></h1>
-                        </div>
-                    </div>
+  // useEffect call's 
 
-                    {/* body section  */}
+  useEffect(() => {
 
-                    <section className='main-section mx-6 py-2 h-[calc(100vh-150px)] flex gap-4 '>
-                        {/* tabs-container  */}
-                        <div className="tab-container w-[25%] h-full bg-white border border-gray-200 rounded-lg p-3 space-y-2 ">
-                            {/* Stream */}
-                            <div onClick={() => setActiveItem('Stream')} className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer ${activeItem === 'Stream' ? 'bg-[#0B56A4] text-white' : 'hover:bg-gray-100'}`}>
-                                <div className="flex items-center gap-2">
-                                    <img src={activeItem == "Stream" ? activeSteamIcon : ""} className="w-6 h-6" />
-                                    <span className="text-sm font-medium">Stream</span>
-                                </div>
-                                <span className="text-lg">{'>'}</span>
-                            </div>
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const name =
+          decoded?.name || decoded?.username || decoded?.user?.name || "";
 
-                            {/* Classwork */}
-                            <div onClick={() => setActiveItem('Classwork')} className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer ${activeItem === 'Classwork' ? 'bg-[#0B56A4] text-white' : 'hover:bg-gray-100'}`}>
-                                <div className="flex items-center gap-2">
-                                    <img src={activeItem == "Classwork" ? "" : classWorkIcon} className="w-6 h-6" />
-                                    <span className={`text-sm font-medium ${activeItem === 'Classwork' ? 'text-white' : 'text-gray-800'}`}>Classwork</span>
-                                </div>
-                                <span className={`text-lg ${activeItem === 'Classwork' ? 'text-white' : 'text-gray-400'}`}>{'>'}</span>
-                            </div>
+        if (name) {
+          setFirstLetter(name.charAt(0).toUpperCase());
+        }
+      } catch (error) {
+        console.error("Invalid token");
+      }
+    }
+  }, []);
 
-                            {/* People */}
-                            <div onClick={() => setActiveItem('People')} className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer ${activeItem === 'People' ? 'bg-[#0B56A4] text-white' : 'hover:bg-gray-100'}`}>
-                                <div className="flex items-center gap-2">
-                                    <img src={activeItem == "People" ? "" : peopleIcon} className="w-6 h-6" />
-                                    <span className={`text-sm font-medium ${activeItem === 'People' ? 'text-white' : 'text-gray-800'}`}>People</span>
-                                </div>
-                                <span className={`text-lg ${activeItem === 'People' ? 'text-white' : 'text-gray-400'}`}>{'>'}</span>
-                            </div>
+  useEffect(() => {
+    getStreamDetails();
+  }, []);
 
-                            {/* Grades */}
-                            <div onClick={() => setActiveItem('Grades')} className={`flex items-center justify-between px-3 py-2 rounded-md cursor-pointer ${activeItem === 'Grades' ? 'bg-[#0B56A4] text-white' : 'hover:bg-gray-100'}`}>
-                                <div className="flex items-center gap-2">
-                                    <img src={activeItem == "Grades" ? "" : gradeIcon} className="w-6 h-6" />
-                                    <span className={`text-sm font-medium ${activeItem === 'Grades' ? 'text-white' : 'text-gray-800'}`}>Grades</span>
-                                </div>
-                                <span className={`text-lg ${activeItem === 'Grades' ? 'text-white' : 'text-gray-400'}`}>{'>'}</span>
-                            </div>
-                        </div>
+  // functions 
 
-                        <div className="component-container  w-[75%]">
-                            {activeItem === 'Stream' && (
-                                <ClassRoomStreamComponent />
-                            )}
-                            {activeItem == "Classwork" && <ClassRoomClassworkComponent />}
-                            {activeItem == "People" && <ClassroompeopleContainer/>}
-                        </div>
+  //   fetch stream details
+  async function getStreamDetails() {
+    try {
+      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setStreamData(res.data);
+      // setFeedData(res.data.stream)
+    } catch (err) {
+      console.error(
+        "Error occured while fetching Classroom stream details : ",
+        err.message,
+      );
+    }
+  }
 
-                    </section>
+  return (
+    <>
+      <section className="w-full h-screen flex">
+        <div className="hidden md:block w-[20%]">
+          <Sidebar />
+        </div>
+        <div className="container-2 w-full md:w-[80%] h-[100%]">
+          {/* Breadcrumbs   */}
+          <div className="main-content-container p-6 flex items-center justify-between">
+            <div className="breadcrumsb-container">
+              <h1 className="flex items-center ">
+                Class{" "}
+                <span>
+                  <ChevronRight className="w-6 h-6" />
+                </span>{" "}
+                <span className="text-[#0B56A4] font-medium">
+                  {streamData?.subjectName}{" "}
+                </span>
+              </h1>
+            </div>
+            {/* Right - Icons */}
+            <div className="flex items-center gap-3">
+              {/* Notification Icon */}
+              <div className="p-2 rounded-full bg-gray-50 shadow-sm hover:shadow-md transition">
+                <img src={notificationIcon} className="w-4 h-4" />
+              </div>
 
+              {/* Profile Image */}
+              <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+                {firstLetter}
+              </div>
+            </div>
+          </div>
+          <ClassroomHeader activeTab={activeTab} setActiveTab={setActiveTab} />
 
+          {/* body section  */}
 
+          <section className="main-section mx-6 py-2 h-[calc(100vh-150px)] flex gap-4 ">
+            <div className="component-container w-full">
+              {activeTab === "stream" && (
+                <ClassRoomStreamComponent activeTab={activeTab} />
+              )}
+              {activeTab == "classwork" && (
+                <ClassRoomClassworkComponent activeTab={activeTab} />
+              )}
+              {activeTab == "people" && (
+                <ClassroompeopleContainer activeTab={activeTab} />
+              )}
+              {activeTab == "subjectPlanning" && (
+                <ClassroomSubjectPlanningComponent activeTab={activeTab} subjectId={classId} />
+              )}
+            </div>
+          </section>
+        </div>
+      </section>
+    </>
+  );
+};
 
-                </div>
-            </section>
-        </>
-    )
-}
-
-export default Classpage
+export default Classpage;
