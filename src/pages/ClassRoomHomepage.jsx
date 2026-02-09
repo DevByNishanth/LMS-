@@ -66,7 +66,6 @@ import notification from "../assets/notification.svg";
 // Array of classroom/educational themed images
 const classroomImages = [banner1, banner2, banner3];
 
-// Helper function to get a random image
 const getRandomImage = () => {
   return classroomImages[Math.floor(Math.random() * classroomImages.length)];
 };
