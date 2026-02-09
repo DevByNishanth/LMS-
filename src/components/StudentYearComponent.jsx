@@ -5,6 +5,7 @@ const StudentYearComponent = ({ years, selectedYear, setSelectedYear, setSelecte
     return (
         <div className="w-full h-[100%] bg-white border border-[#D6D6D6] rounded-xl p-4 space-y-3">
             {years.map((year, index) => (
+                
                 <button
                     key={index}
                     onClick={() => { setSelectedSection("A"); setSelectedYear(year.year) }}
@@ -18,6 +19,7 @@ const StudentYearComponent = ({ years, selectedYear, setSelectedYear, setSelecte
                         className={`w-6 h-6 ${selectedYear === year.year ? "text-white" : "text-gray-500"
                             }`}
                     />
+                    {console.log(year.year)}
                     
                 </button>
             ))}

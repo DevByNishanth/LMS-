@@ -24,7 +24,7 @@ const SectionManagementPage = () => {
   // states
   const [firstLetter, setFirstLetter] = useState("");
   const [selectedAcademicYear, setSelectedAcademicYear] = useState("2025-2026");
-  const [selectedYear, setSelectedYear] = useState("First Year");
+  const [selectedYear, setSelectedYear] = useState("1st Year");
   const [sections, setSections] = useState([
     "Section A",
     "Section B",

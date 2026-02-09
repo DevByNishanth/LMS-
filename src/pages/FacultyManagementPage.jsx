@@ -35,7 +35,7 @@ const FacultyManagementPage = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       const formattedData = res.data.map((item) => ({
         name: item.Designation,
@@ -57,7 +57,7 @@ const FacultyManagementPage = () => {
     async function getData() {
       const apiUrl = import.meta.env.VITE_API_URL;
       const departmentFilter = await axios.get(
-        `${apiUrl}api/faculty/department-wise/ECE`
+        `${apiUrl}api/faculty/department-wise/ECE`,
       );
     }
     getData();

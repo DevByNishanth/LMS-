@@ -67,7 +67,7 @@ const FacultyTable = () => {
   const [isCanvas, setIsCanvas] = useState(false);
   const [isDetailCanvas, setIsDetailCanvas] = useState(false);
   const [data, setData] = useState([]);
-  const [canvasData, setCanvasData] = useState({})
+  const [canvasData, setCanvasData] = useState({});
   const [isEdit, setIsEdit] = useState(false);
   const [editData, setEditData] = useState(null);
 
@@ -86,6 +86,7 @@ const FacultyTable = () => {
     });
 
     setData(response.data);
+    console.log("Faculty Data : ", response.data);
   };
 
   const filteredData = data.filter((item) => {
@@ -142,8 +143,9 @@ const FacultyTable = () => {
               filteredData.map((item, index) => (
                 <tr
                   key={index}
-                  className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    } border-b border-gray-200 text-[13px]`}
+                  className={`${
+                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                  } border-b border-gray-200 text-[13px]`}
                 >
                   <td className="py-3 px-4">{item.employeeId}</td>
                   <td className="py-3 px-4">{item.firstName}</td>
@@ -153,7 +155,10 @@ const FacultyTable = () => {
                   <td className="py-3 px-4">{item.mobileNumber}</td>
                   <td className="py-3 px-4 flex gap-2">
                     <button
-                      onClick={() => { setCanvasData(item); setIsDetailCanvas(true) }}
+                      onClick={() => {
+                        setCanvasData(item);
+                        setIsDetailCanvas(true);
+                      }}
                       className="bg-[#0567CE] cursor-pointer hover:bg-[#0567CE] text-white w-8 h-8 flex items-center justify-center rounded-full"
                     >
                       <img src={eye} alt="" />
@@ -193,9 +198,20 @@ const FacultyTable = () => {
           </tbody>
         </table>
       </div>
-      {isCanvas && <AddFacultyCanvas setIsCanvas={setIsCanvas} isEdit={isEdit} setIsEdit={setIsEdit} editData={editData} getData={getData} />}
+      {isCanvas && (
+        <AddFacultyCanvas
+          setIsCanvas={setIsCanvas}
+          isEdit={isEdit}
+          setIsEdit={setIsEdit}
+          editData={editData}
+          getData={getData}
+        />
+      )}
       {isDetailCanvas && (
-        <DetailViewCanvas setIsDetailCanvas={setIsDetailCanvas} canvasData={canvasData} />
+        <DetailViewCanvas
+          setIsDetailCanvas={setIsDetailCanvas}
+          canvasData={canvasData}
+        />
       )}
       {isDelete && (
         <DeleteModal setIsDelete={setIsDelete} deleteId={deleteId} />

@@ -13,6 +13,7 @@ import {
 } from "lucide-react";
 
 const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
+  console.log("canvasData : ", canvasData);
   const canvasRef = useRef(null);
   const [activeTab, setActiveTab] = useState("Attendance");
 
@@ -104,7 +105,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
             <div className="flex gap-6 items-start">
               <div className="w-[120px] h-[120px] shrink-0 border border-slate-900 bg-gray-50 rounded-xl flex items-center justify-center">
                 <span className="text-5xl font-medium text-slate-800">
-                  {canvasData?.firstName?.slice(0, 1) || "A"}
+                  {canvasData?.firstName?.slice(0, 1) || "--"}
                 </span>
               </div>
 
@@ -112,28 +113,28 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                 {[
                   {
                     label: "First Name",
-                    value: canvasData?.firstName || "Arun",
+                    value: canvasData?.firstName || "--",
                   },
                   {
                     label: "Last Name",
-                    value: canvasData?.lastName || "Kumar",
+                    value: canvasData?.lastName || "--",
                   },
                   {
                     label: "Email",
-                    value: canvasData?.email || "arunkumar70@college.edu",
+                    value: canvasData?.email || "--",
                   },
                   {
                     label: "Phone",
-                    value: canvasData?.mobileNumber || "9651464284",
+                    value: canvasData?.mobileNumber || "--  ",
                   },
-                  { label: "Gender", value: canvasData?.gender || "Female" },
+                  { label: "Gender", value: canvasData?.gender || "--" },
                   {
                     label: "Date of Birth",
-                    value: canvasData?.dateOfBirth || "20-11-2003",
+                    value: canvasData?.dateOfBirth || "--",
                   },
                   {
                     label: "Qualification",
-                    value: canvasData?.qualification || "B.E",
+                    value: canvasData?.qualification || "--",
                   },
                 ].map((item, i) => (
                   <div key={i} className="flex flex-col">
@@ -160,42 +161,42 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                   {
                     icon: IdCardLanyard,
                     label: "Employee Id",
-                    value: canvasData.employeeId || "EMP1070",
+                    value: canvasData.employeeId || "--",
                   },
                   {
                     icon: Briefcase,
                     label: "Designation",
-                    value: canvasData.designation || "Lecturer",
+                    value: canvasData.designation   || "--",
                   },
                   {
                     icon: Building2,
                     label: "Department",
-                    value: canvasData.department || "EEE",
+                    value: canvasData.department || "--",
                   },
                   {
                     icon: UserCog,
                     label: "Reporting Manager",
-                    value: canvasData?.reportingManager || "Manager B",
+                    value: canvasData?.reportingManager || "--",
                   },
                   {
                     icon: Calendar1Icon,
                     label: "Joining Date",
-                    value: canvasData?.joiningDate || "11-10-2022",
+                    value: canvasData?.joiningDate || "--",
                   },
                   {
                     icon: Clock,
                     label: "Notice Period",
-                    value: canvasData?.noticePeriod || "60 Days",
+                    value: canvasData?.noticePeriod || "--",
                   },
                   {
                     icon: Key,
                     label: "Role",
-                    value: canvasData?.role || "Assistant Professor",
+                    value: canvasData?.role || "--",
                   },
                   {
                     icon: Badge,
                     label: "Job Title",
-                    value: canvasData?.jobTitle || "Senior Lecturer",
+                    value: canvasData?.jobTitle || "--",
                   },
                 ].map((item, idx) => (
                   <div key={idx} className="flex items-start gap-2">

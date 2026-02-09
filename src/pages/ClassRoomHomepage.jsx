@@ -195,10 +195,11 @@ const ClassRoomHomepage = () => {
         >
           {classes.length > 0 ? (
             classes.map((cls) => {
-              {console.log(cls)}
+              { console.log(cls) }
               return (
                 <Link
                   to={`/dashboard/classroom/class/${cls.subjectId}`}
+                  state={cls}
                   key={cls.id}
                   className="rounded-lg cursor-pointer rounded-t-xl bg-white border border-gray-200 hover:shadow-lg transition"
                 >

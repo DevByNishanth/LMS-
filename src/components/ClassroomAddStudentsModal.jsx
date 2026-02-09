@@ -1,10 +1,28 @@
 import { Clipboard, Search, X } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import copyIcon from "../assets/copyIcon.svg";
+import axios from "axios";
+import { usePlotArea } from "recharts";
+import { useLocation, useParams } from "react-router-dom";
 
-const ClassroomAddStudentsModal = ({ onClose }) => {
+const ClassroomAddStudentsModal = ({ onClose, selectedTab }) => {
+    // Auth 
+    const apiUrl = import.meta.env.VITE_API_URL;
+    const token = localStorage.getItem("LmsToken");
+
+    // params 
+    const location = useLocation();
+    const classData = location.state;
+    const sectionId = classData.sectionId
+    console.log("classData : ", classData)
+    console.log("sectionId : ", sectionId)
+
+    const { classId } = useParams();
+
+    // states 
     const [search, setSearch] = useState("");
-    const [selectedStudentId, setSelectedStudentId] = useState(null);
+    const [selectedEmails, setSelectedEmails] = useState([]);
+    const [faculties, setFaculties] = useState([]);
     const [studentsData, setStudentsData] = useState([
         { id: 1, name: "Alice Johnson", email: "alice.johnson@example.com", avatar: "https://i.pravatar.cc/150?img=1" },
         { id: 2, name: "Bob Smith", email: "bob.smith@example.com", avatar: "https://i.pravatar.cc/150?img=2" },
@@ -13,15 +31,101 @@ const ClassroomAddStudentsModal = ({ onClose }) => {
         { id: 5, name: "Emma Williams", email: "emma.williams@example.com", avatar: "https://i.pravatar.cc/150?img=5" }
     ]);
 
-    // 🔍 Search logic (name OR email)
-    const filteredStudents = useMemo(() => {
-        return studentsData.filter((student) =>
-            `${student.name} ${student.email}`
-                .toLowerCase()
-                .includes(search.toLowerCase())
+    const toggleSelection = (email) => {
+        setSelectedEmails((prev) =>
+            prev.includes(email)
+                ? prev.filter((e) => e !== email)
+                : [...prev, email]
         );
-    }, [search]);
+    };
 
+    const displayedUsers = useMemo(() => {
+        const data = selectedTab === "Teachers" ? faculties : studentsData;
+        const users = Array.isArray(data) ? data : [];
+
+        if (!search) return users;
+
+        return users.filter((user) => {
+            const name = user.firstName || user.name || "";
+            const email = user.email || "";
+
+            return `${name} ${email}`
+                .toLowerCase()
+                .includes(search.toLowerCase());
+        });
+    }, [search, faculties, studentsData, selectedTab]);
+
+
+    const fetchFaculties = async () => {
+        try {
+            const res = await axios.get(`${apiUrl}api/faculty`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setFaculties(res.data && Array.isArray(res.data) ? res.data : []);
+        } catch (err) {
+            console.error(
+                "Error occured while fetching Classroom stream details : ",
+                err.message,
+            );
+        }
+    }
+
+    const fetchStudents = async () => {
+        try {
+            const res = await axios.get(`${apiUrl}api/students/filter`, {
+                params: {
+                    department: classData.department,
+                    year: classData.year,
+                    section: classData.sectionName.replace('Section', '') || classData.section
+                },
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            // console.log("res.data : ", res.data.students);
+            setStudentsData(res.data && Array.isArray(res.data.students) ? res.data.students : []);
+        } catch (err) {
+            console.error(
+                "Error occured while fetching Classroom stream details : ",
+                err.message,
+            );
+        }
+    }
+
+    const handleInvite = async () => {
+        if (selectedEmails.length === 0) return;
+
+        const role = selectedTab === "Teachers" ? "faculty" : "student";
+        const endpoint = selectedTab === "Teachers" ? `api/staff/classroom/${sectionId}/invite` : `api/staff/classroom/${sectionId}/invite`;
+        // const endpoint = selectedTab === "Teachers" ? `api/staff/classroom/${sectionId}/invite` : `api/staff/classroom/${sectionId}/invite`;
+        const payload = {
+            emails: selectedEmails,
+            role: role
+        };
+
+        try {
+            await axios.post(`http://10.57.1.217:5000/${endpoint}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            onClose();
+        } catch (err) {
+            console.error("Error sending invites:", err);
+            // Optionally add user feedback here
+        }
+    };
+
+    // side effects 
+    useEffect(() => {
+        if (selectedTab == "Teachers") {
+            fetchFaculties()
+        } else {
+            fetchStudents()
+        }
+    }, [token]);
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
             {/* Modal */}
@@ -29,9 +133,9 @@ const ClassroomAddStudentsModal = ({ onClose }) => {
                 {/* Header */}
                 <div className="header py-2 border-b border-gray-200 mb-2 flex items-center justify-between">
                     <h2 className="text-lg font-medium text-gray-900">
-                        Invite Students
+                        Invite {selectedTab}
                     </h2>
-                    <button onClick={onClose} className="bg-gray-100 rounded-full w-8 h-8 flex items-center justify-center"><X /></button>
+                    <button onClick={onClose} className="bg-gray-100 cursor-pointer hover:bg-gray-200 rounded-full w-8 h-8 flex items-center justify-center"><X /></button>
                 </div>
 
                 {/* Invite Link */}
@@ -68,56 +172,74 @@ const ClassroomAddStudentsModal = ({ onClose }) => {
 
                 {/* Students List */}
                 <div className="max-h-[220px] space-y-2 overflow-y-auto">
-                    {filteredStudents.length === 0 && (
+                    {displayedUsers.length === 0 && (
                         <p className="text-center text-sm text-gray-500">
-                            No students found
+                            No {selectedTab === "Teachers" ? "faculties" : "students"} found
                         </p>
                     )}
 
-                    {filteredStudents.map((student) => (
-                        <div
-                            key={student.id}
-                            className="flex items-center justify-between rounded-lg border border-gray-300 p-3"
-                        >
-                            <div className="flex items-center gap-3">
-                                <img
-                                    src={student.avatar || "https://i.pravatar.cc/150?img=12"}
-                                    alt={student.name}
-                                    className="h-10 w-10 rounded-full object-cover"
-                                />
-                                <div>
-                                    <p className="text-sm font-medium text-gray-800">
-                                        {student.name}
-                                    </p>
-                                    <p className="text-xs text-gray-500">
-                                        {student.email}
-                                    </p>
+                    {displayedUsers.map((user) => {
+                        const isSelected = selectedEmails.includes(user.email);
+                        const displayName = user.firstName || user.name;
+
+                        return (
+                            <div
+                                key={user.id || user.email} // Fallback key
+                                className={`flex items-center justify-between rounded-lg border p-3 cursor-pointer transition-colors ${isSelected ? "border-blue-600 bg-blue-50" : "border-gray-300 hover:bg-gray-50"
+                                    }`}
+                                onClick={() => toggleSelection(user.email)}
+                            >
+                                <div className="flex items-center gap-3">
+                                    <img
+                                        src={user.avatar || "https://i.pravatar.cc/150?img=12"}
+                                        alt={displayName}
+                                        className="h-10 w-10 rounded-full object-cover"
+                                    />
+                                    <div>
+                                        <p className="text-sm font-medium text-gray-800">
+                                            {displayName}
+                                        </p>
+                                        <p className="text-xs text-gray-500">
+                                            {user.email}
+                                        </p>
+                                    </div>
+                                </div>
+
+                                {/* Checkbox/Radio Visual */}
+                                <div
+                                    className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${isSelected
+                                        ? "border-blue-600 bg-blue-600"
+                                        : "border-gray-300"
+                                        }`}
+                                >
+                                    {isSelected && (
+                                        <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-white" viewBox="0 0 20 20" fill="currentColor">
+                                            <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd" />
+                                        </svg>
+                                    )}
                                 </div>
                             </div>
-
-                            {/* Radio */}
-                            <button
-                                onClick={() => setSelectedStudentId(student.id)}
-                                className={`h-5 w-5 rounded-full border-2 flex items-center justify-center ${selectedStudentId === student.id
-                                    ? "border-blue-600"
-                                    : "border-gray-300"
-                                    }`}
-                            >
-                                {selectedStudentId === student.id && (
-                                    <div className="h-2.5 w-2.5 rounded-full bg-blue-600" />
-                                )}
-                            </button>
-                        </div>
-                    ))}
+                        );
+                    })}
                 </div>
 
                 {/* Footer */}
                 <div className="mt-5 flex justify-end gap-3">
-                    <button className="rounded-md border border-gray-400 cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                    <button
+                        onClick={onClose}
+                        className="rounded-md border border-gray-400 cursor-pointer px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    >
                         Cancel
                     </button>
-                    <button className="rounded-md bg-[#0B56A4] cursor-pointer px-5 py-2 text-sm font-medium hover:bg-[#0B56A4]/80 text-white">
-                        Invite
+                    <button
+                        onClick={handleInvite}
+                        disabled={selectedEmails.length === 0}
+                        className={`rounded-md px-5 py-2 text-sm font-medium text-white ${selectedEmails.length === 0
+                            ? "bg-gray-300 cursor-not-allowed"
+                            : "bg-[#0B56A4] hover:bg-[#0B56A4]/80 cursor-pointer"
+                            }`}
+                    >
+                        Invite ({selectedEmails.length})
                     </button>
                 </div>
             </div>

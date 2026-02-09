@@ -1,4 +1,4 @@
-import { Plus } from 'lucide-react';
+import { Plus, Trash, Trash2 } from 'lucide-react';
 import React, { useState } from 'react'
 import profileImg from '../assets/profileImg.svg';
 import ClassroomAddStudentsModal from './ClassroomAddStudentsModal';
@@ -24,6 +24,7 @@ const ClassroompeopleContainer = () => {
     const [showAddModal, setShowAddModal] = useState(false);
 
 
+
     return (
         <section className='w-full p-6 h-full border border-[#DBDBDB] rounded-lg'>
             {/* tab container  */}
@@ -38,9 +39,10 @@ const ClassroompeopleContainer = () => {
                 <div className="btn-container">
                     <button onClick={() => setShowAddModal(true)} className='flex items-center cursor-pointer gap-3 text-white bg-[#0B56A4] px-7 py-2 rounded-lg'><Plus className="text-white"></Plus> Add</button>
                     <div className="dropdown-contanier absolute top-full right-0">
-                        {showAddModal && <ClassroomAddStudentsModal onClose={() => {
+                        {showAddModal && <ClassroomAddStudentsModal selectedTab={selectedTab} onClose={() => {
                             setShowAddModal(false)
                         }} />}
+
                     </div>
                 </div>
 
@@ -63,7 +65,7 @@ const ClassroompeopleContainer = () => {
                         </div>
 
                         <div className="text-gray-900 text-xl font-medium cursor-pointer">
-                            &#8942;
+                            <Trash2/>
                         </div>
                     </div>
                 }

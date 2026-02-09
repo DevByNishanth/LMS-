@@ -147,7 +147,8 @@ const App = () => {
           path="/dashboard/classroom/class/:classId"
           element={<Classpage />}
         />
-        <Route path="/invitation/verify" element={<InvitationPage />} />
+        {/* /classroom/invite?token=bbbfaf68fd4231c015af0e6ff7f150dc0b3f6f27501e61e9c5ef4296473ec790 */}
+        <Route path="/classroom/invite" element={<InvitationPage />} />
       </Routes>
     </>
   );
