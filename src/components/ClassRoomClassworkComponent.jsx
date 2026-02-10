@@ -44,11 +44,12 @@ const ClassRoomClassworkComponent = () => {
   const fetchAssignments = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/assignment/${classId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/assignment/subject/${classId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("Assignments:", response.data.data);
-      setAssignments(response.data.data);
+      console.log("Assignments:", response.data.assignments);
+      setAssignments(response.data.assignments);
+
     } catch (error) {
       console.error("Error fetching assignments:", error);
     }
@@ -269,7 +270,7 @@ const ClassRoomClassworkComponent = () => {
             </div>
           </>
         )}
-      </section> : <ClassworkDetailView selectedAssignment={selectedAssignment}/>}
+      </section> : <ClassworkDetailView selectedAssignment={selectedAssignment} />}
 
       {isAssignmentModalOpen && (
         <AddAssignmentModal

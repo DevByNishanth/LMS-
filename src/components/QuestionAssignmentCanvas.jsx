@@ -17,6 +17,7 @@ export default function QuestionAssignmentCanvas({
         questionType: "Short Answer", // Default to Short Answer
         instruction: "",
         dueDate: "",
+        points: ""
     });
 
     const [options, setOptions] = useState(["", ""]); // Default 2 empty options for Multiple Choice
@@ -88,6 +89,7 @@ export default function QuestionAssignmentCanvas({
         data.append("title", formData.title);
         data.append("instruction", formData.instruction);
         data.append("dueDate", formData.dueDate);
+        data.append("marks", formData.points);
 
         // Map UI questionType to Backend expected values if needed. 
         // Assuming backend expects "Descriptive" for "Short Answer" based on user table example
@@ -171,6 +173,20 @@ export default function QuestionAssignmentCanvas({
                             type="text"
                             name="title"
                             value={formData.title}
+                            onChange={handleChange}
+                            className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
+                        />
+                        {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+                    </div>
+                    {/* Marks / Points */}
+                    <div>
+                        <label className="text-md text-gray-600 font-medium mb-2">
+                            Points
+                        </label>
+                        <input
+                            type="number"
+                            name="points"
+                            value={formData.points}
                             onChange={handleChange}
                             className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
                         />

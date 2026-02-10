@@ -18,6 +18,7 @@ export default function AddAssignmentModal({
     title: "",
     instruction: "",
     dueDate: "",
+    points: ""
   });
 
   const [resources, setResources] = useState([]);
@@ -64,6 +65,7 @@ export default function AddAssignmentModal({
     data.append("title", formData.title);
     data.append("instruction", formData.instruction);
     data.append("dueDate", formData.dueDate);
+    data.append("marks", formData.points);
 
     // Separate resources
     const linkResource = resources.find(r => r.type === 'link');
@@ -131,6 +133,20 @@ export default function AddAssignmentModal({
               type="text"
               name="title"
               value={formData.title}
+              onChange={handleChange}
+              className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
+            />
+            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+          </div>
+          {/* marks / points  */}
+          <div>
+            <label className="text-md text-gray-600 font-medium mb-2">
+              Points
+            </label>
+            <input
+              type="number"
+              name="points"
+              value={formData.points}
               onChange={handleChange}
               className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />

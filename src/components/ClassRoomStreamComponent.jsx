@@ -3,7 +3,7 @@ import folderIcon from "../assets/folderIcon.svg";
 import archiveIcon from "../assets/archiveIcon.svg";
 import profileImg from "../assets/profileImg.svg";
 import copyIcon from "../assets/copyIcon.svg";
-import { Edit, File, Pencil, Plus, Trash } from "lucide-react";
+import { Edit, File, Pencil, Plus, Trash, Send, X } from "lucide-react";
 import postBadge from "../assets/postBadge.svg";
 import { useEffect, useRef, useState } from "react";
 import AddAnnouncementModal from "./AddAnnouncementModal";
@@ -30,6 +30,8 @@ const ClassRoomStreamComponent = () => {
   const [feedData, setFeedData] = useState([])
   const [actionDropdown, setActionDropdown] = useState(null)
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
+  const [activeCommentBox, setActiveCommentBox] = useState(null);
+  const [commentText, setCommentText] = useState("");
 
   // ref 
   const actionDropdownRef = useRef(null)
@@ -72,6 +74,37 @@ const ClassRoomStreamComponent = () => {
     setActionDropdown(null);
     console.log("Deleting item", item);
   }
+
+  const handleToggleComments = (id) => {
+    if (activeCommentBox === id) {
+      setActiveCommentBox(null);
+    } else {
+      setActiveCommentBox(id);
+    }
+  };
+
+  const handlePostComment = async (postId) => {
+    console.log("postId : ", postId);
+    if (!commentText.trim()) return;
+
+    try {
+      const response = await axios.post(
+        `${apiUrl}api/staff/stream/${postId}/comment`,
+        { streamId: postId, comment: commentText },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      if (response.status === 200 || response.status === 201) {
+        setCommentText("");
+        getStreamDetails();
+      }
+    } catch (error) {
+      console.error("Error posting comment:", error);
+    }
+  };
 
   useEffect(() => {
     function handleClickOutside(e) {
@@ -333,12 +366,81 @@ const ClassRoomStreamComponent = () => {
 
                     {/* Footer */}
                     <div className="mt-4 pt-3 border-t border-gray-200">
-                      <div className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer">
+                      <div
+                        onClick={() => handleToggleComments(item._id)}
+                        className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer w-full "
+                      >
                         <span>
                           <img src={commentIcon} className="w-5 h-5" />
                         </span>
-                        <span className="text-black font-medium">Comments</span>
+                        <div className="w-full flex items-center justify-between">
+                          <span className="text-black font-medium  ">
+                            {item.comments?.length > 0 ? `${item.comments.length} Comments` : "Comments"}
+                          </span>
+                          {activeCommentBox === item._id && (
+                            <div className="">
+                              <X className="w-4 h-4 text-black" />
+                            </div>
+                          )}
+                        </div>
                       </div>
+
+                      {/* Comments Section */}
+                      {activeCommentBox === item._id && (
+                        <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
+                          {/* Comments List */}
+                          <div className="space-y-4 mb-4 max-h-60 overflow-y-auto">
+                            {item.comments && item.comments.length > 0 ? (
+                              item.comments.map((comment, idx) => (
+                                <div key={comment._id || idx} className="flex gap-3">
+                                  {console.log("comment data : ", comment)}
+                                  <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs flex-shrink-0">
+                                    {comment.name ? comment.name[0]?.toUpperCase() : "U"}
+                                  </div>
+                                  <div className="bg-gray-100 rounded-lg p-3 flex-1">
+                                    <div className="flex justify-between items-center mb-1">
+                                      <span className="text-xs font-semibold text-gray-900">
+                                        {comment.name || "User"}
+                                      </span>
+                                      <span className="text-[10px] text-gray-500">
+                                        {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                      </span>
+                                    </div>
+                                    <p className="text-sm text-gray-700">{comment.comment}</p>
+                                  </div>
+                                </div>
+                              ))
+                            ) : (
+                              <p className="text-sm text-gray-500 text-center italic">No comments yet. Be the first to comment!</p>
+                            )}
+                          </div>
+
+                          {/* Add Comment Input */}
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-[#0B56A4] flex items-center justify-center text-white text-xs flex-shrink-0">
+                              {firstLetter || "U"}
+                            </div>
+                            <div className="flex-1 relative">
+                              <input
+                                type="text"
+                                value={commentText}
+                                onChange={(e) => setCommentText(e.target.value)}
+                                placeholder="Add a class comment..."
+                                className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 text-sm focus:outline-none focus:border-[#0B56A4]"
+                                onKeyDown={(e) => {
+                                  if (e.key === 'Enter') handlePostComment(item._id);
+                                }}
+                              />
+                              <button
+                                onClick={() => handlePostComment(item._id)}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0B56A4] hover:bg-blue-50 p-1 rounded-full"
+                              >
+                                <Send className="w-4 h-4" />
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
                 ))
