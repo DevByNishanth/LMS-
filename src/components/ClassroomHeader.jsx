@@ -36,7 +36,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
     }, []);
     return (
         <>
-            <div className="w-full flex items-center justify-between px-6 py-3 bg-white ">
+            <div className="w-full flex items-center justify-between px-6 pb-3 bg-white ">
                 <div className="tabs flex flex-wrap items-center gap-4">
                     <button
                         onClick={() => setActiveTab("stream")}

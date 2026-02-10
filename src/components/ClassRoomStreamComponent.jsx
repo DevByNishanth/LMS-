@@ -12,6 +12,7 @@ import commentIcon from "../assets/commentIcon.svg";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
+import fileIcon from "../assets/file-icon.svg";
 
 const ClassRoomStreamComponent = () => {
   // Auth
@@ -318,7 +319,8 @@ const ClassRoomStreamComponent = () => {
                               {item.attachments.map((file, index) => {
                                 return (
                                   <a key={index} target="_blank" href={file} rel="noopener noreferrer" className="flex items-center gap-2 border border-gray-300 rounded-md py-2 px-4 bg-gray-50 cursor-pointer">
-                                    <File className="w-4 h-4 text-black-400" />
+                                    {/* <File className="w-4 h-4 text-black-400" /> */}
+                                    <img src={fileIcon} alt="" />
                                     <span>{file}</span>
                                   </a>
                                 )

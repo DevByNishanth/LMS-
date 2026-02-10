@@ -15,6 +15,7 @@ import assignmentWorkIcon from "../assets/assignmentWorkIcon.svg";
 import AddAssignmentModal from "./AddAssignmentModal";
 import QuizAssignmentCanvas from "./QuizAssignmentCanvas";
 import QuestionAssignmentCanvas from "./QuestionAssignmentCanvas";
+import ClassworkDetailView from "./ClassworkDetailView";
 
 
 // const classWorkData1 = [];
@@ -30,7 +31,8 @@ const ClassRoomClassworkComponent = () => {
   const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   const [quizAssignmentModalOpen, setIsQuizAssignmentModalOpen] =
     useState(false);
-
+  const [isDetailview, setIsDetailview] = useState(false);
+  const [selectedAssignment, setSelectedAssignment] = useState(null);
   const [isQuestionModalOpen, setIsQuestionModalOpen] = useState(false);
 
   // refs
@@ -70,6 +72,15 @@ const ClassRoomClassworkComponent = () => {
     fetchQuestions();
   }
 
+
+  async function handleDetailView(item) {
+    setSelectedAssignment(item);
+    setIsDetailview(true);
+
+  }
+
+  // useEffect calls 
+
   useEffect(() => {
     fetchAllClasswork();
   }, [classId]);
@@ -99,7 +110,7 @@ const ClassRoomClassworkComponent = () => {
 
   return (
     <>
-      <section className="w-full p-6 h-full border border-[#DBDBDB] rounded-lg">
+      {!isDetailview ? <section className="w-full p-6 h-full border border-[#DBDBDB] rounded-lg">
         {classworkList.length !== 0 ? (
           <>
             <div className="header-container  mb-4">
@@ -174,6 +185,7 @@ const ClassRoomClassworkComponent = () => {
 
                 return (
                   <div
+                    onClick={() => handleDetailView(item)}
                     className="card cursor-pointer hover:border-[#0B56A4] flex items-center rounded-xl bg-[#F9F9F9] px-4 justify-between border border-gray-300 py-4"
                     key={index}
                   >
@@ -257,7 +269,8 @@ const ClassRoomClassworkComponent = () => {
             </div>
           </>
         )}
-      </section>
+      </section> : <ClassworkDetailView selectedAssignment={selectedAssignment}/>}
+
       {isAssignmentModalOpen && (
         <AddAssignmentModal
           setIsAssignmentModalOpen={setIsAssignmentModalOpen}

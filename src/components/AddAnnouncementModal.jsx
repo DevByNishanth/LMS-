@@ -207,7 +207,7 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
           <div className="attachment-container mt-4">
             <h1 className="text-gray-800 font-medium">Attach Any</h1>
             <div className="flex gap-6 text-xs text-gray-600 mt-4">
-              <div  
+              <div
                 onClick={() => setSelectedAttachmentOption("link")}
                 className="flex flex-col items-center gap-1 cursor-pointer hover:text-black hover:font-medium"
               >
@@ -277,6 +277,8 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
             openingFrom={openingFrom}
             setOpeningFrom={setOpeningFrom}
             onSubmit={handleAttachmentSubmit}
+            allowedExtensions={[".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"]}
+            maxFileSize={5 * 1024 * 1024}
           />
         )
       }

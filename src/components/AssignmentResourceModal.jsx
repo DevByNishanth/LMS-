@@ -7,6 +7,8 @@ const AssignmentResourceModal = ({
   openingFrom,
   setOpeningFrom,
   onSubmit,
+  allowedExtensions = [], // Default to empty (allow all)
+  maxFileSize = null, // Default to null (no limit)
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -27,7 +29,35 @@ const AssignmentResourceModal = ({
 
   const handleFileChange = (e) => {
     if (e.target.files && e.target.files[0]) {
-      setSelectedFile(e.target.files[0]);
+      const file = e.target.files[0];
+
+      // Validate File Size
+      if (maxFileSize && file.size > maxFileSize) {
+        alert(`File size exceeds ${maxFileSize / (1024 * 1024)}MB`);
+        e.target.value = null;
+        return;
+      }
+
+      // Validate File Extension/Type
+      if (allowedExtensions && allowedExtensions.length > 0) {
+        const fileName = file.name.toLowerCase();
+        const isValidExtension = allowedExtensions.some((ext) =>
+          fileName.endsWith(ext.toLowerCase())
+        );
+
+        if (!isValidExtension) {
+          alert(`Invalid file type. Allowed types: ${allowedExtensions.join(", ")}`);
+          e.target.value = null;
+          return;
+        }
+      }
+
+      // Explicit SVG check if not covered by allowedExtensions (though if allowedExtensions is used, it should be covered)
+      // But if allowedExtensions is empty, we might want to block SVG if specific global rule? 
+      // The user request "No svg allowed" was specific to the context.
+      // Better to rely on allowedExtensions passed from parent.
+
+      setSelectedFile(file);
     }
   };
 
