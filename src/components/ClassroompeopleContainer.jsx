@@ -64,8 +64,8 @@ const ClassroompeopleContainer = () => {
                             </p>
                         </div>
 
-                        <div className="text-gray-900 text-xl font-medium cursor-pointer">
-                            <Trash2/>
+                        <div className="text-gray-900 text-xl font-medium bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ">
+                            <Trash2 className='text-red-400 w-5 h-5' />
                         </div>
                     </div>
                 }
@@ -84,8 +84,8 @@ const ClassroompeopleContainer = () => {
                             </p>
                         </div>
 
-                        <div className="text-gray-900 text-xl font-medium cursor-pointer">
-                            &#8942;
+                        <div className="text-gray-900 text-xl font-medium bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer ">
+                            <Trash2 className='text-red-400 w-5 h-5' />
                         </div>
                     </div>
                 }

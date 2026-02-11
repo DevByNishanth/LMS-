@@ -10,6 +10,7 @@ const days = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"
 
 
 
+const daysArray = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"];
 
 export default function TimeTable() {
     const [filters, setFilters] = useState({ year: "1st Year", semester: "1", section: "Section A" });
@@ -37,7 +38,7 @@ export default function TimeTable() {
             if (!token) return;
 
             const decoded = jwtDecode(token);
-            const department = decoded.department || "CSE"; // Fallback to CSE if not found
+            const department = decoded.department || "CSE";
 
             const response = await axios.get(
                 `${import.meta.env.VITE_API_URL}api/timetable/class`,
@@ -54,16 +55,66 @@ export default function TimeTable() {
                 }
             );
 
-            const data = response.data;
-
             // Set tableData directly as backend now returns the structured object
-            setTableData(data || {});
+            setTableData(response.data || {});
         } catch (err) {
             console.error("Error fetching timetable:", err);
+            setTableData({}); // Reset on error
         } finally {
             setLoading(false);
         }
     };
+
+    const prepareSlots = () => {
+        if (!tableData.headers || !tableData.breaks) return [];
+
+        const slots = [];
+
+        // Add periods
+        tableData.headers.forEach((header, index) => {
+            slots.push({
+                ...header,
+                type: 'period',
+                originalIndex: index
+            });
+        });
+
+        // Add breaks
+        Object.entries(tableData.breaks).forEach(([key, time]) => {
+            const name = key
+                .replace(/([A-Z])/g, ' $1')
+                .replace(/^./, str => str.toUpperCase())
+                .replace('Break', '')
+                .trim();
+            slots.push({
+                type: 'break',
+                name: name,
+                time: time
+            });
+        });
+
+        // Helper to convert "HH:MMAM/PM" to minutes for sorting
+        const getTimeVal = (timeStr) => {
+            const start = timeStr.split(' - ')[0].trim();
+            const match = start.match(/^(\d+):(\d+)(AM|PM)$/i);
+            if (!match) return 0;
+
+            let [_, hours, minutes, modifier] = match;
+            let h = parseInt(hours, 10);
+            const m = parseInt(minutes, 10);
+
+            if (modifier.toUpperCase() === 'PM' && h !== 12) h += 12;
+            if (modifier.toUpperCase() === 'AM' && h === 12) h = 0;
+
+            return h * 60 + m;
+        };
+
+        slots.sort((a, b) => getTimeVal(a.time) - getTimeVal(b.time));
+
+        return slots;
+    };
+
+    const slots = prepareSlots();
 
     const fetchFaculties = async () => {
         try {
@@ -72,11 +123,12 @@ export default function TimeTable() {
             const decoded = jwtDecode(token);
             const dept = decoded.department || "CSE";
 
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/faculty/department/${dept}`, {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}api/faculty`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
-            console.log("fac details : ", response.data.faculty)
-            setFaculties(response.data.faculty || []);
+            console.log("fac details : ", response.data)
+            const filteredStaffs = response.data.filter((item) => item.firstName.toLowerCase() !== "super");
+            setFaculties(filteredStaffs);
         } catch (err) {
             console.error("Error fetching faculties:", err);
         }
@@ -93,11 +145,15 @@ export default function TimeTable() {
                 headers: { Authorization: `Bearer ${token}` }
             });
             console.log("subject details : ", response.data.subjects)
+
             setSubjects(response.data.subjects || []);
         } catch (err) {
             console.error("Error fetching subjects:", err);
         }
     };
+
+
+
 
     React.useEffect(() => {
         fetchTimetable();
@@ -245,108 +301,187 @@ export default function TimeTable() {
 
     return (
         <div className="p-6 ">
-            {/* Filters */}
-            <div className="flex justify-end gap-4 mb-4">
-                <select name="year" value={filters.year} onChange={handleFilterChange} className="border rounded px-3 py-2">
-                    <option value="1st Year">1st Year</option>
-                    <option value="2nd Year">2nd Year</option>
-                    <option value="3rd Year">3rd Year</option>
-                    <option value="4th Year">4th Year</option>
-                </select>
-                <select name="semester" value={filters.semester} onChange={handleFilterChange} className="border rounded px-3 py-2">
-                    <option value="1">Semester 1</option>
-                    <option value="2">Semester 2 </option>
-                    <option value="3">Semester 3 </option>
-                    <option value="4">Semester 4 </option>
-                    <option value="5">Semester 5 </option>
-                    <option value="6">Semester 6 </option>
-                    <option value="7">Semester 7 </option>
-                    <option value="8">Semester 8 </option>
-                </select>
-                <select name="section" value={filters.section} onChange={handleFilterChange} className="border rounded px-3 py-2">
-                    <option value="Section A">Section A</option>
-                    <option value="Section B">Section B</option>
-                    <option value="Section C">Section C</option>
-                    <option value="Section D">Section D</option>
-                </select>
+            {/* Header with Title & Filters */}
+            <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-4 bg-white p-4 rounded-xl ">
+                <div>
+                    <h2 className="text-xl font-semibold text-[#08384F]">
+                        {tableData.department || "Timetable"}
+                        <span className="text-gray-600 font-normal ml-2 text-sm">
+                            {filters.year} • Sem {filters.semester} • {filters.section}
+                        </span>
+                    </h2>
+                </div>
+                <div className="flex gap-3">
+                    <select
+                        name="year"
+                        value={filters.year}
+                        onChange={handleFilterChange}
+                        className="border border-gray-200 w-[160px] outline-none focus:ring-2 focus:ring-[#08384F]/20 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 cursor-pointer transition-all"
+                    >
+                        {["1st Year", "2nd Year", "3rd Year", "4th Year"].map(y => (
+                            <option key={y} value={y}>{y}</option>
+                        ))}
+                    </select>
+                    <select
+                        name="semester"
+                        value={filters.semester}
+                        onChange={handleFilterChange}
+                        className="border border-gray-200 w-[160px] outline-none focus:ring-2 focus:ring-[#08384F]/20 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 cursor-pointer transition-all"
+                    >
+                        {[1, 2, 3, 4, 5, 6, 7, 8].map(s => (
+                            <option key={s} value={String(s)}>Semester {s}</option>
+                        ))}
+                    </select>
+                    <select
+                        name="section"
+                        value={filters.section}
+                        onChange={handleFilterChange}
+                        className="border border-gray-200 w-[160px] outline-none focus:ring-2 focus:ring-[#08384F]/20 rounded-lg px-4 py-2 text-sm font-medium text-slate-700 cursor-pointer transition-all"
+                    >
+                        {["Section A", "Section B", "Section C", "Section D"].map(sec => (
+                            <option key={sec} value={sec}>{sec}</option>
+                        ))}
+                    </select>
+                </div>
             </div>
 
-            {/* Table */}
-            <div className=" bg-white max-h-[calc(100vh-165px)] overflow-auto">
-                <table className="w-full border-collapse">
-                    <thead className="bg-[#08384F] text-white sticky top-0">
-                        <tr>
-                            <th className="p-3 text-left">Time Slot</th>
-                            {days.map((day) => (
-                                <th key={day} className="p-3 text-center">{day}</th>
-                            ))}
-                        </tr>
-                    </thead>
-                    <tbody className="border border-gray-200">
-                        {loading ? (
-                            <tr>
-                                <td colSpan={days.length + 1} className="p-10 text-center">
-                                    <div className="flex flex-col items-center justify-center gap-3">
-                                        <div className="w-10 h-10 border-4 border-[#0B56A4] border-t-transparent rounded-full animate-spin"></div>
-                                        <p className="text-gray-500 font-medium">Fetching Timetable...</p>
-                                    </div>
-                                </td>
+            {/* Table Container */}
+            <div className="bg-white border border-slate-100 overflow-hidden">
+                <div className="overflow-x-auto max-h-[calc(100vh-220px)]">
+                    <table className="w-full border-collapse">
+                        <thead>
+                            <tr className="bg-[#08384F] text-white ">
+                                <th className="sticky top-0 left-0 z-30 bg-[#08384F] p-5 text-left font-medium text-sm border-b border-white/10 uppercase tracking-wider w-[180px] min-w-[180px]">
+                                    Day
+                                </th>
+                                {slots.length > 0 ? slots.map((slot, idx) => (
+                                    <th
+                                        key={idx}
+                                        className={`sticky top-0 z-20 p-4 text-center border-b border-white/10 w-[180px] min-w-[180px] ${slot.type === 'break' ? 'bg-[#062c3e] italic text-white' : 'bg-[#08384F]'}`}
+                                    >
+                                        <div className="flex flex-col gap-1">
+                                            {/* <span className="text-[10px] opacity-70 font-medium">
+                                                {slot.type === 'period' ? `PERIOD ${slot.period}` : 'BREAK'}
+                                            </span> */}
+                                            <span className="text-sm font-medium tracking-tight">
+                                                {slot.type === 'break' ? slot.name : slot.time.split(' - ')[0]}
+                                            </span>
+                                            <span className="text-[10px] opacity-100">
+                                                {slot.type === 'period' ? slot.time : slot.time}
+                                            </span>
+                                        </div>
+                                    </th>
+                                )) : (
+                                    <th className="p-4 text-center w-[180px] min-w-[180px]">Loading Slots...</th>
+                                )}
                             </tr>
-                        ) : Object.keys(tableData).length > 0 ? (
-                            Object.keys(tableData).map((time, index) => (
-                                <tr
-                                    key={time}
-                                    className={`${index % 2 === 1 ? "bg-[#E6E9F5]" : ""} border border-gray-200`}
-                                >
-                                    <td className="p-3 font-medium text-[#333333]">{time}</td>
-
-                                    {days.map((day) => (
-                                        <td key={day} className="p-4 text-center">
-                                            {tableData[time]?.[day] ? (
-                                                <div className="text-xs flex flex-col items-center gap-1 font-medium text-[#333333]">
-                                                    <div className="flex items-center justify-center gap-3">
-                                                        <span className="font-semibold">{tableData[time][day].subjectName}</span>
-                                                        <span className="flex items-center gap-3">
-                                                            <img
-                                                                src={editIcon}
-                                                                className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
-                                                                alt="Edit"
-                                                                onClick={() => handleEdit(day, time, tableData[time][day])}
-                                                            />
-                                                            <img
-                                                                src={deleteIcon}
-                                                                className="w-4.5 h-4.5 cursor-pointer hover:scale-110"
-                                                                alt="Delete"
-                                                                onClick={() => openDeleteModal(day, time)}
-                                                            />
-                                                        </span>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <button
-                                                    onClick={() => openModal(day, time)}
-                                                    className="inline-flex cursor-pointer items-center gap-2 text-black"
-                                                >
-                                                    Add
-                                                    <span className="bg-[#0B56A4] hover:bg-[#0b55a4e7] rounded-full w-6 h-6 flex items-center justify-center text-white">
-                                                        <Plus className="text-white w-4 h-4" />
-                                                    </span>
-                                                </button>
-                                            )}
-                                        </td>
-                                    ))}
+                        </thead>
+                        <tbody className="divide-y divide-slate-100">
+                            {loading ? (
+                                <tr>
+                                    <td colSpan={slots.length + 1} className="p-24 text-center">
+                                        <div className="flex flex-col items-center justify-center gap-4">
+                                            <div className="relative">
+                                                <div className="w-16 h-16 border-4 border-[#08384F]/10 rounded-full"></div>
+                                                <div className="absolute top-0 w-16 h-16 border-4 border-[#08384F] border-t-transparent rounded-full animate-spin"></div>
+                                            </div>
+                                            <p className="text-slate-500 font-semibold animate-pulse">Syncing Timetable Database...</p>
+                                        </div>
+                                    </td>
                                 </tr>
-                            ))
-                        ) : (
-                            <tr>
-                                <td colSpan={days.length + 1} className="p-10 text-center text-gray-500 font-medium italic">
-                                    No data found for the selected filters.
-                                </td>
-                            </tr>
-                        )}
-                    </tbody>
+                            ) : tableData.rows && tableData.rows.length > 0 ? (
+                                tableData.rows.map((row, rowIndex) => (
+                                    <tr key={row.day} className="group hover:bg-slate-50/80 transition-colors h-[120px]">
+                                        <td className="sticky left-0 z-10 bg-white group-hover:bg-slate-50/80 p-5 font-bold text-[#08384F] border-r border-slate-100 transition-colors w-[180px] min-w-[180px]">
+                                            {row.day}
+                                        </td>
+                                        {slots.map((slot, slotIdx) => {
+                                            if (slot.type === 'break') {
+                                                return (
+                                                    <td key={slotIdx} className="bg-gray-200 p-4 text-center group-hover:bg-gray-400 transition-colors w-[180px] min-w-[180px]">
+                                                        <span className="text-[11px] font-bold text-slate-900 uppercase tracking-[0.2em] vertical-rl rotate-180">
+                                                            • {slot.name}•
+                                                        </span>
+                                                    </td>
+                                                );
+                                            }
 
-                </table>
+                                            const periodEntry = row.periods[slot.originalIndex];
+
+                                            return (
+                                                <td key={slotIdx} className="p-4 transition-all relative w-[180px] min-w-[180px]">
+                                                    {periodEntry ? (
+                                                        <div className="group/card h-full flex flex-col justify-center">
+                                                            <div className="flex flex-col gap-2">
+                                                                <div className="flex justify-between items-start">
+                                                                    <span className="text-xs font-medium text-slate-800 line-clamp-2 leading-tight">
+                                                                        {periodEntry.subjectName}
+                                                                    </span>
+                                                                    <div className="flex gap-1.5 opacity-0 group-hover/card:opacity-100 transition-opacity shrink-0">
+                                                                        <button
+                                                                            onClick={() => handleEdit(row.day, slot.time, periodEntry)}
+                                                                            className="p-1 hover:bg-blue-50 cursor-pointer rounded transition-colors"
+                                                                        >
+                                                                            <img src={editIcon} className="w-5 h-5 flex-shrink-0 object-contain" alt="Edit" />
+                                                                        </button>
+                                                                        <button
+                                                                            onClick={() => openDeleteModal(row.day, slot.time)}
+                                                                            className="p-1 hover:bg-red-50 cursor-pointer rounded transition-colors"
+                                                                        >
+                                                                            <img src={deleteIcon} className="w-5 h-5 flex-shrink-0 object-contain" alt="Delete" />
+                                                                        </button>
+                                                                    </div>
+                                                                </div>
+                                                                <div className="flex items-center gap-1.5 mt-auto">
+                                                                    <div className="w-1 h-1 bg-[#08384F] rounded-full"></div>
+                                                                    <span className="text-[12px] font-medium text-slate-500 truncate">
+                                                                        {periodEntry.facultyName}
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    ) : (
+                                                        <div className="group/add flex items-center justify-center h-full">
+                                                            <button
+                                                                onClick={() => openModal(row.day, slot.time)}
+                                                                className="opacity-0 group-hover/add:opacity-100 flex flex-col items-center gap-1 text-[10px] font-bold text-[#08384F] transition-all transform hover:scale-105"
+                                                            >
+                                                                <div className="bg-[#08384F] p-2 rounded-full mb-1">
+                                                                    <Plus className="w-4 h-4 text-white" />
+                                                                </div>
+                                                                Add
+                                                            </button>
+                                                            <div className="absolute inset-0 flex items-center justify-center opacity-10 pointer-events-none group-hover/add:hidden">
+                                                                <Plus className="w-6 h-6 text-slate-200" />
+                                                            </div>
+                                                        </div>
+                                                    )}
+                                                </td>
+                                            );
+                                        })}
+                                    </tr>
+                                ))
+                            ) : (
+                                <tr>
+                                    <td colSpan={slots.length + 1} className="p-20 text-center">
+                                        <div className="flex flex-col items-center gap-3">
+                                            <div className="text-slate-300">
+                                                <X className="w-12 h-12 mx-auto mb-2 opacity-20" />
+                                            </div>
+                                            <p className="text-slate-400 font-medium italic">No timetable schedule found for this criteria.</p>
+                                            <button
+                                                onClick={fetchTimetable}
+                                                className="text-xs text-blue-600 font-bold hover:underline"
+                                            >
+                                                Reload Data
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            )}
+                        </tbody>
+                    </table>
+                </div>
             </div>
 
             {/* Modal */}

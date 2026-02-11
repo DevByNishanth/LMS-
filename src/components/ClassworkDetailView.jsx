@@ -1,4 +1,4 @@
-import { Paperclip, User, Users, Send } from 'lucide-react'
+import { Paperclip, User, Users, Send, Link as LinkIcon, Video, FileText, ExternalLink } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import assignmentIcon from '../assets/assignmentWorkIcon.svg'
 import fileIcon from '../assets/file-icon.svg'
@@ -82,7 +82,7 @@ const ClassworkDetailView = ({ selectedAssignment }) => {
                             {/* Title */}
                             <div className='flex gap-1 justify-between w-full'>
                                 <h2 className="font-medium text-gray-900">
-                                    {selectedAssignment?.title} <span className="text-[#0B56A4]">( {selectedAssignment.marks} Points )</span>
+                                    {selectedAssignment?.title} {selectedAssignment.marks && <span className="text-[#0B56A4] font-semibold ml-1 text-sm">( {selectedAssignment.marks} Points )</span>}
                                 </h2>
                                 <p className="text-xs text-[#646464] mt-1">
                                     Posted on <span className="">{selectedAssignment?.createdAt && new Date(selectedAssignment.createdAt).toLocaleString()}</span>
@@ -97,12 +97,71 @@ const ClassworkDetailView = ({ selectedAssignment }) => {
                             {selectedAssignment?.instruction}
                         </p>
 
-                        {/* File */}
-                        <div className="flex items-center gap-3 mt-2 px-3 py-2 border border-gray-200 rounded-lg bg-white w-fit hover:bg-gray-100 cursor-pointer">
-                            <div className="w-8 h-8 rounded flex items-center justify-center">
-                                <img src={fileIcon} alt="assignmentIcon" className='w-7 h-7' />
-                            </div>
-                            <span className="text-md font-medium text-gray-700">File.txt</span>
+                        {/* Attachments Section */}
+                        <div className="flex flex-wrap gap-3 mt-4">
+                            {/* Files */}
+                            {selectedAssignment?.attachments?.map((fileUrl, index) => (
+                                <a
+                                    key={index}
+                                    href={fileUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 px-3 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors group"
+                                >
+                                    <div className="w-8 h-8 rounded bg-blue-50 flex items-center justify-center group-hover:bg-blue-100 transition-colors">
+                                        <FileText className="w-5 h-5 text-[#0B56A4]" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                                            {fileUrl.split('/').pop().split('-').slice(2).join('-') || "Attachment"}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400 uppercase font-bold">File</span>
+                                    </div>
+                                    <ExternalLink className="w-3 h-3 text-gray-300 group-hover:text-gray-500" />
+                                </a>
+                            ))}
+
+                            {/* External Link */}
+                            {selectedAssignment?.link && (
+                                <a
+                                    href={selectedAssignment.link}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 px-3 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors group"
+                                >
+                                    <div className="w-8 h-8 rounded bg-green-50 flex items-center justify-center group-hover:bg-green-100 transition-colors">
+                                        <LinkIcon className="w-5 h-5 text-green-600" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                                            {selectedAssignment.link}
+                                        </span>
+                                        <span className="text-[10px] text-gray-400 uppercase font-bold">Link</span>
+                                    </div>
+                                    <ExternalLink className="w-3 h-3 text-gray-300 group-hover:text-gray-500" />
+                                </a>
+                            )}
+
+                            {/* YouTube Link */}
+                            {selectedAssignment?.youtubeLink && (
+                                <a
+                                    href={selectedAssignment.youtubeLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-3 px-3 py-2 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors group"
+                                >
+                                    <div className="w-8 h-8 rounded bg-red-50 flex items-center justify-center group-hover:bg-red-100 transition-colors">
+                                        <Video className="w-5 h-5 text-red-600" />
+                                    </div>
+                                    <div className="flex flex-col">
+                                        <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                                            YouTube Video
+                                        </span>
+                                        <span className="text-[10px] text-gray-400 uppercase font-bold">YouTube</span>
+                                    </div>
+                                    <ExternalLink className="w-3 h-3 text-gray-300 group-hover:text-gray-500" />
+                                </a>
+                            )}
                         </div>
                     </div>
 
