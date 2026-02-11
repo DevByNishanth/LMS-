@@ -14,7 +14,7 @@ const ClassroomAddStudentsModal = ({ onClose, selectedTab }) => {
     const location = useLocation();
     const classData = location.state;
     const sectionId = classData.sectionId
-    console.log("classData : ", classData)
+    // console.log("classData : ", classData)
     console.log("sectionId : ", sectionId)
 
     const { classId } = useParams();
@@ -106,7 +106,7 @@ const ClassroomAddStudentsModal = ({ onClose, selectedTab }) => {
         };
 
         try {
-            await axios.post(`http://10.57.1.217:5000/${endpoint}`, payload, {
+            await axios.post(`${apiUrl}${endpoint}`, payload, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

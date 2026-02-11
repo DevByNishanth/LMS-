@@ -128,7 +128,7 @@ export default function QuestionAssignmentCanvas({
 
         try {
             const token = localStorage.getItem("LmsToken");
-            await axios.post(`${import.meta.env.VITE_API_URL}api/staff/question`, data, {
+            await axios.post(`${import.meta.env.VITE_API_URL}api/question`, data, {
                 headers: {
                     "Content-Type": "multipart/form-data",
                     Authorization: `Bearer ${token}`
@@ -259,7 +259,7 @@ export default function QuestionAssignmentCanvas({
                     )}
 
                     {/* Attach */}
-                    <div>
+                    {/* <div>
                         <p className="text-md text-gray-600 font-medium mb-4">Attach Any</p>
                         <div className="flex gap-6 text-xs text-gray-600">
                             <div
@@ -299,7 +299,7 @@ export default function QuestionAssignmentCanvas({
                                 Upload
                             </div>
                         </div>
-                    </div>
+                    </div> */}
 
                     {/* Resources Preview */}
                     {resources.length > 0 && (

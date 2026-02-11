@@ -63,7 +63,7 @@ const ClassRoomClassworkComponent = () => {
   const fetchQuestions = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/staff/questions/${classId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/question/subject/${classId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log("Questions:", response.data.data);
@@ -359,7 +359,7 @@ const ClassRoomClassworkComponent = () => {
           )}
         </section>
       ) : (
-        <ClassworkDetailView selectedAssignment={selectedAssignment} />
+        <ClassworkDetailView selectedAssignment={selectedAssignment} setIsDetailview={setIsDetailview} />
       )}
 
       {isAssignmentModalOpen && (

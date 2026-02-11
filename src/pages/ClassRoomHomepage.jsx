@@ -194,9 +194,10 @@ const ClassRoomHomepage = () => {
         >
           {classes.length > 0 ? (
             classes.map((cls) => {
-              { console.log(cls) }
+              { console.log("cls : ", cls) }
               return (
                 <Link
+                  // to={`/dashboard/classroom/class/${cls.sectionId}`}
                   to={`/dashboard/classroom/class/${cls.subjectId}`}
                   state={cls}
                   key={cls.id}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import ClassroomHeader from "../components/ClassroomHeader";
 import { ChevronRight } from "lucide-react";
@@ -21,7 +21,11 @@ const Classpage = () => {
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
 
+  // router dom 
+  const navigate = useNavigate();
+
   // states 
+
   const { classId } = useParams();
   const [activeTab, setActiveTab] = useState("stream");
   // const [activeItem, setActiveItem] = useState('Stream');
@@ -83,7 +87,11 @@ const Classpage = () => {
           <div className="main-content-container p-6 flex items-center justify-between">
             <div className="breadcrumsb-container">
               <h1 className="flex items-center ">
-                Class{" "}
+                <div
+                  className="text-[#000000] font-medium cursor-pointer hover:text-[#0B56A4] transition-colors"
+                >
+                  Classroom
+                </div>
                 <span>
                   <ChevronRight className="w-6 h-6" />
                 </span>{" "}

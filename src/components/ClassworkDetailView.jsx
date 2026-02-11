@@ -1,4 +1,4 @@
-import { Paperclip, User, Users, Send, Link as LinkIcon, Video, FileText, ExternalLink } from 'lucide-react'
+import { Paperclip, User, Users, Send, Link as LinkIcon, Video, FileText, ExternalLink, ChevronRight } from 'lucide-react'
 import React, { useState, useEffect } from 'react'
 import assignmentIcon from '../assets/assignmentWorkIcon.svg'
 import fileIcon from '../assets/file-icon.svg'
@@ -6,7 +6,9 @@ import StudentWorkComponent from './StudentWorkComponent'
 import axios from 'axios'
 import { jwtDecode } from 'jwt-decode'
 
-const ClassworkDetailView = ({ selectedAssignment }) => {
+const ClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
+
+    console.log("selectedAssignment : ", selectedAssignment)
 
     // states
     const [isStudentWorkComponent, setIsStudentWorkComponent] = useState(false);
@@ -38,10 +40,31 @@ const ClassworkDetailView = ({ selectedAssignment }) => {
     const handlePostComment = async (postId) => {
         if (!commentText.trim()) return;
 
+        let commentUrl = "";
+        let payload = { comment: commentText };
+
+        // Determine item type
+        const isQuestion = item.itemType === 'question' || item.questionType !== undefined;
+        const isMaterial = item.itemType === 'material' || item.key === "Material";
+        const isAssignment = item.itemType === 'assignment' || item.key === "Assignment";
+
+        // Determine endpoint based on item type
+        if (isQuestion) {
+            commentUrl = `${apiUrl}api/question/${postId}/comment`;
+            payload.questionId = postId;
+        } else if (isMaterial) {
+            commentUrl = `${apiUrl}api/material/${postId}/comment`;
+            payload.materialId = postId;
+        } else {
+            // Default to assignment if it's explicitly an assignment or if other types don't match
+            commentUrl = `${apiUrl}api/assignment/${postId}/comment`;
+            payload.assignmentId = postId;
+        }
+
         try {
             const response = await axios.post(
-                `${apiUrl}api/assignment/${postId}/comment`,
-                { assignmentId: postId, comment: commentText },
+                commentUrl,
+                payload,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -50,10 +73,13 @@ const ClassworkDetailView = ({ selectedAssignment }) => {
             );
             if (response.status === 200 || response.status === 201) {
                 setCommentText("");
-                // Manually updating local state for immediate feedback as we don't have a single-item refresh API easily available here
+                // Manually updating local state for immediate feedback
+                const decoded = jwtDecode(token);
+                const userName = decoded?.name || decoded?.username || decoded?.user?.name || "You";
+
                 const newComment = {
                     _id: Date.now().toString(), // temporary ID
-                    name: firstLetter + " (You)",
+                    name: userName,
                     comment: commentText,
                     createdAt: new Date().toISOString()
                 };
@@ -64,12 +90,27 @@ const ClassworkDetailView = ({ selectedAssignment }) => {
             }
         } catch (error) {
             console.error("Error posting comment:", error);
+            alert("Failed to post comment. Please try again.");
         }
     };
 
+    // Determine type for breadcrumb
+    const isQuestion = item.itemType === 'question' || item.questionType !== undefined;
+    const isMaterial = item.itemType === 'material' || item.key === "Material";
+
     return (
         <>
-            {!isStudentWorkComponent ? <section className='w-full h-full overflow-y-auto'>
+            <div className="breadcrumb-section flex items-center mb-4">
+                <span
+                    onClick={() => { setIsDetailview(false) }}
+                    className='text-[#0B56A4] cursor-pointer font-medium'
+                >
+                    {isQuestion ? "Questions" : isMaterial ? "Materials" : "Assignments"}
+                </span>
+                <ChevronRight className='w-4 h-4 mx-1 text-gray-400' />
+                <span className='font-medium text-gray-600'>Detail view</span>
+            </div>
+            {!isStudentWorkComponent ? <section className='w-full max-h-[calc(100vh-190px)] overflow-y-auto  '>
                 <div className="rounded-lg border border-gray-200 bg-[#F9F9F9]">
                     {/* Header */}
                     <div className="flex justify-between items-start  p-4 border-b border-gray-200 sticky top-0 z-10 bg-[#F9F9F9] rounded-t-lg">
