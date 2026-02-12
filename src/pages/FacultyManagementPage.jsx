@@ -115,7 +115,6 @@ const FacultyManagementPage = () => {
                   )}
                 </div>
               </div>
-              {/* <TitanicPie /> */}
               <PieChartWithCustomizedLabel chartData={chartData} />
             </div>
           </div>
