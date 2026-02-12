@@ -19,16 +19,22 @@ import Classpage from "./pages/Classpage";
 import StudentAttendancePage from "./pages/StudentAttendancePage";
 import AttendanceTraqckingPage from "./pages/AttendanceTraqckingPage";
 import AdminSemesterRegPage from "./pages/AdminSemesterRegPage";
+import AdminSemesterRegistrationOverviewPage from "./pages/AdminSemesterRegistrationOverviewPage";
 import TimeTableManagementPage from "./pages/TimeTableManagementPage";
 import StudentLayout from "./components/Student_Layout";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentClassroomDetails from "./components/Student_ClassroomDetails";
 import StudentClassroom from "./pages/Student_Classroom";
 import InvitationPage from "./pages/InvitationPage";
+import { ToastContainer } from "react-toastify";
 
 const App = () => {
   return (
     <>
+
+      {/* toast notification container  */}
+      <ToastContainer />
+      {/* routes  */}
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route
@@ -133,6 +139,14 @@ const App = () => {
           path="/dashboard/adminSemReg"
           element={
             <ProtectedRoute>
+              <AdminSemesterRegistrationOverviewPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/adminSemReg/view"
+          element={
+            <ProtectedRoute>
               <AdminSemesterRegPage />
             </ProtectedRoute>
           }
@@ -146,30 +160,6 @@ const App = () => {
           }
         />
 
-        <Route
-          path="/dashboard/sudentAttendance"
-          element={
-            <ProtectedRoute>
-              <StudentAttendancePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/adminSemReg"
-          element={
-            <ProtectedRoute>
-              <AdminSemesterRegPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/dashboard/timetableManagement"
-          element={
-            <ProtectedRoute>
-              <TimeTableManagementPage />
-            </ProtectedRoute>
-          }
-        />
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
         <Route
           path="/dashboard/classroom/class/:classId"
@@ -178,11 +168,6 @@ const App = () => {
         <Route path="/classroom/invite" element={<InvitationPage />} />
 
         <Route path="/invitation/verify" element={<InvitationPage />} />
-
-        <Route
-          path="/dashboard/classroom/class/:classId"
-          element={<Classpage />}
-        />
 
         <Route path="/student" element={<StudentLayout />}>
           <Route index element={<StudentDashboard />} />

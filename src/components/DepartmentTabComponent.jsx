@@ -39,14 +39,14 @@ const departments = [
   { department: "Science & Humanities", icon: <BookOpen /> },
 ];
 
-const DepartmentTabComponent = () => {
+const DepartmentTabComponent = ({ basePath = "/dashboard/semesterRegistration/addSubject" }) => {
   return (
     <>
       <section className="px-6 mt-4">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-4">
           {departments.map((dept, index) => (
             <Link
-              to={`/dashboard/semesterRegistration/addSubject?dept=${encodeURIComponent(
+              to={`${basePath}?dept=${encodeURIComponent(
                 dept.department
               )}`}
               key={index}

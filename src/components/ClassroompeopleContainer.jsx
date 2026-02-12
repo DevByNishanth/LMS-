@@ -94,7 +94,7 @@ const ClassroompeopleContainer = () => {
             {selectedTab == "Teachers" ? (
                 <div className="teachers-list w-full mt-2 max-h-[calc(100vh-320px)] overflow-auto space-y-2">
                     {faculties.length > 0 ? (
-                        faculties.map((item) => (
+                        faculties.map((item, index) => (
                             <div key={item.id || item._id} className="flex items-center justify-between py-3 border-b border-gray-300">
                                 <div className="flex items-center gap-3">
                                     <img
@@ -107,9 +107,9 @@ const ClassroompeopleContainer = () => {
                                     </p>
                                 </div>
 
-                                <div onClick={() => handleStudentDelete(item.id)} className="text-gray-900 text-xl font-medium bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-red-50 transition-colors">
+                                {index !== 0 && <div onClick={() => handleStudentDelete(item.id)} className="text-gray-900 text-xl font-medium bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-red-50 transition-colors">
                                     <Trash2 className='text-red-400 w-5 h-5' />
-                                </div>
+                                </div>}
                             </div>
                         ))
                     ) : (
@@ -119,7 +119,7 @@ const ClassroompeopleContainer = () => {
             ) : (
                 <div className="students-list w-full mt-2 max-h-[calc(100vh-320px)] overflow-auto space-y-2">
                     {students.length > 0 ? (
-                        students.map((item) => (
+                        students.map((item, index) => (
                             <div key={item.id || item._id} className="flex items-center justify-between py-3 border-b border-gray-300">
                                 <div className="flex items-center gap-3">
                                     <img
@@ -131,10 +131,10 @@ const ClassroompeopleContainer = () => {
                                         {item.name}
                                     </p>
                                 </div>
-
-                                <div onClick={() => handleStudentDelete(item.id)} className="text-gray-900 text-xl font-medium bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-red-50 transition-colors">
+                                {index !== 0 && <div onClick={() => handleStudentDelete(item.id)} className="text-gray-900 text-xl font-medium bg-gray-100 w-10 h-10 flex items-center justify-center rounded-full cursor-pointer hover:bg-red-50 transition-colors">
                                     <Trash2 className='text-red-400 w-5 h-5' />
-                                </div>
+                                </div>}
+
                             </div>
                         ))
                     ) : (

@@ -1,18 +1,22 @@
 import React, { useState } from "react";
 import { X } from "lucide-react";
 import axios from "axios";
+import { ToastContainer, toast } from "react-toastify";
 
-const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
+const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => {
   const [formData, setFormData] = useState({
     code: "",
     subject: "",
-    department: "",
+    department: selectedDept,
   });
 
   const [activeTab, setActiveTab] = useState("single");
   const [loading, setLoading] = useState(false);
   const [selectedFile, setSelectedFile] = useState(null);
+  const [errorMessage, setErrorMessage] = useState("");
+  const [isError, setIsError] = useState(false);
   const fileInputRef = React.useRef(null);
+
 
   // Initialize form data when editing
   React.useEffect(() => {
@@ -20,13 +24,13 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
       setFormData({
         code: editingSubject.code || "",
         subject: editingSubject.subject || "",
-        department: editingSubject.department || "",
+        department: editingSubject.selectedDept || "",
       });
     } else {
       setFormData({
         code: "",
         subject: "",
-        department: "",
+        department: selectedDept,
       });
     }
   }, [editingSubject, isOpen]);
@@ -47,12 +51,12 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
         "application/vnd.ms-excel",
         "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
       ];
-      
+
       if (!validExcelTypes.includes(file.type)) {
         alert("Please select a valid Excel file (.xls or .xlsx)");
         return;
       }
-      
+
       setSelectedFile(file);
     }
   };
@@ -80,13 +84,17 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
       );
 
       if (response.status === 200 || response.status === 201) {
-        alert("File uploaded successfully!");
+        toast.success("File uploaded successfully!");
         setSelectedFile(null);
         onClose();
       }
     } catch (error) {
+
       console.error("Error uploading file:", error);
-      alert(error.response?.data?.message || "Failed to upload file");
+      toast.error(error.response?.data?.message, {
+        position : "top-right"
+      });
+      setErrorMessage(error.response?.data?.message || "Failed to upload file");
     } finally {
       setLoading(false);
     }
@@ -100,6 +108,7 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
   };
 
   const handleSubmit = async (e) => {
+    console.log("formdata : ", formData)
     e.preventDefault();
 
     // Validation
@@ -147,9 +156,9 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
       );
       alert(
         error.response?.data?.message ||
-          (editingSubject
-            ? "Failed to update subject"
-            : "Failed to add subject"),
+        (editingSubject
+          ? "Failed to update subject"
+          : "Failed to add subject"),
       );
     } finally {
       setLoading(false);
@@ -188,21 +197,19 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
             <div className="flex bg-[#E6E9F5] py-2 px-3 rounded-full">
               <button
                 onClick={() => setActiveTab("single")}
-                className={`flex-1 py-2 text-md font-medium rounded-full transition-all ${
-                  activeTab === "single"
-                    ? "bg-white text-[#0B56A4]"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-2 text-md font-medium rounded-full transition-all ${activeTab === "single"
+                  ? "bg-white text-[#0B56A4]"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 Single Entry
               </button>
               <button
                 onClick={() => setActiveTab("multiple")}
-                className={`flex-1 py-2 text-md font-medium rounded-full transition-all ${
-                  activeTab === "multiple"
-                    ? "bg-white text-[#0B56A4] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`flex-1 py-2 text-md font-medium rounded-full transition-all ${activeTab === "multiple"
+                  ? "bg-white text-[#0B56A4] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
               >
                 Bulk Upload
               </button>
@@ -216,7 +223,7 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
               className="space-y-5"
             >
               <div className="space-y-1.5">
-                <label className="text-sm font-semibold text-gray-700 ml-0.5">
+                <label className="text-md font-medium text-gray-700 ml-0.5">
                   Subject Code
                 </label>
                 <input
@@ -245,7 +252,8 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
                 />
               </div>
 
-              <div className="space-y-1.5">
+              {/* department  */}
+              {/* <div className="space-y-1.5">
                 <label className="text-md font-medium text-[#333333] ml-0.5">
                   Department
                 </label>
@@ -263,6 +271,17 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
                   <option value="MECH">MECH</option>
                   <option value="CIVIL">CIVIL</option>
                   <option value="AI & DS">AI & DS</option>
+                </select>
+              </div> */}
+
+              <div className="space-y-1.5">
+                <label className="text-md font-medium text-[#333333] ml-0.5">
+                  Subject Type
+                </label>
+                <select className="w-full border mt-2 border-gray-100 rounded-lg px-4 py-2.5 text-sm   transition-all outline-none appearance-none" >
+                  <option value="theory">Theory</option>
+                  <option value="lab">Lab</option>
+                  <option value="lab">Theory and Lab</option>
                 </select>
               </div>
             </form>
@@ -361,10 +380,10 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject }) => {
             {loading
               ? "Saving..."
               : editingSubject
-              ? "Update Subject"
-              : activeTab === "multiple"
-              ? "Upload Excel"
-              : "Save Subject"}
+                ? "Update Subject"
+                : activeTab === "multiple"
+                  ? "Upload Excel"
+                  : "Save Subject"}
           </button>
         </div>
       </section>

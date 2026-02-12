@@ -4,6 +4,7 @@ import { CheckCircle, XCircle } from "lucide-react";
 import presentIcon from '../assets/presentIcon.svg'
 import absentIcon from '../assets/absentIcon.svg'
 import onDutyIcon from '../assets/onDutyIcon.svg'
+import { useLocation } from 'react-router-dom';
 
 
 const HOURS = [
@@ -17,6 +18,13 @@ const HOURS = [
 ];
 
 const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
+    console.log("stream data : ", streamData)
+    // params 
+    const location = useLocation()
+    const classData = location.state
+    const sectionName = classData.sectionName
+
+    console.log("class data for attendance : ", classData)
     // states 
     const [attendanceData, setAttendanceData] = useState([]);
     const [activeHour, setActiveHour] = useState(0);
@@ -74,7 +82,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
         const params = {
             department: department,
             year: year,
-            section: normalizedSection,
+            section: sectionName,
             subjectId: subjectId,
             date: date,
             hour: hourLabel
@@ -353,11 +361,9 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                                     <td className="p-3">{student.rollNo}</td>
 
                                     <td className="p-3 flex items-center gap-2">
-                                        <img
-                                            src="https://i.pravatar.cc/30"
-                                            className="w-6 h-6 rounded-full"
-                                            alt=""
-                                        />
+                                        <div className="name-container w-8 h-8 rounded-full bg-gray-100 text-[#0B56A4] flex items-center justify-center font-medium">
+                                            {student.name.slice(0, 1)}
+                                        </div>
                                         {student.name}
                                     </td>
 

@@ -66,7 +66,9 @@ const Classpage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
+  
       setStreamData(res.data);
+      console.log("data : ", res.data)
       // setFeedData(res.data.stream)
     } catch (err) {
       console.error(

@@ -130,9 +130,8 @@ const Sidebar = () => {
   return (
     <div className="relative hidden md:block">
       <div
-        className={`fixed top-0 left-0 h-screen bg-[#D9EBFE] z-50 transition-all duration-300 flex flex-col ${
-          collapsed ? "w-[83px]" : "w-[20%]"
-        }`}
+        className={`fixed top-0 left-0 h-screen bg-[#D9EBFE] z-50 transition-all duration-300 flex flex-col ${collapsed ? "w-[83px]" : "w-[20%]"
+          }`}
       >
         <div className="flex items-center justify-center p-4">
           {!collapsed && (
@@ -148,11 +147,10 @@ const Sidebar = () => {
               <Link
                 key={index}
                 to={item.link}
-                className={`flex items-center h-[54px] px-2 rounded-l-[14px] transition-all duration-200 ${
-                  active
-                    ? "bg-white text-[#18283b]"
-                    : "text-black hover:bg-white/50"
-                }`}
+                className={`flex items-center h-[54px] px-2 rounded-l-[14px] transition-all duration-200 ${active
+                  ? "bg-white text-[#18283b]"
+                  : "text-black hover:bg-white/50"
+                  }`}
               >
                 <span className="min-w-[3rem] text-center">
                   <img src={active ? item.activeIcon : item.icon} alt="icon" />
@@ -160,9 +158,8 @@ const Sidebar = () => {
 
                 {!collapsed && (
                   <span
-                    className={`font-semibold whitespace-nowrap ${
-                      active ? "text-[#0B56A4]" : "text-[#282526]"
-                    }`}
+                    className={`font-semibold whitespace-nowrap ${active ? "text-[#0B56A4]" : "text-[#282526]"
+                      }`}
                   >
                     {item.label}
                   </span>

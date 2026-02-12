@@ -2,6 +2,9 @@ import React, { useState, useEffect } from "react";
 import { Search, Plus, Check, Trash2, Pencil } from "lucide-react";
 import AddSubjectCanvas from "./AddSubjectCanvas";
 import axios from "axios";
+import noData from '../assets/nodata.svg'
+
+import { useLocation } from "react-router-dom";
 
 const SemesterRegistrationTable = () => {
   const [search, setSearch] = useState("");
@@ -10,22 +13,31 @@ const SemesterRegistrationTable = () => {
   const [subjects, setSubjects] = useState([]);
   const [loading, setLoading] = useState(false);
 
+  const location = useLocation();
+  const queryParams = new URLSearchParams(location.search);
+  const fullDeptName = queryParams.get("dept");
+  const selectedDept = fullDeptName?.match(/\(([^)]+)\)/)?.[1] || fullDeptName;
+
+
+
   const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("LmsToken");
 
   useEffect(() => {
-    fetchSubjects();
-  }, []);
+    if (selectedDept) {
+      fetchSubjects();
+    }
+  }, [selectedDept]);
 
   const fetchSubjects = async () => {
     setLoading(true);
     try {
-      const response = await axios.get(`${apiUrl}api/subjects`, {
+      const response = await axios.get(`${apiUrl}api/subjects/${selectedDept}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       });
-      console.log(response.data);
+      console.log("subject data : ", response.data.subjects);
       // Adapt to the backend response structure if needed
       setSubjects(response.data.subjects || response.data.subjects || []);
     } catch (error) {
@@ -67,12 +79,14 @@ const SemesterRegistrationTable = () => {
   };
 
   const filteredSubjects = Array.isArray(subjects)
-    ? subjects.filter(
-        (item) =>
-          (item.subject &&
-            item.subject.toLowerCase().includes(search.toLowerCase())) ||
-          (item.code && item.code.includes(search)),
-      )
+    ? subjects.filter((item) => {
+      const matchesSearch =
+        (item.subject &&
+          item.subject.toLowerCase().includes(search.toLowerCase())) ||
+        (item.code && item.code.includes(search));
+
+      return matchesSearch;
+    })
     : [];
 
   return (
@@ -81,8 +95,8 @@ const SemesterRegistrationTable = () => {
         <div className="p-3 ">
           {/* Header */}
           <div className="flex items-center justify-between mb-4">
-            <h2 className="text-lg font-semibold text-gray-800">
-              Subject Details
+            <h2 className="text-lg font-medium text-gray-800">
+              Subject Details {selectedDept && <span className="text-[#0B56A4]">- {selectedDept}</span>}
             </h2>
 
             <div className="flex items-center gap-3">
@@ -97,7 +111,7 @@ const SemesterRegistrationTable = () => {
                   placeholder="Search Subject and code"
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-10 pr-4 py-2 border rounded-lg text-sm focus:outline-none focus:ring-1"
+                  className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg text-sm focus:outline-none focus:ring-1"
                 />
               </div>
 
@@ -139,9 +153,8 @@ const SemesterRegistrationTable = () => {
                   filteredSubjects.map((item, index) => (
                     <tr
                       key={item._id || index}
-                      className={`text-sm ${
-                        index % 2 === 0 ? "bg-[#e6e9f5a2]" : "bg-gray-50"
-                      }`}
+                      className={`text-sm ${index % 2 === 0 ? "bg-[#e6e9f5a2]" : "bg-gray-50"
+                        }`}
                     >
                       <td className="px-4 py-3">{item.code}</td>
                       <td className="px-4 py-3">{item.subject}</td>
@@ -169,7 +182,10 @@ const SemesterRegistrationTable = () => {
                 {!loading && filteredSubjects.length === 0 && (
                   <tr>
                     <td colSpan="4" className="text-center py-6 text-gray-500">
-                      No subjects found
+                      <p> No subjects found</p>
+                      <div className="text-center">
+                        <img src={noData} className="w-[200px] m-auto h-[200px] " />
+                      </div>
                     </td>
                   </tr>
                 )}
@@ -183,6 +199,7 @@ const SemesterRegistrationTable = () => {
       <AddSubjectCanvas
         isOpen={isCanvasOpen}
         editingSubject={editingSubject}
+        selectedDept={selectedDept}
         onClose={() => {
           setIsCanvasOpen(false);
           setEditingSubject(null);
