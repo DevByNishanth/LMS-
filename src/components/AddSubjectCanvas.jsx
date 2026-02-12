@@ -8,6 +8,7 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => 
     code: "",
     subject: "",
     department: selectedDept,
+    type: "Theory"
   });
 
   const [activeTab, setActiveTab] = useState("single");
@@ -24,13 +25,15 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => 
       setFormData({
         code: editingSubject.code || "",
         subject: editingSubject.subject || "",
-        department: editingSubject.selectedDept || "",
+        department: editingSubject.department || "",
+        type: editingSubject.type || "Theory"
       });
     } else {
       setFormData({
         code: "",
         subject: "",
         department: selectedDept,
+        type: "Theory"
       });
     }
   }, [editingSubject, isOpen]);
@@ -92,7 +95,7 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => 
 
       console.error("Error uploading file:", error);
       toast.error(error.response?.data?.message, {
-        position : "top-right"
+        position: "top-right"
       });
       setErrorMessage(error.response?.data?.message || "Failed to upload file");
     } finally {
@@ -112,7 +115,7 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => 
     e.preventDefault();
 
     // Validation
-    if (!formData.code || !formData.subject || !formData.department) {
+    if (!formData.code || !formData.subject || !formData.department || !formData.type) {
       alert("All fields are required");
       return;
     }
@@ -146,7 +149,7 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => 
             ? "Subject updated successfully!"
             : "Subject added successfully!",
         );
-        setFormData({ code: "", subject: "", department: "" });
+        setFormData({ code: "", subject: "", department: selectedDept, type: "Theory" });
         onClose();
       }
     } catch (error) {
@@ -278,10 +281,17 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => 
                 <label className="text-md font-medium text-[#333333] ml-0.5">
                   Subject Type
                 </label>
-                <select className="w-full border mt-2 border-gray-100 rounded-lg px-4 py-2.5 text-sm   transition-all outline-none appearance-none" >
-                  <option value="theory">Theory</option>
-                  <option value="lab">Lab</option>
-                  <option value="lab">Theory and Lab</option>
+                <select
+                  name="type"
+                  value={formData.type}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, type: e.target.value }))
+                  }}
+                  className="w-full border mt-2 border-gray-100 rounded-lg px-4 py-2.5 text-sm transition-all outline-none appearance-none"
+                >
+                  <option value="Theory">Theory</option>
+                  <option value="Lab">Lab</option>
+                  <option value="Theory & Lab">Theory & Lab</option>
                 </select>
               </div>
             </form>
