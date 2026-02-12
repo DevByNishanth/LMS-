@@ -3,14 +3,6 @@ import React, { useEffect, useRef, useState } from "react";
 import { useLocation } from "react-router-dom";
 import noData from "../assets/noData.svg";
 import axios from "axios";
-const allSubjects = [
-  { code: "CS6801", name: "Electronic and Communication" },
-  { code: "CS6802", name: "Computer Networks" },
-  { code: "CS6803", name: "Database Systems" },
-  { code: "CS6804", name: "Operating Systems" },
-  { code: "CS6805", name: "Artificial Intelligence" },
-  { code: "CS6806", name: "Cloud Computing" },
-];
 
 const AddSubjectComponent = ({ facultyData, subjectData }) => {
   //    params
@@ -109,12 +101,21 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
     staff.firstName.toLowerCase().includes(staffSearch.toLowerCase())
   );
 
-  // Filter based on search query
-  const filteredSubjects = subjectData.filter(
-    (sub) =>
+  // Filter based on search query and subject type
+  const filteredSubjects = subjectData.filter((sub) => {
+    const matchesSearch =
       sub.code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      sub.subject.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+      sub.subject.toLowerCase().includes(searchQuery.toLowerCase());
+
+    const subType = sub.type?.toLowerCase() || "";
+    const currentSelectedType = selectedType.toLowerCase();
+
+    // If "theory" is selected, match "theory" or "theory & lab"
+    // If "lab" is selected, match "lab" or "theory & lab"
+    const matchesType = subType.includes(currentSelectedType);
+
+    return matchesSearch && matchesType;
+  });
 
   // Odd or even semester list
   const oddSemesters = [1, 3, 5, 7];
@@ -427,8 +428,16 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
                           className="accent-[#0b55a3]"
                         />
 
-                        <span className="text-gray-800">
-                          {sub.code} - {sub.subject}
+                        <span className="text-gray-800 flex items-center gap-2">
+                          <span className="font-medium">{sub.code}</span> - {sub.subject}
+                          {sub.type && (
+                            <span className={`text-[10px] px-2 py-0.5 rounded-full font-bold uppercase ${sub.type.toLowerCase() === 'theory' ? 'bg-blue-100 text-blue-700' :
+                              sub.type.toLowerCase() === 'lab' ? 'bg-green-100 text-green-700' :
+                                'bg-purple-100 text-purple-700'
+                              }`}>
+                              {sub.type}
+                            </span>
+                          )}
                         </span>
                       </label>
                     );
