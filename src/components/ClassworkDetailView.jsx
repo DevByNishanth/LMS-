@@ -85,7 +85,7 @@ const ClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
                 };
                 setItem(prev => ({
                     ...prev,
-                    comments: [...(prev.comments || []), newComment]
+                    comments: [...(Array.isArray(prev.comments) ? prev.comments : []), newComment]
                 }));
             }
         } catch (error) {

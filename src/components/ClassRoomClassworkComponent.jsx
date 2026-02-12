@@ -63,11 +63,11 @@ const ClassRoomClassworkComponent = () => {
   const fetchQuestions = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/question/subject/${classId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/question?subjectId=${classId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
-      console.log("Questions:", response.data.data);
-      setQuestions(response.data.data.map(q => ({ ...q, itemType: 'question' })));
+      console.log("Questions:", response.data.questions);
+      setQuestions(response.data.questions.map(q => ({ ...q, itemType: 'question' })));
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
