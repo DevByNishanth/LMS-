@@ -83,33 +83,6 @@ const HodSubjectDetailsComponent = () => {
   const [selectedSemester, setSelectedSemester] = useState(1);
   // const [selectedDept, setSelectedDept] = useState("CSE"); // default
   const [facultyDetails, setFacultyDetails] = useState([]);
-
-  // const [subjectData, setSubjectData] = useState([
-  //   {
-  //     subject: "Electronic and Communication",
-  //     sections: [
-  //       {
-  //         sectionName: "Section A",
-  //         staff: {
-  //           name: "Surya Chandran",
-  //           id: "staff_01",
-  //         },
-  //       },
-  //       {
-  //         sectionName: "Section B",
-  //         staff: null,
-  //       },
-  //       {
-  //         sectionName: "Section C",
-  //         staff: {
-  //           name: "Surya Chandran",
-  //           id: "staff_01",
-  //         },
-  //       },
-  //     ],
-  //   },
-  // ]);
-
   const [subjectData, setSubjectData] = useState([]);
   const [dept, setDept] = useState("");
 
