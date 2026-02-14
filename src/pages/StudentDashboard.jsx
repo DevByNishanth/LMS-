@@ -5,7 +5,6 @@ const StudentDashboard = () => {
   return (
     <div>
           <StudentSidebar />
-          Empty Student dashboard !
     </div>
   );
 };

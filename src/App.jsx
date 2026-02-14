@@ -27,14 +27,12 @@ import StudentClassroomDetails from "./components/Student_ClassroomDetails";
 import StudentClassroom from "./pages/Student_Classroom";
 import InvitationPage from "./pages/InvitationPage";
 import { ToastContainer } from "react-toastify";
+import CalendarPage from "./pages/CalendarPage";
 
 const App = () => {
   return (
     <>
-
-      {/* toast notification container  */}
       <ToastContainer />
-      {/* routes  */}
       <Routes>
         <Route path="/" element={<LoginPage />} />
         <Route
@@ -159,7 +157,7 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-
+        <Route path="/dashboard/calendar" element={<CalendarPage/>}/>
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
         <Route
           path="/dashboard/classroom/class/:classId"
