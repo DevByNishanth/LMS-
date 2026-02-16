@@ -160,7 +160,7 @@ const App = () => {
         <Route path="/dashboard/calendar" element={<CalendarPage/>}/>
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
         <Route
-          path="/dashboard/classroom/class/:classId"
+          path="/dashboard/classroom/class/:classId/:sectionId"
           element={<Classpage />}
         />
         <Route path="/classroom/invite" element={<InvitationPage />} />

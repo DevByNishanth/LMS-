@@ -3,10 +3,10 @@ import { Link, useNavigate, useParams } from "react-router-dom";
 import Sidebar from "../components/Sidebar";
 import ClassroomHeader from "../components/ClassroomHeader";
 import { ChevronRight } from "lucide-react";
-import classWorkIcon from "../assets/classWorkIcon.svg";
-import peopleIcon from "../assets/peopleIcon.svg";
-import gradeIcon from "../assets/gradesIcon.svg";
-import activeSteamIcon from "../assets/activeSteamIcon.svg";
+// import classWorkIcon from "../assets/classWorkIcon.svg";
+// import peopleIcon from "../assets/peopleIcon.svg";
+// import gradeIcon from "../assets/gradesIcon.svg";
+// import activeSteamIcon from "../assets/activeSteamIcon.svg";
 import ClassRoomStreamComponent from "../components/ClassRoomStreamComponent";
 import ClassRoomClassworkComponent from "../components/ClassRoomClassworkComponent";
 import ClassroompeopleContainer from "../components/ClassroompeopleContainer";
@@ -26,7 +26,7 @@ const Classpage = () => {
 
   // states 
 
-  const { classId } = useParams();
+  const { classId, sectionId } = useParams();
   const [activeTab, setActiveTab] = useState("stream");
   // const [activeItem, setActiveItem] = useState('Stream');
   const [firstLetter, setFirstLetter] = useState("");
@@ -61,7 +61,7 @@ const Classpage = () => {
   //   fetch stream details
   async function getStreamDetails() {
     try {
-      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}`, {
+      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}/${sectionId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

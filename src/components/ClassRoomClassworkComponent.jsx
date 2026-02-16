@@ -24,7 +24,7 @@ import AddMaterialModal from "./AddMaterialModal";
 
 const ClassRoomClassworkComponent = () => {
   // states
-  const { classId } = useParams();
+  const { classId, sectionId } = useParams();
   const [assignments, setAssignments] = useState([]);
   const [questions, setQuestions] = useState([]);
   const [isDropdown, setIsDropdown] = useState(false);
@@ -49,7 +49,7 @@ const ClassRoomClassworkComponent = () => {
   const fetchAssignments = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/assignment/subject/${classId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/assignment/subject/${classId}/${sectionId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log("Assignments:", response.data.assignments);
@@ -63,7 +63,7 @@ const ClassRoomClassworkComponent = () => {
   const fetchQuestions = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/question?subjectId=${classId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/question/${classId}/${sectionId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log("Questions:", response.data.questions);
@@ -76,7 +76,7 @@ const ClassRoomClassworkComponent = () => {
   const fetchMaterials = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/material/subject/${classId}`, {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/material/subject/${classId}/${sectionId}`, {
         headers: { Authorization: `Bearer ${token}` }
       });
       console.log("Materials:", response.data.data);

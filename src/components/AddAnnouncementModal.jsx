@@ -1,11 +1,21 @@
 import { X } from "lucide-react";
 import React, { useState } from "react";
-import { Paperclip, Link, Youtube, Plus, Upload, File as FileIcon } from "lucide-react";
+import {
+  Paperclip,
+  Link,
+  Youtube,
+  Plus,
+  Upload,
+  File as FileIcon,
+} from "lucide-react";
 import AssignmentResourceModal from "./AssignmentResourceModal";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) => {
+const AddAnnouncementModal = ({
+  setIsAnnouncementModal,
+  initialData = null,
+}) => {
   // States
   const [selectedAttachmentOption, setSelectedAttachmentOption] =
     useState(null);
@@ -13,16 +23,20 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
 
   const [message, setMessage] = useState(initialData?.message || "");
   const [link, setLink] = useState(initialData?.link || "");
-  const [youtubeLink, setYoutubeLink] = useState(initialData?.youtubeLink || "");
+  const [youtubeLink, setYoutubeLink] = useState(
+    initialData?.youtubeLink || "",
+  );
   const [file, setFile] = useState(null); // New file to upload
   // Logic for existing files could be complex, assuming we just show them for now or allow clearing?
-  // User prompt implies "edit all fields... attachments". 
+  // User prompt implies "edit all fields... attachments".
   // Handling existing *uploaded* attachments vs new files is key./
 
-  const [existingAttachments, setExistingAttachments] = useState(initialData?.attachments || []);
-  const { classId } = useParams(); // Using classId from URL params as subjectId
+  const [existingAttachments, setExistingAttachments] = useState(
+    initialData?.attachments || [],
+  );
+  const { classId, sectionId } = useParams(); // Using classId from URL params as subjectId
 
-  // Auth ---------- 
+  // Auth ----------
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -49,6 +63,7 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
       const formData = new FormData();
       if (!initialData) {
         formData.append("subjectId", classId);
+        formData.append("sectionId", sectionId);
       }
       formData.append("message", message);
       formData.append("link", link);
@@ -97,7 +112,11 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
       }
     } catch (error) {
       console.error("Error posting announcement:", error);
-      alert(initialData ? "Failed to update announcement." : "Failed to post announcement.");
+      alert(
+        initialData
+          ? "Failed to update announcement."
+          : "Failed to post announcement.",
+      );
     }
   };
 
@@ -135,22 +154,37 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
               {link && (
                 <div className="flex items-center justify-between gap-1">
                   <div className="flex items-center gap-1">
-                    <Link className="w-3 h-3 " />  <span > Link Attached :</span> <span className="text-blue-600 truncate max-w-[200px]">{link}</span>
+                    <Link className="w-3 h-3 " /> <span> Link Attached :</span>{" "}
+                    <span className="text-blue-600 truncate max-w-[200px]">
+                      {link}
+                    </span>
                   </div>
-                  <X className="w-4 h-4 cursor-pointer hover:text-red-500" onClick={() => setLink("")} />
+                  <X
+                    className="w-4 h-4 cursor-pointer hover:text-red-500"
+                    onClick={() => setLink("")}
+                  />
                 </div>
               )}
               {youtubeLink && (
                 <div className="flex items-center justify-between gap-1">
                   <div className="flex items-center gap-1">
-                    <Youtube className="w-3 h-3" />  <span > Youtube :</span> <span className="text-blue-600 truncate max-w-[200px]">{youtubeLink}</span>
+                    <Youtube className="w-3 h-3" /> <span> Youtube :</span>{" "}
+                    <span className="text-blue-600 truncate max-w-[200px]">
+                      {youtubeLink}
+                    </span>
                   </div>
-                  <X className="w-4 h-4 cursor-pointer hover:text-red-500" onClick={() => setYoutubeLink("")} />
+                  <X
+                    className="w-4 h-4 cursor-pointer hover:text-red-500"
+                    onClick={() => setYoutubeLink("")}
+                  />
                 </div>
               )}
               {/* Existing Uploaded Files */}
               {existingAttachments.map((att, index) => (
-                <div key={index} className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-gray-50">
+                <div
+                  key={index}
+                  className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-gray-50"
+                >
                   <div className="flex items-center gap-2 overflow-hidden">
                     <div className="bg-blue-100 p-2 rounded text-blue-600">
                       <FileIcon className="w-5 h-5" />
@@ -166,7 +200,9 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
                   </div>
                   <button
                     onClick={() => {
-                      const newAtts = existingAttachments.filter((_, i) => i !== index);
+                      const newAtts = existingAttachments.filter(
+                        (_, i) => i !== index,
+                      );
                       setExistingAttachments(newAtts);
                     }}
                     className="p-1 text-gray-500 hover:bg-gray-200 rounded-full transition"
@@ -269,19 +305,17 @@ const AddAnnouncementModal = ({ setIsAnnouncementModal, initialData = null }) =>
       </div>
 
       {/* modals  */}
-      {
-        selectedAttachmentOption && (
-          <AssignmentResourceModal
-            selectedAttachmentOption={selectedAttachmentOption}
-            setSelectedAttachmentOption={setSelectedAttachmentOption}
-            openingFrom={openingFrom}
-            setOpeningFrom={setOpeningFrom}
-            onSubmit={handleAttachmentSubmit}
-            allowedExtensions={[".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"]}
-            maxFileSize={5 * 1024 * 1024}
-          />
-        )
-      }
+      {selectedAttachmentOption && (
+        <AssignmentResourceModal
+          selectedAttachmentOption={selectedAttachmentOption}
+          setSelectedAttachmentOption={setSelectedAttachmentOption}
+          openingFrom={openingFrom}
+          setOpeningFrom={setOpeningFrom}
+          onSubmit={handleAttachmentSubmit}
+          allowedExtensions={[".pdf", ".doc", ".docx", ".png", ".jpg", ".jpeg"]}
+          maxFileSize={5 * 1024 * 1024}
+        />
+      )}
     </>
   );
 };

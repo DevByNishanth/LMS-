@@ -1,5 +1,14 @@
 import { useState } from "react";
-import { X, Paperclip, Link, Youtube, Plus, Upload, Trash2, FileText } from "lucide-react";
+import {
+  X,
+  Paperclip,
+  Link,
+  Youtube,
+  Plus,
+  Upload,
+  Trash2,
+  FileText,
+} from "lucide-react";
 import AssignmentResourceModal from "./AssignmentResourceModal";
 import { useParams } from "react-router-dom";
 import axios from "axios";
@@ -8,7 +17,7 @@ export default function AddAssignmentModal({
   onClose,
   setIsAssignmentModalOpen,
 }) {
-  const { classId } = useParams();
+  const { classId, sectionId } = useParams();
   const [selectedAttachmentOption, setSelectedAttachmentOption] =
     useState(null);
 
@@ -18,7 +27,7 @@ export default function AddAssignmentModal({
     title: "",
     instruction: "",
     dueDate: "",
-    points: ""
+    points: "",
   });
 
   const [resources, setResources] = useState([]);
@@ -49,7 +58,8 @@ export default function AddAssignmentModal({
   const validate = () => {
     const newErrors = {};
     if (!formData.title.trim()) newErrors.title = "Title is required";
-    if (!formData.instruction.trim()) newErrors.instruction = "Instruction is required";
+    if (!formData.instruction.trim())
+      newErrors.instruction = "Instruction is required";
     if (!formData.dueDate) newErrors.dueDate = "Due Date is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
@@ -62,14 +72,15 @@ export default function AddAssignmentModal({
     setLoading(true);
     const data = new FormData();
     data.append("subjectId", classId);
+    data.append("sectionId", sectionId);
     data.append("title", formData.title);
     data.append("instruction", formData.instruction);
     data.append("dueDate", formData.dueDate);
     data.append("marks", formData.points);
 
     // Separate resources
-    const linkResource = resources.find(r => r.type === 'link');
-    const youtubeResource = resources.find(r => r.type === 'youtube link');
+    const linkResource = resources.find((r) => r.type === "link");
+    const youtubeResource = resources.find((r) => r.type === "youtube link");
 
     if (linkResource) {
       data.append("link", linkResource.value);
@@ -80,8 +91,8 @@ export default function AddAssignmentModal({
     }
 
     // Append files
-    resources.forEach(r => {
-      if (r.type === 'upload') {
+    resources.forEach((r) => {
+      if (r.type === "upload") {
         data.append("attachments", r.value);
       }
     });
@@ -91,8 +102,8 @@ export default function AddAssignmentModal({
       await axios.post(`${import.meta.env.VITE_API_URL}api/assignment`, data, {
         headers: {
           "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
       // Success
       setIsAssignmentModalOpen(false);
@@ -136,7 +147,9 @@ export default function AddAssignmentModal({
               onChange={handleChange}
               className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />
-            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+            {errors.title && (
+              <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+            )}
           </div>
           {/* marks / points  */}
           <div>
@@ -150,7 +163,9 @@ export default function AddAssignmentModal({
               onChange={handleChange}
               className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />
-            {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
+            {errors.title && (
+              <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+            )}
           </div>
 
           {/* Instruction */}
@@ -165,7 +180,9 @@ export default function AddAssignmentModal({
               rows={5}
               className={`w-full border ${errors.instruction ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 resize-none focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />
-            {errors.instruction && <p className="text-red-500 text-xs mt-1">{errors.instruction}</p>}
+            {errors.instruction && (
+              <p className="text-red-500 text-xs mt-1">{errors.instruction}</p>
+            )}
           </div>
 
           {/* Attach */}
@@ -214,16 +231,27 @@ export default function AddAssignmentModal({
           {/* Resources Preview */}
           {resources.length > 0 && (
             <div className="space-y-2">
-              <p className="text-sm font-medium text-gray-600">Attached Resources</p>
+              <p className="text-sm font-medium text-gray-600">
+                Attached Resources
+              </p>
               {resources.map((res, idx) => (
-                <div key={idx} className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded p-2">
+                <div
+                  key={idx}
+                  className="flex items-center justify-between bg-gray-50 border border-gray-200 rounded p-2"
+                >
                   <div className="flex items-center gap-2 overflow-hidden">
-                    {res.type === 'link' && <Link className="w-4 h-4 text-blue-500 shrink-0" />}
-                    {res.type === 'youtube link' && <Youtube className="w-4 h-4 text-red-500 shrink-0" />}
-                    {res.type === 'upload' && <FileText className="w-4 h-4 text-gray-500 shrink-0" />}
+                    {res.type === "link" && (
+                      <Link className="w-4 h-4 text-blue-500 shrink-0" />
+                    )}
+                    {res.type === "youtube link" && (
+                      <Youtube className="w-4 h-4 text-red-500 shrink-0" />
+                    )}
+                    {res.type === "upload" && (
+                      <FileText className="w-4 h-4 text-gray-500 shrink-0" />
+                    )}
 
                     <span className="text-sm text-gray-700 truncate">
-                      {res.type === 'upload' ? res.value.name : res.value}
+                      {res.type === "upload" ? res.value.name : res.value}
                     </span>
                   </div>
                   <button
@@ -248,11 +276,12 @@ export default function AddAssignmentModal({
               onChange={handleChange}
               className={`w-full border ${errors.dueDate ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none`}
             />
-            {errors.dueDate && <p className="text-red-500 text-xs mt-1">{errors.dueDate}</p>}
+            {errors.dueDate && (
+              <p className="text-red-500 text-xs mt-1">{errors.dueDate}</p>
+            )}
           </div>
 
           {/* Assign To */}
-
         </form>
         {/* Footer Buttons */}
         <div className="flex justify-end gap-3 py-5 px-6 absolute bottom-0 w-full ">

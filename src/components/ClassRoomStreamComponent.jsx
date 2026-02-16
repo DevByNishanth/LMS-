@@ -21,7 +21,7 @@ const ClassRoomStreamComponent = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   //   params
-  const { classId } = useParams();
+  const { classId, sectionId } = useParams();
 
   // states
   const [isAnnouncementModal, setIsAnnouncementModal] = useState(false);
@@ -137,7 +137,7 @@ const ClassRoomStreamComponent = () => {
   //   fetch stream details
   async function getStreamDetails() {
     try {
-      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}`, {
+      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}/${sectionId}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

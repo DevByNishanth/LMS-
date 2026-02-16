@@ -72,7 +72,7 @@ const getRandomImage = () => {
 
 const ClassRoomHomepage = () => {
   // Auth
-  const apiUrl = import.meta.env.VITE_API_URL; // from .env file
+  const apiUrl = import.meta.env.VITE_API_URL; 
   const token = localStorage.getItem("LmsToken");
   const decoded = jwtDecode(token);
   const staffName = decoded.name;
@@ -85,9 +85,6 @@ const ClassRoomHomepage = () => {
   const [classes, setClasses] = useState([]);
   const [loading, setLoading] = useState(false);
 
-  // useEffect calls
-
-  // useEffect call's
 
   useEffect(() => {
     const token = localStorage.getItem("LmsToken");
@@ -100,7 +97,6 @@ const ClassRoomHomepage = () => {
   }, []);
 
   useEffect(() => {
-    // fetchClasses();
     getAllocatedSubjects();
   }, [token]);
 
@@ -154,7 +150,6 @@ const ClassRoomHomepage = () => {
   return (
     <>
       <div className="px-6 ">
-        {/* Header */}
         {classes.length > 0 ? (
           <div className="mt-2 flex items-center justify-between mb-4">
             <div className="searchbar-container border border-[#D9D9D9] rounded-lg flex items-center gap-2 px-2 ">
@@ -197,8 +192,7 @@ const ClassRoomHomepage = () => {
               { console.log("cls : ", cls) }
               return (
                 <Link
-                  // to={`/dashboard/classroom/class/${cls.sectionId}`}
-                  to={`/dashboard/classroom/class/${cls.subjectId}`}
+                  to={`/dashboard/classroom/class/${cls.subjectId}/${cls.sectionId}`}
                   state={cls}
                   key={cls.id}
                   className="rounded-lg cursor-pointer rounded-t-xl bg-white border border-gray-200 hover:shadow-lg transition"
