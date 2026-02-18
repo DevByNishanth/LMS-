@@ -5,7 +5,6 @@ import SubjectRow from "./SubjectRow";
 import noData from "../assets/noData.svg";
 import { jwtDecode } from "jwt-decode";
 
-
 const tableHeader = ["Subject", "Section", "Staff", "Action"];
 const regulations = ["2026", "2029", "2032", "2035"];
 const semester = [1, 2, 3, 4, 5, 6, 7, 8];
@@ -86,35 +85,31 @@ const HodSubjectDetailsComponent = () => {
   const [subjectData, setSubjectData] = useState([]);
   const [dept, setDept] = useState("");
 
-
-
   // useEffect call's --------------------------------------------->
 
   useEffect(() => {
     const token = localStorage.getItem("LmsToken");
     if (token) {
       const decoded = jwtDecode(token);
-      const department =
-        decoded?.department
+      const department = decoded?.department;
       setDept(department);
     }
-  }, [])
-
-
+  }, []);
 
   useEffect(() => {
-    if (!selectedRegulation || !selectedSemester || !selectedType || !dept) return;
+    if (!selectedRegulation || !selectedSemester || !selectedType || !dept)
+      return;
     const fetchData = async () => {
       try {
         const response = await fetch(
-          `${apiUrl}api/admin-allocation/hod-dashboard?type=${selectedType}&semester=${selectedSemester}&regulation=${selectedRegulation}&department=${dept}`,
+          `${apiUrl}api/admin-allocation/hod-dashboard?subjectType=${selectedType}&semester=${selectedSemester}&regulation=${selectedRegulation}&department=${dept}`,
           {
             method: "GET",
             headers: {
               "Content-Type": "application/json",
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         const data = await response.json();
@@ -168,19 +163,21 @@ const HodSubjectDetailsComponent = () => {
           <div className="first-tab-container min-h-[calc(100vh-170px)]   overflow-auto border border-gray-300 rounded-lg col-span-3 px-4 py-6">
             <button
               onClick={() => setSelectedType("theory")}
-              className={`w-full   flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${selectedType.toLowerCase() == "theory"
-                ? "bg-[#0B56A4] text-white"
-                : "border border-gray-300"
-                }`}
+              className={`w-full   flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${
+                selectedType.toLowerCase() == "theory"
+                  ? "bg-[#0B56A4] text-white"
+                  : "border border-gray-300"
+              }`}
             >
               Theory <ChevronRight />
             </button>
             <button
               onClick={() => setSelectedType("lab")}
-              className={`w-full mt-2 flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${selectedType.toLowerCase() == "lab"
-                ? "bg-[#0B56A4] text-white"
-                : "border border-gray-300"
-                }`}
+              className={`w-full mt-2 flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${
+                selectedType.toLowerCase() == "lab"
+                  ? "bg-[#0B56A4] text-white"
+                  : "border border-gray-300"
+              }`}
             >
               Lab <ChevronRight />
             </button>
