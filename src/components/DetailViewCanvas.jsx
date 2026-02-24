@@ -1,5 +1,4 @@
 import React, { useEffect, useRef, useState } from "react";
-import manImg from "../assets/man.svg";
 import {
   Badge,
   Briefcase,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 
 const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
-  console.log("canvasData : ", canvasData);
   const canvasRef = useRef(null);
   const [activeTab, setActiveTab] = useState("Attendance");
 
@@ -83,130 +81,81 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
 
   return (
     <>
-      <div className="fixed inset-0 bg-black/50 z-50"></div>
+      <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity"></div>
       <section
         ref={canvasRef}
-        className="w-[90%] bg-white h-[95vh] rounded-lg z-[60] fixed left-[50%] translate-x-[-50%] top-[50%] translate-y-[-50%] shadow-2xl flex flex-col overflow-hidden"
+        className="w-[90%] bg-white h-[95vh] rounded-2xl z-[60] fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
       >
-        <div className="flex justify-between items-center px-6 py-3 border-b border-gray-100 shrink-0">
-          <h2 className="text-lg font-bold text-[#0c3a4d]">
-            Faculty Details Information
+        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-20">
+          <h2 className="text-xl font-bold text-[#08384F]">
+            Faculty Profile Information
           </h2>
           <button
             onClick={() => setIsDetailCanvas(false)}
-            className="p-1.5 hover:bg-gray-100 rounded-full"
+            className="p-2 hover:bg-gray-100 rounded-full transition-colors group"
           >
-            <X className="w-6 h-6 text-gray-400" />
+            <X size={24} className="text-gray-400 group-hover:text-gray-700" />
           </button>
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
-          <div className="p-5 shrink-0">
-            <div className="flex gap-6 items-start">
-              <div className="w-[120px] h-[120px] shrink-0 border border-slate-900 bg-gray-50 rounded-xl flex items-center justify-center">
-                <span className="text-5xl font-medium text-slate-800">
+          <div className="p-6 shrink-0 space-y-6">
+            <div className="flex gap-8 items-start">
+              <div className="w-[140px] h-[140px] shrink-0 border-2 border-blue-50 bg-blue-50/50 rounded-2xl flex items-center justify-center shadow-inner">
+                <span className="text-5xl font-bold text-[#08384F]">
                   {canvasData?.firstName?.slice(0, 1) || "--"}
                 </span>
               </div>
 
-              <div className="flex-1 bg-gray-50/50 border border-gray-100 rounded-xl p-4 grid grid-cols-4 gap-4">
+              <div className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl p-5 grid grid-cols-4 gap-6 shadow-sm">
                 {[
-                  {
-                    label: "First Name",
-                    value: canvasData?.firstName || "--",
-                  },
-                  {
-                    label: "Last Name",
-                    value: canvasData?.lastName || "--",
-                  },
-                  {
-                    label: "Email",
-                    value: canvasData?.email || "--",
-                  },
-                  {
-                    label: "Phone",
-                    value: canvasData?.mobileNumber || "--  ",
-                  },
-                  { label: "Gender", value: canvasData?.gender || "--" },
-                  {
-                    label: "Date of Birth",
-                    value: canvasData?.dateOfBirth || "--",
-                  },
-                  {
-                    label: "Qualification",
-                    value: canvasData?.qualification || "--",
-                  },
+                  { label: "First Name", value: canvasData?.firstName },
+                  { label: "Last Name", value: canvasData?.lastName },
+                  { label: "Email Address", value: canvasData?.email },
+                  { label: "Phone", value: canvasData?.mobileNumber },
+                  { label: "Gender", value: canvasData?.gender },
+                  { label: "Date of Birth", value: canvasData?.dateOfBirth },
+                  { label: "Qualification", value: canvasData?.qualification },
                 ].map((item, i) => (
-                  <div key={i} className="flex flex-col">
-                    <span className="text-[10px] font-medium text-gray-400 uppercase tracking-wider">
+                  <div key={i} className="flex flex-col gap-1">
+                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">
                       {item.label}
                     </span>
-                    <span className="text-sm font-medium text-gray-700 truncate">
-                      {item.value}
+                    <span className="text-sm font-semibold text-gray-700 truncate">
+                      {item.value || "--"}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="mt-5">
-              <div className="flex items-center gap-2 mb-3">
-                <div className="w-1 h-5 bg-sky-600 rounded-full"></div>
-                <h3 className="text-base font-medium text-gray-800">
-                  Employee Details
-                </h3>
+
+            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+              <div className="flex items-center gap-2 mb-4">
+                <div className="w-1.5 h-6 bg-[#0B56A4] rounded-full"></div>
+                <h3 className="text-lg font-bold text-gray-800">Employment Overview</h3>
               </div>
 
-              <div className="grid grid-cols-5 gap-y-4 gap-x-2 mt-4 ">
+              <div className="grid grid-cols-4 gap-y-6 gap-x-4">
                 {[
-                  {
-                    icon: IdCardLanyard,
-                    label: "Employee Id",
-                    value: canvasData.employeeId || "--",
-                  },
-                  {
-                    icon: Briefcase,
-                    label: "Designation",
-                    value: canvasData.designation   || "--",
-                  },
-                  {
-                    icon: Building2,
-                    label: "Department",
-                    value: canvasData.department || "--",
-                  },
-                  {
-                    icon: UserCog,
-                    label: "Reporting Manager",
-                    value: canvasData?.reportingManager || "--",
-                  },
-                  {
-                    icon: Calendar1Icon,
-                    label: "Joining Date",
-                    value: canvasData?.joiningDate || "--",
-                  },
-                  {
-                    icon: Clock,
-                    label: "Notice Period",
-                    value: canvasData?.noticePeriod || "--",
-                  },
-                  {
-                    icon: Key,
-                    label: "Role",
-                    value: canvasData?.role || "--",
-                  },
-                  {
-                    icon: Badge,
-                    label: "Job Title",
-                    value: canvasData?.jobTitle || "--",
-                  },
+                  { icon: IdCardLanyard, label: "Employee Id", value: canvasData.employeeId },
+                  { icon: Briefcase, label: "Designation", value: canvasData.designation },
+                  { icon: Building2, label: "Department", value: canvasData.department },
+                  { icon: UserCog, label: "Reporting Manager", value: canvasData?.reportingManager },
+                  { icon: Calendar1Icon, label: "Joining Date", value: canvasData?.joiningDate },
+                  { icon: Clock, label: "Notice Period", value: canvasData?.noticePeriod },
+                  { icon: Key, label: "Role", value: canvasData?.role },
+                  { icon: Badge, label: "Job Title", value: canvasData?.jobTitle },
                 ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-2">
-                    <item.icon className="w-4 h-4 text-sky-500 mt-0.5 shrink-0" />
+                  <div key={idx} className="flex items-start gap-3">
+                    <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+                      <item.icon size={18} className="text-[#0B56A4]" />
+                    </div>
                     <div className="flex flex-col">
-                      <span className="text-[10px] font-medium text-gray-400 uppercase">
+                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
                         {item.label}
                       </span>
-                      <span className="text-sm text-gray-600 font-medium">
-                        {item.value}
+                      <span className="text-sm text-gray-700 font-semibold">
+                        {item.value || "--"}
                       </span>
                     </div>
                   </div>
@@ -215,17 +164,17 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col p-5 bg-white overflow-hidden">
-            <div className="flex items-center justify-between mb-4 shrink-0">
-              <div className="flex bg-gray-100 p-1 rounded-full">
+          <div className="flex-1 flex flex-col p-6 bg-white overflow-hidden border-t border-gray-100">
+            <div className="flex items-center justify-between mb-5 shrink-0">
+              <div className="flex bg-gray-100 p-1.5 rounded-xl">
                 {tabs.map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-8 py-2 text-xs font-bold rounded-full transition-all ${
+                    className={`px-10 py-2.5 text-xs font-bold rounded-lg transition-all ${
                       activeTab === tab
-                        ? "bg-[#1a5fb4] text-white shadow-md"
-                        : "text-gray-500 hover:text-gray-700"
+                        ? "bg-[#08384F] text-white shadow-lg"
+                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
                     }`}
                   >
                     {tab}
@@ -233,103 +182,80 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                 ))}
               </div>
               {activeTab === "Attendance" && (
-                <select className="border border-gray-200 rounded-lg px-3 py-1.5 text-xs font-semibold text-gray-700 bg-white outline-none">
-                  <option>November</option>
+                <select className="border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-gray-700 bg-white outline-none cursor-pointer hover:border-[#0B56A4] transition-colors">
+                  <option>November 2024</option>
+                  <option>October 2024</option>
                 </select>
               )}
             </div>
 
-            <div className="flex-1 border border-gray-100 rounded-md overflow-auto shadow-sm bg-white">
-              <table className="w-full text-left text-sm border-collapse">
-                <thead className="sticky top-0 bg-[#0c3a4d] text-white z-10">
-                  {activeTab === "Attendance" && (
-                    <tr>
-                      <th className="p-3 font-semibold">Date</th>
-                      <th className="p-3 font-semibold">Clock-In</th>
-                      <th className="p-3 font-semibold">Clock-out</th>
-                      <th className="p-3 font-semibold">Working hours</th>
-                    </tr>
-                  )}
-                  {activeTab === "Subject List" && (
-                    <tr>
-                      <th className="p-3 font-semibold">Regulation</th>
-                      <th className="p-3 font-semibold">Subject Name</th>
-                      <th className="p-3 font-semibold">Year</th>
-                      <th className="p-3 font-semibold">Department</th>
-                      <th className="p-3 font-semibold">Section</th>
-                    </tr>
-                  )}
-                  {activeTab === "Timetable" && (
-                    <tr>
-                      <th className="p-3 font-semibold">Time Slot</th>
-                      <th className="p-3 font-semibold">Mon</th>
-                      <th className="p-3 font-semibold">Tue</th>
-                      <th className="p-3 font-semibold">Wed</th>
-                      <th className="p-3 font-semibold">Thu</th>
-                      <th className="p-3 font-semibold">Fri</th>
-                      <th className="p-3 font-semibold">Sat</th>
-                    </tr>
-                  )}
+            <div className="flex-1 border border-gray-200 rounded-2xl overflow-auto shadow-sm">
+              <table className="w-full text-left text-sm border-separate border-spacing-0">
+                <thead className="sticky top-0 bg-[#08384F] text-white z-10">
+                  <tr>
+                    {activeTab === "Attendance" && (
+                      <>
+                        <th className="p-4 font-bold border-r border-white/10">Date</th>
+                        <th className="p-4 font-bold border-r border-white/10">Clock-In</th>
+                        <th className="p-4 font-bold border-r border-white/10">Clock-out</th>
+                        <th className="p-4 font-bold">Working hours</th>
+                      </>
+                    )}
+                    {activeTab === "Subject List" && (
+                      <>
+                        <th className="p-4 font-bold border-r border-white/10">Reg</th>
+                        <th className="p-4 font-bold border-r border-white/10">Subject Name</th>
+                        <th className="p-4 font-bold border-r border-white/10">Year</th>
+                        <th className="p-4 font-bold border-r border-white/10">Department</th>
+                        <th className="p-4 font-bold">Section</th>
+                      </>
+                    )}
+                    {activeTab === "Timetable" && (
+                      <>
+                        <th className="p-4 font-bold border-r border-white/10">Time Slot</th>
+                        <th className="p-4 font-bold border-r border-white/10">Mon</th>
+                        <th className="p-4 font-bold border-r border-white/10">Tue</th>
+                        <th className="p-4 font-bold border-r border-white/10">Wed</th>
+                        <th className="p-4 font-bold border-r border-white/10">Thu</th>
+                        <th className="p-4 font-bold border-r border-white/10">Fri</th>
+                        <th className="p-4 font-bold">Sat</th>
+                      </>
+                    )}
+                  </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
                   {activeTab === "Attendance" &&
                     attendanceData.map((row, i) => (
-                      <tr
-                        key={i}
-                        className="even:bg-gray-50 hover:bg-blue-50/50 transition-colors "
-                      >
-                        <td className="p-3 text-gray-600">{row.date}</td>
-                        <td className="p-3 text-gray-500">{row.clockIn}</td>
-                        <td className="p-3 text-gray-500">{row.clockOut}</td>
-                        <td className="p-3 text-gray-800 font-">
-                          {row.hours}
-                        </td>
+                      <tr key={i} className="hover:bg-blue-50 transition-colors">
+                        <td className="p-4 text-gray-700 font-medium">{row.date}</td>
+                        <td className="p-4 text-emerald-600 font-bold">{row.clockIn}</td>
+                        <td className="p-4 text-rose-500 font-bold">{row.clockOut}</td>
+                        <td className="p-4 text-gray-800 font-bold">{row.hours}</td>
                       </tr>
                     ))}
                   {activeTab === "Subject List" &&
                     subjectData.map((row, i) => (
-                      <tr
-                        key={i}
-                        className="even:bg-gray-50 hover:bg-blue-50/50 transition-colors"
-                      >
-                        <td className="p-3 text-gray-600">{row.reg}</td>
-                        <td className="p-3 text-gray-800 font-semibold">
-                          {row.name}
-                        </td>
-                        <td className="p-3 text-gray-500">{row.year}</td>
-                        <td className="p-3 text-gray-500">{row.dept}</td>
-                        <td className="p-3 text-blue-600 font-medium">
-                          {row.sec}
+                      <tr key={i} className="hover:bg-blue-50 transition-colors">
+                        <td className="p-4 text-gray-500 font-bold">{row.reg}</td>
+                        <td className="p-4 text-gray-800 font-bold">{row.name}</td>
+                        <td className="p-4 text-gray-600 font-medium">{row.year}</td>
+                        <td className="p-4 text-gray-600 font-medium">{row.dept}</td>
+                        <td className="p-4">
+                          <span className="bg-blue-100 text-[#0B56A4] px-3 py-1 rounded-full text-xs font-bold">
+                            {row.sec}
+                          </span>
                         </td>
                       </tr>
                     ))}
                   {activeTab === "Timetable" &&
                     timetableData.map((row, i) => (
-                      <tr
-                        key={i}
-                        className="even:bg-gray-50 hover:bg-blue-50/50 transition-colors"
-                      >
-                        <td className="p-3 text-gray-800 font-bold bg-gray-50/30">
-                          {row.slot}
-                        </td>
-                        <td className="p-3 text-gray-600 italic text-xs">
-                          {row.mon}
-                        </td>
-                        <td className="p-3 text-gray-600 italic text-xs">
-                          {row.tue}
-                        </td>
-                        <td className="p-3 text-gray-600 italic text-xs">
-                          {row.wed}
-                        </td>
-                        <td className="p-3 text-gray-600 italic text-xs">
-                          {row.thu}
-                        </td>
-                        <td className="p-3 text-gray-600 italic text-xs">
-                          {row.fri}
-                        </td>
-                        <td className="p-3 text-gray-600 italic text-xs">
-                          {row.sat}
-                        </td>
+                      <tr key={i} className="hover:bg-blue-50 transition-colors">
+                        <td className="p-4 text-[#08384F] font-bold bg-gray-50/80">{row.slot}</td>
+                        {[row.mon, row.tue, row.wed, row.thu, row.fri, row.sat].map((day, idx) => (
+                          <td key={idx} className={`p-4 text-xs font-bold ${day === "FREE" ? "text-gray-300 italic" : "text-gray-600"}`}>
+                            {day}
+                          </td>
+                        ))}
                       </tr>
                     ))}
                 </tbody>

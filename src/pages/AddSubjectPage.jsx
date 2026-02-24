@@ -51,12 +51,11 @@ const AddSubjectPage = () => {
         <div className="container-1 w-[20%] h-[100%]">
           <Sidebar />
         </div>
-        {/* content section -----------------------------------  */}
         <div className="container-2 w-[80%] h-[100%]">
           <HeaderComponent
             title={"Subject Management"}
             second={dept}
-            secondColor="text-blue-700"
+            secondColor="text-[#000000]"
           />
           <div className="content-container mx-6">
             
