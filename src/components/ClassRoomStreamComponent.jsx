@@ -211,7 +211,7 @@ const ClassRoomStreamComponent = () => {
               </h1>
               <button
                 onClick={() => setIsAnnouncementModal(true)}
-                className="flex items-center gap-2 bg-[#0B56A4] text-white px-4 py-2 rounded-md hover:bg-[#0B56A4]/80 cursor-pointer"
+                className="flex items-center gap-2 bg-[#08384F]  bg text-white px-4 py-2 rounded-md hover:bg-[#0B56A4]/80 cursor-pointer"
               >
                 <Plus /> Add Announcement
               </button>
@@ -268,7 +268,7 @@ const ClassRoomStreamComponent = () => {
                       <div className="flex gap-2">
                         {/* Avatar */}
                         <div>
-                          <p className="bg-[#0B56A4] text-white w-10 h-10 flex items-center justify-center rounded-full">
+                          <p className="bg-[#08384F]  bgtext-white w-10 h-10 flex items-center justify-center rounded-full">
                             S
                           </p>
                         </div>
@@ -417,7 +417,7 @@ const ClassRoomStreamComponent = () => {
 
                           {/* Add Comment Input */}
                           <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#0B56A4] flex items-center justify-center text-white text-xs flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#08384F]  bgflex items-center justify-center text-white text-xs flex-shrink-0">
                               {firstLetter || "U"}
                             </div>
                             <div className="flex-1 relative">

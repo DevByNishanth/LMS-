@@ -72,7 +72,7 @@ const StudentManagement = () => {
               </div>
 
               {/* Profile Image */}
-              <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
                 {firstName}
               </div>
             </div>

@@ -91,7 +91,7 @@ const InvitationPage = () => {
                     <p className="text-gray-500 mt-2">You’ve been hand-picked to join this classroom. Hit the button below and let the learning begin.</p>
                     <div className="btn-container flex items-center gap-2 justify-center">
                         <button onClick={handleRejectInvitation} className="border border-gray-400 rounded cursor-pointer hover:bg-gray-100 text-gray-700 px-4 py-2 rounded mt-4">Reject Invitation</button>
-                        <button onClick={handleAcceptInvitation} className="bg-[#0B56A4] cursor-pointer hover:bg-[#0B56A4]/80 text-white px-4 py-2 rounded mt-4">Accept Invitation</button>
+                        <button onClick={handleAcceptInvitation} className="bg-[#08384F]  bgcursor-pointer hover:bg-[#0B56A4]/80 text-white px-4 py-2 rounded mt-4">Accept Invitation</button>
                     </div>
                 </div>
             </div>

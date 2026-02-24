@@ -237,7 +237,7 @@ export default function AddMaterialModal({ onClose, setIsMaterialModalOpen }) {
           <button
             onClick={handleSubmit}
             type="submit"
-            className="px-8 py-2 text-sm font-semibold rounded-lg bg-[#0B56A4] text-white hover:bg-[#094a8f] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md active:scale-95"
+            className="px-8 py-2 text-sm font-semibold rounded-lg bg-[#08384F]  bgtext-white hover:bg-[#094a8f] disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md active:scale-95"
             disabled={loading}
           >
             {loading ? (

@@ -5,13 +5,13 @@ const StudentYearComponent = ({ years, selectedYear, setSelectedYear, setSelecte
     return (
         <div className="w-full h-[100%] bg-white border border-[#D6D6D6] rounded-xl p-4 space-y-3">
             {years.map((year, index) => (
-                
+
                 <button
                     key={index}
                     onClick={() => { setSelectedSection("A"); setSelectedYear(year.year) }}
                     className={`w-full flex items-center justify-between px-4 py-3 rounded-lg border border-[#D6D6D6] transition
                         ${selectedYear === year.year
-                            ? "bg-[#0B56A4] text-white"
+                            ? "bg-[#08384F]  bgtext-white"
                             : "bg-white text-gray-700 hover:bg-gray-50"
                         }`} >
                     <span className="font-medium">{year.year}</span>
@@ -20,7 +20,7 @@ const StudentYearComponent = ({ years, selectedYear, setSelectedYear, setSelecte
                             }`}
                     />
                     {console.log(year.year)}
-                    
+
                 </button>
             ))}
         </div>

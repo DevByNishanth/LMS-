@@ -14,7 +14,7 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                 <div className="content-container border border-gray-200 bg-[#F9F9F9F9] rounded-lg">
                     <div className="flex justify-between items-start w-full  px-4 py-2 border-b border-gray-300">
                         <div className="flex gap-3 items-center w-full   ">
-                            <div className="w-10 h-10 bg-[#0B56A4] rounded-full flex items-center justify-center text-white font-semibold">
+                            <div className="w-10 h-10 bg-[#08384F]  bgrounded-full flex items-center justify-center text-white font-semibold">
                                 <img src={assignmentIcon} alt="assignmentIcon" className='w-6 h-6' />
                             </div>
                             <div className=" w-full flex items-center justify-between">
@@ -103,13 +103,13 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                 {/* Tabs */}
                 <div className="flex items-center gap-6 justify-between  mt-2 mb-2">
                     <div className="btn-container  flex gap-2 bg-gray-100 rounded-full  py-2 px-2">
-                        <button onClick={() => setSelectedTab("all")} className={` ${selectedTab == "all" ? "bg-[#0B56A4] text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
+                        <button onClick={() => setSelectedTab("all")} className={` ${selectedTab == "all" ? "bg-[#08384F]  bgtext-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
                             All Students ({selectedAssignment?.stats?.totalStudents})
                         </button>
-                        <button onClick={() => setSelectedTab("submittedStudents")} className={` ${selectedTab == "submittedStudents" ? "bg-[#0B56A4] text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
+                        <button onClick={() => setSelectedTab("submittedStudents")} className={` ${selectedTab == "submittedStudents" ? "bg-[#08384F]  bgtext-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
                             Submitted Students ({selectedAssignment?.stats?.submitted})
                         </button>
-                        <button onClick={() => setSelectedTab("pendingStudents")} className={` ${selectedTab == "pendingStudents" ? "bg-[#0B56A4] text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
+                        <button onClick={() => setSelectedTab("pendingStudents")} className={` ${selectedTab == "pendingStudents" ? "bg-[#08384F]  bgtext-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
                             Pending Students ({selectedAssignment?.stats?.pending})
                         </button>
                     </div>
@@ -173,7 +173,7 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                                     <td className="p-3 text-gray-700">__ / 100</td>
 
                                     <td className="p-3">
-                                        <button className="bg-[#0B56A4] w-8 h-8 rounded-full flex items-center justify-center">
+                                        <button className="bg-[#08384F]  bgw-8 h-8 rounded-full flex items-center justify-center">
                                             <Eye className="w-5 h-5 text-white" />
                                         </button>
                                     </td>

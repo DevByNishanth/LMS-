@@ -53,15 +53,13 @@ const StudentSidebar = () => {
               <Link
                 key={label}
                 to={link}
-                className={`flex items-center h-[54px] px-3 rounded-xl transition-all duration-200 ${
-                  active ? "bg-white shadow-sm" : "hover:bg-white/60"
-                }`}
+                className={`flex items-center h-[54px] px-3 rounded-xl transition-all duration-200 ${active ? "bg-white shadow-sm" : "hover:bg-white/60"
+                  }`}
               >
                 {icon({ active })}
                 <span
-                  className={`ml-3 font-semibold ${
-                    active ? "text-[#0B56A4]" : "text-[#282526]"
-                  }`}
+                  className={`ml-3 font-semibold ${active ? "text-[#0B56A4]" : "text-[#282526]"
+                    }`}
                 >
                   {label}
                 </span>
@@ -73,7 +71,7 @@ const StudentSidebar = () => {
         <div className="px-4 py-6">
           <button
             onClick={handleLogout}
-            className="flex items-center justify-center gap-3 w-full py-2 rounded-lg bg-[#0B56A4] text-white hover:bg-[#094a8f] transition"
+            className="flex items-center justify-center gap-3 w-full py-2 rounded-lg bg-[#08384F]  bgtext-white hover:bg-[#094a8f] transition"
           >
             <LogOut size={20} />
             <span>Logout</span>

@@ -57,7 +57,7 @@ const DeleteModal = ({ setIsDelete, deleteId }) => {
               onClick={() => {
                 handleDelete(deleteId);
               }}
-              className="font-medium text-md w-[50%] hover:bg-white hover:border border-gray-300 hover:text-black cursor-pointer transition-all duration-300 bg-[#0B56A4] text-white rounded-lg px-4 py-2"
+              className="font-medium text-md w-[50%] hover:bg-white hover:border border-gray-300 hover:text-black cursor-pointer transition-all duration-300 bg-[#08384F]  bgtext-white rounded-lg px-4 py-2"
             >
               Delete
             </button>

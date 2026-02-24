@@ -297,7 +297,7 @@ const AddAnnouncementModal = ({
           <button
             type="submit"
             onClick={handleSubmit}
-            className="px-4 py-2 cursor-pointer rounded bg-[#0B56A4] text-white hover:opacity-90"
+            className="px-4 py-2 cursor-pointer rounded bg-[#08384F]  bgtext-white hover:opacity-90"
           >
             {initialData ? "Update" : "Save"}
           </button>

@@ -53,7 +53,7 @@ const DepartmentTabComponent = ({ basePath = "/dashboard/semesterRegistration/ad
               className="flex items-center justify-between gap-4 p-4 bg-[#F9F9F9] border border-[#CACACA] rounded-xl hover:shadow-md transition-shadow duration-300 cursor-pointer"
             >
               <div className="flex items-center gap-4">
-                <div className="p-3 text-white bg-[#0B56A4] rounded-full">
+                <div className="p-3 text-white bg-[#08384F]  bgrounded-full">
                   {dept.icon}
                 </div>
                 <p className="font-medium text-sm text-[#0B56A4]">

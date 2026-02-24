@@ -115,7 +115,7 @@ const SubjectPlanningPage = () => {
               </div>
 
               {/* Profile Image */}
-              <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
                 {firstName}
               </div>
             </div>
@@ -159,14 +159,14 @@ const SubjectPlanningPage = () => {
                             // ))
                             return <div className="card border border-gray-300 bg-[#F9F9F9] p-4 rounded-xl flex items-center gap-2 justify-between">
                                 <div className="first-container flex items-center gap-3">
-                                    <div className="icon-container w-11 h-11 bg-[#0B56A4] flex items-center justify-center rounded-full">
+                                    <div className="icon-container w-11 h-11 bg-[#08384F]  bgflex items-center justify-center rounded-full">
                                         <img src={bookIcon} className="h-[80%] w-[55%]" />
                                     </div>
                                     <h1 className='text-[#0B56A4] font-medium text-lg'>{item.subjectCode} - {item.subject}</h1>
                                 </div>
                                 <div className="second-container flex items-center gap-6 text-lg">
                                     <h1 className='font-medium'>({item.classDetails.year} - {item.classDetails.department} - {item.classDetails.section} Section)</h1>
-                                    <Link to={`/dashboard/subjectPlanning/${item.subjectCode}/?data=${queryData}`} className="icon-container cursor-pointer w-11 h-11 hover:bg-[#0f6fd6] bg-[#0B56A4] flex items-center justify-center rounded-full">
+                                    <Link to={`/dashboard/subjectPlanning/${item.subjectCode}/?data=${queryData}`} className="icon-container cursor-pointer w-11 h-11 hover:bg-[#0f6fd6] bg-[#08384F]  bgflex items-center justify-center rounded-full">
                                         <img src={upSideRightArrow} className="h-[80%] w-[55%]" />
                                     </Link>
                                 </div>
@@ -208,7 +208,7 @@ const SubjectPlanningPage = () => {
                     className="card border border-gray-300 bg-[#F9F9F9] p-4 rounded-xl flex items-center justify-between transition-all hover:border-[#0B56A4]"
                   >
                     <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 bg-[#0B56A4] flex items-center justify-center rounded-full">
+                      <div className="w-11 h-11 bg-[#08384F]  bgflex items-center justify-center rounded-full">
                         <img src={bookIcon} className="h-[80%] w-[55%]" />
                       </div>
 
@@ -225,7 +225,7 @@ const SubjectPlanningPage = () => {
 
                       <Link
                         to={`/dashboard/subjectPlanning/${item.subjectCode}/?data=${queryData}`}
-                        className="w-11 h-11 bg-[#0B56A4] hover:bg-[#0f6fd6] flex items-center justify-center rounded-full transition-colors shadow-md"
+                        className="w-11 h-11 bg-[#08384F]  bghover:bg-[#0f6fd6] flex items-center justify-center rounded-full transition-colors shadow-md"
                       >
                         <img
                           src={upSideRightArrow}

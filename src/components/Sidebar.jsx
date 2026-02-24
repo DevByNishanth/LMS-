@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import whiteLogo from "../assets/eshwar_logo_white.png";
 import {
   Menu,
   LayoutDashboard,
@@ -112,17 +113,18 @@ const Sidebar = () => {
   return (
     <div className="relative hidden md:block">
       <div
-        className={`fixed top-0 left-0 h-screen bg-[#D9EBFE] z-50 transition-all duration-300 flex flex-col ${
-          collapsed ? "w-[83px]" : "w-[20%]"
-        }`}
+        className={`fixed top-0 left-0 h-screen bg-[#08384F]  bg  z-50 transition-all duration-300 flex flex-col ${collapsed ? "w-[83px]" : "w-[20%]"
+          }`}
       >
-        <div className="flex items-center justify-center p-4">
-          {!collapsed && (
-            <img src={logo} alt="logo" className="w-[140px] object-cover" />
-          )}
+        <div className="logo-container my-5">
+          <div className="flex items-center pl-6 ">
+            {!collapsed && (
+              <img src={whiteLogo} alt="logo" className="w-[140px] object-cover" />
+            )}
+          </div>
         </div>
 
-        <div className="flex-1 space-y-1 px-2">
+        <div className="flex-1 space-y-1 pl-2">
           {filteredNavItems.map((item, index) => {
             const active = isActive(item.link);
             const Icon = item.icon;
@@ -131,28 +133,28 @@ const Sidebar = () => {
               <Link
                 key={index}
                 to={item.link}
-                className={`flex items-center h-[54px] px-2 rounded-l-[14px] transition-all duration-200 ${
-                  active
-                    ? "bg-white text-[#18283b]"
-                    : "text-black hover:bg-white/50"
-                }`}
+                className={`flex items-center h-[54px] px-2 rounded-l-[14px] transition-all duration-200 relative ${active
+                  ? "bg-white text-[#18283b]"
+                  : "text-black hover:bg-white/50"
+                  }`}
               >
                 <span className="min-w-[3rem] flex justify-center">
                   <Icon
                     size={20}
-                    className={active ? "text-[#0B56A4]" : "text-black"}
+                    className={active ? "text-[#000000]" : "text-white"}
                   />
                 </span>
 
                 {!collapsed && (
                   <span
-                    className={`font-semibold whitespace-nowrap ${
-                      active ? "text-[#0B56A4]" : "text-[#282526]"
-                    }`}
+                    className={`font-semibold whitespace-nowrap ${active ? "text-[#000000]" : "text-[#ffffff]"
+                      }`}
                   >
                     {item.label}
                   </span>
                 )}
+
+
               </Link>
             );
           })}
@@ -161,7 +163,7 @@ const Sidebar = () => {
         <div className="px-4 py-6 absolute bottom-4 w-full">
           <button
             onClick={handleLogout}
-            className="bg-[#0b56a4] flex items-center gap-3 justify-center text-white px-4 py-2 w-full rounded-lg cursor-pointer hover:bg-[#0b55a4e5]"
+            className="flex items-center gap-3 justify- text-white font-medium px-4 py-2 w-full rounded-lg cursor-pointer hover:bg-[#ffffff] hover:text-black transition-all duration-200"
           >
             <LogOut size={18} />
             Logout

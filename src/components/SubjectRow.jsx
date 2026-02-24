@@ -235,7 +235,7 @@ export default function SubjectRow({
 
           {/* STAFF */}
           <td
-            className={`px-4 py-3 w-[100%] flex items-center gap-2 ${sec.staff === null ? "bg-[#eef2ff]" : "bg-white"
+            className={`px-4 py-3 w-[100%] flex items-center gap-2 ${sec.staff === null ? "bg-gray-100" : "bg-white"
               }`}
           >
             {sec.staff ? (
@@ -262,7 +262,7 @@ export default function SubjectRow({
                 }}
                 className="w-10 cursor-pointer h-10 p-2 rounded-full bg-white flex items-center justify-center border border-gray-100"
               >
-                <Plus className="text-blue-700" />
+                <Plus className="text-[#08384f]" />
               </button>
             )}
           </td>
@@ -300,7 +300,7 @@ export default function SubjectRow({
                       <img
                         src={staff.img} />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#08384f] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#08384F]  bg  flex items-center justify-center">
                         <span className="text-[#ffffff] font-medium">
                           {staff.name.charAt(0)}
                         </span>
@@ -334,7 +334,7 @@ export default function SubjectRow({
                 </button>
 
                 <button
-                  className="bg-[#0B56A4] hover:bg-[#023a75] cursor-pointer text-white px-4 py-2 rounded-lg"
+                  className="bg-[#08384F]  bghover:bg-[#023a75] cursor-pointer text-white px-4 py-2 rounded-lg"
                   onClick={handleSave}
                 >
                   Save
@@ -377,7 +377,7 @@ export default function SubjectRow({
                       <img
                         src={staff.img} />
                     ) : (
-                      <div className="w-8 h-8 rounded-full bg-[#08384f] flex items-center justify-center">
+                      <div className="w-8 h-8 rounded-full bg-[#08384F]  bg  flex items-center justify-center">
                         <span className="text-[#ffffff] font-medium">
                           {staff.name.charAt(0)}
                         </span>
@@ -410,7 +410,7 @@ export default function SubjectRow({
                   Cancel
                 </button>
                 <button
-                  className="bg-[#0B56A4] hover:bg-[#023a75] cursor-pointer text-white px-4 py-2 rounded-lg"
+                  className="bg-[#08384F]  bghover:bg-[#023a75] cursor-pointer text-white px-4 py-2 rounded-lg"
                   onClick={handleSaveTwo}
                 >
                   Save

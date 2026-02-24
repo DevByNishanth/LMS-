@@ -288,7 +288,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                     {selectedStudentsCount > 0 && (
                         <button
                             onClick={() => setShowBulkModal(true)}
-                            className="bg-[#0B56A4] text-white px-4 py-2 rounded hover:bg-[#084282] transition-all shadow-md font-semibold text-sm whitespace-nowrap"
+                            className="bg-[#08384F]  bgtext-white px-4 py-2 rounded hover:bg-[#084282] transition-all shadow-md font-semibold text-sm whitespace-nowrap"
                         >
                             Bulk Attendance ({selectedStudentsCount})
                         </button>
@@ -305,7 +305,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                             onClick={() => setActiveHour(index)}
                             className={`w-full text-left px-4 py-3 rounded mb-1 text-md 
                                       ${activeHour === index
-                                    ? "bg-[#0B56A4] text-white"
+                                    ? "bg-[#08384F]  bgtext-white"
                                     : "hover:bg-gray-100"
                                 }`}
                         >

@@ -19,11 +19,10 @@ const ClassroomHeader = ({ activeItem = "Stream", setActiveItem }) => {
             <button
               key={tab.id}
               onClick={() => setActiveItem(tab.id)}
-              className={`flex items-center gap-2 px-6 py-2 rounded-full font-medium transition-all duration-200 ${
-                isActive
-                  ? "bg-[#0B56A4] text-white shadow-md"
-                  : "bg-[#E8F0FE] text-[#18283b] hover:bg-[#d0e1fd]"
-              }`}
+              className={`flex items-center gap-2 px-6 py-2 rounded-full font-medium transition-all duration-200 ${isActive
+                ? "bg-[#08384F]  bgtext-white shadow-md"
+                : "bg-[#E8F0FE] text-[#18283b] hover:bg-[#d0e1fd]"
+                }`}
             >
               {tab.icon}
               {tab.label}

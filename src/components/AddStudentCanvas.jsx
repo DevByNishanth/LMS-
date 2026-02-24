@@ -108,22 +108,20 @@ const AddStudentCanvas = ({
         {!isEdit && (
           <div className="flex bg-gray-100 p-1 rounded-full w-full mb-3">
             <button
-              className={`px-6 py-3 rounded-full text-sm w-[50%] font-medium ${
-                activeTab === "single"
-                  ? "bg-[#0B56A4] text-white"
-                  : "text-gray-600"
-              }`}
+              className={`px-6 py-3 rounded-full text-sm w-[50%] font-medium ${activeTab === "single"
+                ? "bg-[#08384F]  bgtext-white"
+                : "text-gray-600"
+                }`}
               onClick={() => setActiveTab("single")}
             >
               Single Entry
             </button>
 
             <button
-              className={`px-6 py-2 rounded-full text-sm w-[50%] font-medium ${
-                activeTab === "multiple"
-                  ? "bg-[#0B56A4] text-white"
-                  : "text-gray-600"
-              }`}
+              className={`px-6 py-2 rounded-full text-sm w-[50%] font-medium ${activeTab === "multiple"
+                ? "bg-[#08384F]  bgtext-white"
+                : "text-gray-600"
+                }`}
               onClick={() => setActiveTab("multiple")}
             >
               Multiple Upload
@@ -277,7 +275,7 @@ const AddStudentCanvas = ({
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-5 py-2 bg-[#0B56A4] text-white rounded-lg cursor-pointer"
+                className="px-5 py-2 bg-[#08384F]  bgtext-white rounded-lg cursor-pointer"
               >
                 Save
               </button>
@@ -299,7 +297,7 @@ const AddStudentCanvas = ({
               <button className="px-4 py-2 border rounded-lg" onClick={onClose}>
                 Cancel
               </button>
-              <button className="px-5 py-2 bg-[#0B56A4] text-white rounded-lg">
+              <button className="px-5 py-2 bg-[#08384F]  bgtext-white rounded-lg">
                 Upload
               </button>
             </div>

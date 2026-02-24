@@ -20,7 +20,7 @@ export default function UnitComponent({ onSelect }) {
                     className={`w-full  flex items-center justify-between px-2 py-3 rounded-md mb-2 
             border transition-all
             ${selected === unit
-                            ? "bg-[#0B56A4] text-white "
+                            ? "bg-[#08384F]  bgtext-white "
                             : "bg-white text-gray-800 border-gray-300 hover:bg-gray-100"
                         }
           `}

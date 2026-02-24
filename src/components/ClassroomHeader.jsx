@@ -40,7 +40,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                 <div className="tabs flex flex-wrap items-center gap-4">
                     <button
                         onClick={() => setActiveTab("stream")}
-                        className={`${activeTab.toLowerCase() == "stream" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
+                        className={`${activeTab.toLowerCase() == "stream" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
                     >
                         <span>
                             <img
@@ -56,7 +56,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                     </button>
                     <button
                         onClick={() => setActiveTab("classwork")}
-                        className={`${activeTab.toLowerCase() == "classwork" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
+                        className={`${activeTab.toLowerCase() == "classwork" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
                     >
                         <span>
                             <img
@@ -72,7 +72,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                     </button>
                     <button
                         onClick={() => setActiveTab("people")}
-                        className={`${activeTab.toLowerCase() == "people" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
+                        className={`${activeTab.toLowerCase() == "people" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
                     >
                         <span>
                             <img
@@ -88,7 +88,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                     </button>
                     <button
                         onClick={() => setActiveTab("grades")}
-                        className={`${activeTab.toLowerCase() == "grades" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
+                        className={`${activeTab.toLowerCase() == "grades" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
                     >
                         <span>
                             <img
@@ -104,7 +104,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                     </button>
                     <button
                         onClick={() => setActiveTab("attendance")}
-                        className={`${activeTab.toLowerCase() == "attendance" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
+                        className={`${activeTab.toLowerCase() == "attendance" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
                     >
                         <span>
                             <img
@@ -120,7 +120,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                     </button>
                     <button
                         onClick={() => setActiveTab("subjectPlanning")}
-                        className={`${activeTab.toLowerCase() == "subjectplanning" ? "bg-[#0B56A4] text-white" : "bg-[#D9EBFE] text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
+                        className={`${activeTab.toLowerCase() == "subjectplanning" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
                     >
                         <span>
                             <img
@@ -132,7 +132,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                                 className="w-6 h-6"
                             />
                         </span>
-                        Subject Planning
+                        Course plan
                     </button>
                 </div>
             </div>

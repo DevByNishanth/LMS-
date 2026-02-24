@@ -135,7 +135,7 @@ const FacultyTable = () => {
               setEditData(null);
               setIsCanvas(true);
             }}
-            className="flex items-center gap-2 bg-[#0B56A4] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#094685] transition-colors font-medium text-sm"
+            className="flex items-center gap-2 bg-[#08384F]  bgtext-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#094685] transition-colors font-medium text-sm"
           >
             <Plus size={18} /> Add Faculty
           </button>
@@ -145,7 +145,7 @@ const FacultyTable = () => {
       <div className="overflow-auto rounded-lg border max-h-[calc(100vh-390px)] border-gray-400">
         <table className="w-full">
           <thead className="sticky top-0 z-10">
-            <tr className="bg-[#08384F] text-white text-sm">
+            <tr className="bg-[#08384F]  bg  text-white text-sm">
               <th className="py-3 px-4 text-left whitespace-nowrap">Emp ID</th>
               <th className="py-3 px-4 text-left whitespace-nowrap">
                 Emp Name
@@ -177,9 +177,8 @@ const FacultyTable = () => {
               filtered.map((item, index) => (
                 <tr
                   key={index}
-                  className={`text-sm hover:bg-blue-50 transition-colors ${
-                    index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                  } border-b border-gray-200`}
+                  className={`text-sm hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                    } border-b border-gray-200`}
                 >
                   <td className="py-3 px-4 whitespace-nowrap">
                     {item.employeeId}

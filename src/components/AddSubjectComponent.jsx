@@ -262,7 +262,7 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
                 onClick={() => {
                   setIsStaffList(!isStaffList);
                 }}
-                className={`bg-[#0B56A4] text-white px-3 py-2 text-lg cursor-pointer hover:bg-[#0b55a4dd] rounded flex gap-2 items-center w-[200px]  `}
+                className={`bg-[#08384F]  bgtext-white px-3 py-2 text-lg cursor-pointer hover:bg-[#0b55a4dd] rounded flex gap-2 items-center w-[200px]  `}
               >
                 <Plus
                   className={`${isStaffList ? "rotate-135" : "rotate-0"}`}
@@ -337,7 +337,7 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
                       <button onClick={() => setIsStaffList(!isStaffList)} className="bg-gray-100 px-3 py-2 text-sm rounded font-medium">
                         Cancel
                       </button>
-                      <button onClick={() => { handleStaffUpdate() }} className="bg-[#0B56A4] px-3 py-2 text-sm rounded text-white font-medium">
+                      <button onClick={() => { handleStaffUpdate() }} className="bg-[#08384F]  bgpx-3 py-2 text-sm rounded text-white font-medium">
                         Update
                       </button>
                     </div>
@@ -362,7 +362,7 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
                     onClick={() => setSelectedSemester(sem)}
                     className={`flex items-center justify-between px-4 text-lg rounded-lg gap-2 py-3 border border-gray-300 w-[200px] transition-all
                     ${selectedSemester === sem
-                        ? "bg-[#0B56A4] text-white"
+                        ? "bg-[#08384F]  bgtext-white"
                         : "bg-white text-gray-800 hover:bg-gray-100"
                       }`}
                   >
@@ -380,7 +380,7 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
                 onClick={() => setSelectedType("Theory")}
                 className={`flex items-center justify-between px-4 text-lg rounded-lg gap-2 py-3 border border-gray-300 w-[200px] transition-all
                 ${selectedType === "Theory"
-                    ? "bg-[#0B56A4] text-white"
+                    ? "bg-[#08384F]  bgtext-white"
                     : "bg-white text-gray-800 hover:bg-blue-100"
                   }`}
               >
@@ -391,7 +391,7 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
                 onClick={() => setSelectedType("Lab")}
                 className={`flex items-center justify-between px-4 text-lg rounded-lg gap-2 py-3 border border-gray-300 w-[200px] mt-4 transition-all
                 ${selectedType === "Lab"
-                    ? "bg-[#0B56A4] text-white"
+                    ? "bg-[#08384F]  bgtext-white"
                     : "bg-white text-gray-800 hover:bg-blue-100"
                   }`}
               >
@@ -461,7 +461,7 @@ const AddSubjectComponent = ({ facultyData, subjectData }) => {
             Cancel
           </button>
           <button
-            className="px-4 py-2 bg-[#0B56A4] text-white rounded"
+            className="px-4 py-2 bg-[#08384F]  bgtext-white rounded"
             onClick={handleSave}
           >
             Save

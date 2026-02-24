@@ -128,7 +128,7 @@ export default function AddClassModal({ isOpen, onClose, onSuccess }) {
                     </button>
                     <button
                         onClick={handleSubmit}
-                        className="rounded-md bg-[#0B56A4] px-4 py-2 text-sm text-white cursor-pointer hover:bg-[#0b56a4ce] transition"
+                        className="rounded-md bg-[#08384F]  bgpx-4 py-2 text-sm text-white cursor-pointer hover:bg-[#0b56a4ce] transition"
                     >
                         Create
                     </button>

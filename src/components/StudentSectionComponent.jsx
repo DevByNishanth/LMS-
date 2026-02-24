@@ -28,7 +28,7 @@ const StudentSectionComponent = ({
                     w-full flex items-center justify-between px-4 py-3 rounded-lg 
                     border border-[#D6D6D6] transition
                     ${selectedSection === section.section
-                            ? "bg-[#0B56A4] text-white border-[#0B56A4]"
+                            ? "bg-[#08384F]  bgtext-white border-[#0B56A4]"
                             : "bg-white text-gray-800 hover:bg-gray-50"
                         }
                     `}
