@@ -116,7 +116,7 @@ const ClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
                     <div className="flex justify-between items-start  p-4 border-b border-gray-200 sticky top-0 z-10 bg-[#F9F9F9] rounded-t-lg">
                         <div className="flex gap-3 items-center w-full">
                             {/* Icon */}
-                            <div className="w-10 h-10 rounded-full bg-[#0B56A4] flex items-center justify-center text-white font-semibold">
+                            <div className="w-10 h-10 rounded-full bg-[#08384F]  bgflex items-center justify-center text-white font-semibold">
                                 <img src={assignmentIcon} alt="assignmentIcon" className='w-6 h-6' />
                             </div>
 
@@ -208,7 +208,7 @@ const ClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
 
                     {/* Review Grades */}
                     <div className="flex justify-end px-4 mb-2">
-                        <button onClick={() => setIsStudentWorkComponent(true)} className="flex items-center gap-2 bg-[#0B56A4] text-white text-sm px-4 cursor-pointer py-2 rounded-lg hover:bg-[#0B56A4]/90">
+                        <button onClick={() => setIsStudentWorkComponent(true)} className="flex items-center gap-2 bg-[#08384F]  bgtext-white text-sm px-4 cursor-pointer py-2 rounded-lg hover:bg-[#0B56A4]/90">
                             <Users /> View student work
                         </button>
                     </div>
@@ -249,7 +249,7 @@ const ClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
 
                         {/* Add Comment Input */}
                         <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#0B56A4] flex items-center justify-center text-white text-xs flex-shrink-0">
+                            <div className="w-8 h-8 rounded-full bg-[#08384F]  bgflex items-center justify-center text-white text-xs flex-shrink-0">
                                 {firstLetter || "U"}
                             </div>
                             <div className="flex-1 relative">

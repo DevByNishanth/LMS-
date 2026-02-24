@@ -53,7 +53,7 @@ const StudentManagementStudentList = ({
                     Total Students (<span className="text-[#0B56A4]">{students.length}</span>)
                 </h2>
 
-                {selectedSection !== "Unallocated" && <button onClick={() => setIsSwapModal(true)} className="flex items-center gap-2 text-white bg-[#0B56A4] px-3 py-1.5 rounded-md text-sm">
+                {selectedSection !== "Unallocated" && <button onClick={() => setIsSwapModal(true)} className="flex items-center gap-2 text-white bg-[#08384F]  bgpx-3 py-1.5 rounded-md text-sm">
                     <Pencil size={14} />
                     Edit
                 </button>}

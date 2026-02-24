@@ -298,13 +298,13 @@ const AddFacultyCanvas = ({ setIsCanvas, isEdit, editData, setIsEdit }) => {
           <div className="flex bg-[#E6E9F5] rounded-full mx-6 mt-2 p-1">
             <button
               onClick={() => setActiveTab("single")}
-              className={`w-1/2 py-2 text-md font-medium rounded-full cursor-pointer transition-all duration-200 ${activeTab === "single" ? "bg-[#0B56A4] text-white" : "text-gray-600"}`}
+              className={`w-1/2 py-2 text-md font-medium rounded-full cursor-pointer transition-all duration-200 ${activeTab === "single" ? "bg-[#08384F]  bgtext-white" : "text-gray-600"}`}
             >
               Single Entry
             </button>
             <button
               onClick={() => setActiveTab("multiple")}
-              className={`w-1/2 py-2 text-md font-medium rounded-full cursor-pointer transition-all duration-200 ${activeTab === "multiple" ? "bg-[#0B56A4] text-white" : "text-gray-600"}`}
+              className={`w-1/2 py-2 text-md font-medium rounded-full cursor-pointer transition-all duration-200 ${activeTab === "multiple" ? "bg-[#08384F]  bgtext-white" : "text-gray-600"}`}
             >
               Multiple Upload
             </button>
@@ -469,7 +469,7 @@ const AddFacultyCanvas = ({ setIsCanvas, isEdit, editData, setIsEdit }) => {
                   <div className="col-span-2 flex justify-end mt-4 absolute bottom-4 right-4">
                     <button
                       onClick={handleNext}
-                      className="bg-[#0B56A4] text-white px-4 py-2 rounded-md hover:bg-[#0b55a4dc] cursor-pointer"
+                      className="bg-[#08384F]  bgtext-white px-4 py-2 rounded-md hover:bg-[#0b55a4dc] cursor-pointer"
                     >
                       Next
                     </button>
@@ -602,7 +602,7 @@ const AddFacultyCanvas = ({ setIsCanvas, isEdit, editData, setIsEdit }) => {
                     </button>
                     <button
                       onClick={handleNext}
-                      className="bg-[#0B56A4] text-white px-4 py-2 rounded-md hover:bg-[#0B56A4] cursor-pointer"
+                      className="bg-[#08384F]  bgtext-white px-4 py-2 rounded-md hover:bg-[#08384F]  bgcursor-pointer"
                     >
                       Next
                     </button>
@@ -725,7 +725,7 @@ const AddFacultyCanvas = ({ setIsCanvas, isEdit, editData, setIsEdit }) => {
                     </button>
                     <button
                       type="submit"
-                      className="bg-[#0B56A4] text-white px-4 py-2 rounded-md hover:bg-[#0B56A4] cursor-pointer"
+                      className="bg-[#08384F]  bgtext-white px-4 py-2 rounded-md hover:bg-[#08384F]  bgcursor-pointer"
                     >
                       Submit
                     </button>
@@ -779,7 +779,7 @@ const AddFacultyCanvas = ({ setIsCanvas, isEdit, editData, setIsEdit }) => {
                 <button
                   onClick={handleUpload}
                   disabled={isUploading}
-                  className={`py-2 px-6 rounded-md text-sm font-medium text-white cursor-pointer ${isUploading ? "bg-gray-400" : "bg-[#0B56A4] hover:bg-[#0a4c91]"}`}
+                  className={`py-2 px-6 rounded-md text-sm font-medium text-white cursor-pointer ${isUploading ? "bg-gray-400" : "bg-[#08384F]  bghover:bg-[#0a4c91]"}`}
                 >
                   {isUploading ? "Uploading..." : "Upload"}
                 </button>

@@ -121,7 +121,7 @@ const CalendarComponent = () => {
             <img src={notification} className="w-4 h-4" />
           </div>
 
-          <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+          <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
             {firstName}
           </div>
         </div>
@@ -153,10 +153,9 @@ const CalendarComponent = () => {
                 onClick={() => setSelectedDate(date)}
                 className={`h-[120px] border-r border-b border-purple-100 p-3 cursor-pointer transition flex flex-col
                   ${(index + 1) % 7 === 0 ? "border-r-0" : ""}
-                  ${
-                    !isCurrentMonth
-                      ? "text-gray-300 bg-gray-50"
-                      : isToday
+                  ${!isCurrentMonth
+                    ? "text-gray-300 bg-gray-50"
+                    : isToday
                       ? "bg-blue-100 ring-2 ring-blue-200"
                       : "bg-white hover:bg-gray-50"
                   }
@@ -180,8 +179,8 @@ const CalendarComponent = () => {
                           ? "bg-sky-200 text-sky-900"
                           : "bg-sky-400 text-white"
                         : isPast
-                        ? "bg-green-200 text-green-900"
-                        : "bg-green-600 text-white";
+                          ? "bg-green-200 text-green-900"
+                          : "bg-green-600 text-white";
 
                     return (
                       <div

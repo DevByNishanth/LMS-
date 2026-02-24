@@ -161,7 +161,7 @@ const ClassRoomClassworkComponent = () => {
                 <div ref={dropdownRef} className="btn-container absolute top-0 right-0">
                   <button
                     onClick={() => setIsDropdown(!isDropdown)}
-                    className="bg-[#0B56A4] hover:bg-[#0b55a4db] cursor-pointer transition-all duration-300 text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit m-auto mt-2"
+                    className="bg-[#08384F]  bghover:bg-[#0b55a4db] cursor-pointer transition-all duration-300 text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit m-auto mt-2"
                   >
                     <Plus
                       className={`text-white ${isDropdown ? "rotate-135" : "rotate-0"} transition-all duration-300`}
@@ -209,7 +209,7 @@ const ClassRoomClassworkComponent = () => {
                   <div ref={dropdownRef} className="btn-container relative">
                     <button
                       onClick={() => setIsDropdown(!isDropdown)}
-                      className="bg-[#0B56A4] text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit cursor-pointer hover:bg-[#0b55a4db]"
+                      className="bg-[#08384F]  bgtext-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit cursor-pointer hover:bg-[#0b55a4db]"
                     >
                       <Plus
                         className={`text-white ${isDropdown ? "rotate-135" : "rotate-0"} transition-all duration-300`}
@@ -300,7 +300,7 @@ const ClassRoomClassworkComponent = () => {
                         key={index}
                       >
                         <div className="flex items-center gap-3 ">
-                          <div className="img-container bg-[#0B56A4] w-9 h-9 rounded-full flex items-center justify-center">
+                          <div className="img-container bg-[#08384F]  bgw-9 h-9 rounded-full flex items-center justify-center">
                             {item.itemType === 'question' ? (
                               <FileQuestionMark className="text-white w-5 h-5" />
                             ) : item.itemType === 'material' ? (

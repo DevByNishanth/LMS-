@@ -157,27 +157,25 @@ const HodSubjectDetailsComponent = () => {
             ))}
           </select>
         </div>
-        {/* bg-[#08384F] */}
+        {/* bg-[#08384F]  bg  */}
         {/* body section -------------------  */}
         <div className="main-container grid grid-cols-12 gap-2 mt-4">
           <div className="first-tab-container min-h-[calc(100vh-170px)]   overflow-auto border border-gray-300 rounded-lg col-span-3 px-4 py-6">
             <button
               onClick={() => setSelectedType("theory")}
-              className={`w-full   flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${
-                selectedType.toLowerCase() == "theory"
-                  ? "bg-[#0B56A4] text-white"
-                  : "border border-gray-300"
-              }`}
+              className={`w-full   flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${selectedType.toLowerCase() == "theory"
+                ? "bg-[#08384F]  bg  text-white"
+                : "border border-gray-300"
+                }`}
             >
               Theory <ChevronRight />
             </button>
             <button
               onClick={() => setSelectedType("lab")}
-              className={`w-full mt-2 flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${
-                selectedType.toLowerCase() == "lab"
-                  ? "bg-[#0B56A4] text-white"
-                  : "border border-gray-300"
-              }`}
+              className={`w-full mt-2 flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${selectedType.toLowerCase() == "lab"
+                ? "bg-[#08384F]  bg  text-white"
+                : "border border-gray-300"
+                }`}
             >
               Lab <ChevronRight />
             </button>

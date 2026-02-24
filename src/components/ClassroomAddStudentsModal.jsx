@@ -236,7 +236,7 @@ const ClassroomAddStudentsModal = ({ onClose, selectedTab }) => {
                         disabled={selectedEmails.length === 0}
                         className={`rounded-md px-5 py-2 text-sm font-medium text-white ${selectedEmails.length === 0
                             ? "bg-gray-300 cursor-not-allowed"
-                            : "bg-[#0B56A4] hover:bg-[#0B56A4]/80 cursor-pointer"
+                            : "bg-[#08384F]  bghover:bg-[#0B56A4]/80 cursor-pointer"
                             }`}
                     >
                         Invite ({selectedEmails.length})

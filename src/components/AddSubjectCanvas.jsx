@@ -385,7 +385,7 @@ const AddSubjectCanvas = ({ isOpen, onClose, editingSubject, selectedDept }) => 
             form={activeTab === "single" ? "add-subject-form" : undefined}
             onClick={activeTab === "multiple" ? handleUploadExcel : undefined}
             disabled={loading || (activeTab === "multiple" && !selectedFile)}
-            className="flex-1 px-4 py-3 bg-[#0B56A4] text-white rounded-xl text-sm font-semibold hover:bg-[#084282] transition-all shadow-md active:scale-95 disabled:opacity-50"
+            className="flex-1 px-4 py-3 bg-[#08384F]  bgtext-white rounded-xl text-sm font-semibold hover:bg-[#084282] transition-all shadow-md active:scale-95 disabled:opacity-50"
           >
             {loading
               ? "Saving..."

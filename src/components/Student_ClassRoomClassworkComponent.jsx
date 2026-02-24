@@ -15,7 +15,7 @@ const classWorkData = [
 const Student_ClassRoomClassworkComponent = () => {
     const [searchTerm, setSearchTerm] = useState("");
 
-    const filteredData = classWorkData.filter(item => 
+    const filteredData = classWorkData.filter(item =>
         item.title.toLowerCase().includes(searchTerm.toLowerCase())
     );
 
@@ -27,9 +27,9 @@ const Student_ClassRoomClassworkComponent = () => {
                     <div className="header-container mb-6">
                         <div className="flex items-center justify-between">
                             <h1 className='text-[#282526] font-medium text-xl'>Classwork List</h1>
-                            
+
                             {/* NEW: View Your Work Button for Students */}
-                            <button className="flex items-center gap-2 bg-[#0B56A4] text-white px-5 py-2 rounded-lg hover:bg-[#094a8f] transition-colors shadow-sm cursor-pointer">
+                            <button className="flex items-center gap-2 bg-[#08384F]  bgtext-white px-5 py-2 rounded-lg hover:bg-[#094a8f] transition-colors shadow-sm cursor-pointer">
                                 <Eye size={18} />
                                 <span className="font-medium">View Your Work</span>
                             </button>
@@ -38,9 +38,9 @@ const Student_ClassRoomClassworkComponent = () => {
                         {/* Search and Filter Section */}
                         <div className="flex items-center gap-4 mt-6">
                             <div className="flex-1 border border-gray-300 rounded-lg flex items-center px-3 py-2 bg-white">
-                                <input 
-                                    type="text" 
-                                    placeholder='Search Classwork' 
+                                <input
+                                    type="text"
+                                    placeholder='Search Classwork'
                                     className='outline-none w-full text-sm'
                                     value={searchTerm}
                                     onChange={(e) => setSearchTerm(e.target.value)}
@@ -59,17 +59,17 @@ const Student_ClassRoomClassworkComponent = () => {
                     <div className="card-container space-y-3 max-h-[calc(100vh-320px)] overflow-y-auto pr-2 custom-scrollbar">
                         {filteredData.length > 0 ? (
                             filteredData.map((item, index) => (
-                                <div 
+                                <div
                                     key={index}
                                     className="group flex items-center rounded-xl bg-[#F9F9F9] px-4 py-4 justify-between border border-gray-200 hover:border-[#0B56A4] hover:shadow-sm transition-all cursor-pointer"
                                 >
                                     <div className='flex items-center gap-4'>
-                                        <div className="bg-[#0B56A4] w-10 h-10 rounded-full flex items-center justify-center shadow-inner">
+                                        <div className="bg-[#08384F]  bgw-10 h-10 rounded-full flex items-center justify-center shadow-inner">
                                             <img src={assignmentWorkIcon} className="w-5 h-5" alt="icon" />
                                         </div>
                                         <h1 className='font-medium text-gray-800'>{item.title}</h1>
                                     </div>
-                                    
+
                                     <div className='flex items-center gap-6'>
                                         <h1 className='text-sm text-[#646464]'>
                                             Posted on {item.postedOn}

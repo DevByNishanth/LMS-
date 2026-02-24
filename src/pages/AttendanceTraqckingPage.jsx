@@ -199,7 +199,7 @@ const AttendanceTraqckingPage = () => {
     // Handle bulk attendance marking
     const handleBulkAttendance = async (status) => {
         const selectedStudents = students.filter(s => s.selected);
-        
+
         if (selectedStudents.length === 0) {
             alert("Please select at least one student");
             return;
@@ -229,7 +229,7 @@ const AttendanceTraqckingPage = () => {
             console.log("Bulk attendance marked: ", res.data);
             alert("Attendance marked successfully!");
             setShowBulkModal(false);
-            
+
             // Re-fetch students to update the attendance status
             getStudents();
 
@@ -269,7 +269,7 @@ const AttendanceTraqckingPage = () => {
                                 </div>
 
                                 {/* Profile Image */}
-                                <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+                                <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
                                     {firstName}
                                 </div>
                             </div>
@@ -303,7 +303,7 @@ const AttendanceTraqckingPage = () => {
                                 {selectedStudentsCount > 0 && (
                                     <button
                                         onClick={() => setShowBulkModal(true)}
-                                        className="bg-[#0B56A4] text-white px-4 py-2 rounded hover:bg-[#084282] transition-all shadow-md font-semibold text-sm whitespace-nowrap"
+                                        className="bg-[#08384F]  bgtext-white px-4 py-2 rounded hover:bg-[#084282] transition-all shadow-md font-semibold text-sm whitespace-nowrap"
                                     >
                                         Bulk Attendance ({selectedStudentsCount})
                                     </button>
@@ -320,7 +320,7 @@ const AttendanceTraqckingPage = () => {
                                         onClick={() => setActiveHour(index)}
                                         className={`w-full text-left px-4 py-3 rounded mb-1 text-md 
                                                   ${activeHour === index
-                                                ? "bg-[#0B56A4] text-white"
+                                                ? "bg-[#08384F]  bgtext-white"
                                                 : "hover:bg-gray-100"
                                             }`}
                                     >

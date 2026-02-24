@@ -118,7 +118,7 @@ const SemesterRegistrationTable = () => {
               {/* Add Button */}
               <button
                 onClick={() => setIsCanvasOpen(true)}
-                className="flex items-center gap-2 bg-[#0B56A4] text-white px-4 py-2 rounded-lg text-sm hover:bg-[#0b55a4da] cursor-pointer shadow-sm active:scale-95 transition-all outline-none"
+                className="flex items-center gap-2 bg-[#08384F]  bgtext-white px-4 py-2 rounded-lg text-sm hover:bg-[#0b55a4da] cursor-pointer shadow-sm active:scale-95 transition-all outline-none"
               >
                 <Plus size={16} className="text-white" />
                 Add Subject

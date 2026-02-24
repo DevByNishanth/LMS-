@@ -66,7 +66,7 @@ const Classpage = () => {
           Authorization: `Bearer ${token}`,
         },
       });
-  
+
       setStreamData(res.data);
       console.log("data : ", res.data)
       // setFeedData(res.data.stream)
@@ -110,7 +110,7 @@ const Classpage = () => {
               </div>
 
               {/* Profile Image */}
-              <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+              <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
                 {firstLetter}
               </div>
             </div>

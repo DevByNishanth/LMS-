@@ -109,11 +109,10 @@ const SubjectTable = () => {
           onClick={() => {
             setSelectedTab("subjectPlanning");
           }}
-          className={` ${
-            selectedTab.toLowerCase() == "subjectplanning"
-              ? "bg-[#0B56A4] text-white"
-              : "border border-gray-300 text-black"
-          } px-4 py-2 rounded-md font-medium cursor-pointer`}
+          className={` ${selectedTab.toLowerCase() == "subjectplanning"
+            ? "bg-[#08384F]  bgtext-white"
+            : "border border-gray-300 text-black"
+            } px-4 py-2 rounded-md font-medium cursor-pointer`}
         >
           Subject Planning
         </button>
@@ -121,11 +120,10 @@ const SubjectTable = () => {
           onClick={() => {
             setSelectedTab("timetableschedule");
           }}
-          className={` ${
-            selectedTab.toLowerCase() == "timetableschedule"
-              ? "bg-[#0B56A4] text-white"
-              : "border border-gray-300 text-black"
-          } px-4 py-2 rounded-md font-medium cursor-pointer`}
+          className={` ${selectedTab.toLowerCase() == "timetableschedule"
+            ? "bg-[#08384F]  bgtext-white"
+            : "border border-gray-300 text-black"
+            } px-4 py-2 rounded-md font-medium cursor-pointer`}
         >
           Timetable Schedule
         </button>
@@ -153,7 +151,7 @@ const SubjectTable = () => {
             </div>
             <button
               onClick={() => setAddSubject(true)}
-              className="bg-[#0B56A4] text-white px-3 py-2 rounded-md flex items-center gap-1 text-sm cursor-pointer hover:bg-[#0b55a4e9]"
+              className="bg-[#08384F]  bgtext-white px-3 py-2 rounded-md flex items-center gap-1 text-sm cursor-pointer hover:bg-[#0b55a4e9]"
             >
               <Plus className="text-white w-6 h-6" /> Add Subject
             </button>
@@ -164,7 +162,7 @@ const SubjectTable = () => {
         {selectedTab.toLowerCase() == "subjectplanning" ? (
           <div className="overflow-auto h-[calc(100vh-250px)] border border-gray-300 rounded-t-lg">
             <table className="w-full text-sm">
-              <thead className="bg-[#08384F] text-white sticky top-0">
+              <thead className="bg-[#08384F]  bg  text-white sticky top-0">
                 <tr>
                   <td className="py-3 px-4 text-left">Subject Code</td>
                   <td className="py-3 px-4 text-left">Subject Name</td>
@@ -177,9 +175,8 @@ const SubjectTable = () => {
                 {filteredSubjects.map((subj, index) => (
                   <tr
                     key={index}
-                    className={`${
-                      index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    }  border-b border-gray-200 text-[13px]`}
+                    className={`${index % 2 === 0 ? "bg-gray-50" : "bg-white"
+                      }  border-b border-gray-200 text-[13px]`}
                   >
                     <td className="py-3 px-4">{subj.code}</td>
                     <td className="py-3 px-4">{subj.name}</td>

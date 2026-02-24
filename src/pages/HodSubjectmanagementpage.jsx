@@ -26,7 +26,7 @@ const HodSubjectmanagementpage = () => {
         <div className="container-2 w-[100%] md:w-[80%]   h-[100%]">
           <HeaderComponent
             title={"Staff Allocation"}
-            secondColor="text-blue-700"
+            secondColor="text-[#000000]"
             second={dept}
           />
           {/* --------------- hod subject details and faculty allocation table -----------  */}

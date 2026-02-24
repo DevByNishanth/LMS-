@@ -27,21 +27,19 @@ const Student_ClassroomPeopleContainer = () => {
       <div className="tab-container px-2 py-2 flex items-center gap-2 bg-[#E6E9F5] rounded-full w-full">
         <button
           onClick={() => setSelectedTab("Teachers")}
-          className={`w-1/2 py-2 px-3 cursor-pointer rounded-full transition-all duration-200 font-medium ${
-            selectedTab === "Teachers"
-              ? "bg-[#0B56A4] text-white shadow-md"
-              : "text-gray-600 hover:text-black"
-          }`}
+          className={`w-1/2 py-2 px-3 cursor-pointer rounded-full transition-all duration-200 font-medium ${selectedTab === "Teachers"
+            ? "bg-[#08384F]  bgtext-white shadow-md"
+            : "text-gray-600 hover:text-black"
+            }`}
         >
           Teachers
         </button>
         <button
           onClick={() => setSelectedTab("Students")}
-          className={`w-1/2 py-2 cursor-pointer px-3 rounded-full transition-all duration-200 font-medium ${
-            selectedTab === "Students"
-              ? "bg-[#0B56A4] text-white shadow-md"
-              : "text-gray-600 hover:text-black"
-          }`}
+          className={`w-1/2 py-2 cursor-pointer px-3 rounded-full transition-all duration-200 font-medium ${selectedTab === "Students"
+            ? "bg-[#08384F]  bgtext-white shadow-md"
+            : "text-gray-600 hover:text-black"
+            }`}
         >
           Classmates
         </button>

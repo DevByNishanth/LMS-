@@ -295,7 +295,7 @@ export default function SubjectSubTopicsTable({ selectedUnit, subjectId: propSub
               </button>
               <button
                 onClick={handleSubmit}
-                className="px-4 py-2 bg-[#0B56A4] text-white rounded-lg hover:bg-[#0a4a8d]"
+                className="px-4 py-2 bg-[#08384F]  bgtext-white rounded-lg hover:bg-[#0a4a8d]"
               >
                 {isEditing ? "Update Topic" : "Save Topic"}
               </button>
@@ -307,7 +307,7 @@ export default function SubjectSubTopicsTable({ selectedUnit, subjectId: propSub
       <div className="overflow-x-auto overflow-y-auto max-h-[calc(100vh-160px)] border border-gray-300 rounded-t-lg">
         <table className="w-full text-sm ">
           <thead className="sticky top-0">
-            <tr className="bg-[#08384F] text-white text-left">
+            <tr className="bg-[#08384F]  bg  text-white text-left">
               <th className="px-4 py-3">S.No</th>
               <th className="px-4 py-3">Topic Name</th>
               <th className="px-4 py-3"> Language</th>
@@ -357,7 +357,7 @@ export default function SubjectSubTopicsTable({ selectedUnit, subjectId: propSub
                 <div className="flex justify-center">
                   <button
                     onClick={handleAdd}
-                    className="bg-[#0B56A4] text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:cursor-pointer transition"
+                    className="bg-[#08384F]  bgtext-white px-4 py-2 rounded-lg flex items-center gap-2 hover:cursor-pointer transition"
                   >
                     <Plus className="w-6 h-6" />
                     Add New Topics

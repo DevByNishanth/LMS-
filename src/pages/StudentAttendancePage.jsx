@@ -80,7 +80,7 @@ const StudentAttendancePage = () => {
                             </div>
 
                             {/* Profile Image */}
-                            <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+                            <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
                                 {firstName}
                             </div>
                         </div>
@@ -132,7 +132,7 @@ const StudentAttendancePage = () => {
                                         className="card border border-gray-300 bg-[#F9F9F9] p-4 rounded-xl flex items-center justify-between"
                                     >
                                         <div className="flex items-center gap-3">
-                                            <div className="w-11 h-11 bg-[#0B56A4] flex items-center justify-center rounded-full">
+                                            <div className="w-11 h-11 bg-[#08384F]  bgflex items-center justify-center rounded-full">
                                                 <img src={bookIcon} className="h-[80%] w-[55%]" />
                                             </div>
 
@@ -148,7 +148,7 @@ const StudentAttendancePage = () => {
 
                                             <Link
                                                 to={`/dashboard/sudentAttendance/${item.subjectCode}/?data=${queryData}`}
-                                                className="w-11 h-11 bg-[#0B56A4] hover:bg-[#0f6fd6] flex items-center justify-center rounded-full transition-colors"
+                                                className="w-11 h-11 bg-[#08384F]  bghover:bg-[#0f6fd6] flex items-center justify-center rounded-full transition-colors"
                                             >
                                                 <img src={upSideRightArrow} className="h-[80%] w-[55%]" />
                                             </Link>

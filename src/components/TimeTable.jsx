@@ -350,14 +350,14 @@ export default function TimeTable() {
                 <div className="overflow-x-auto max-h-[calc(100vh-220px)]">
                     <table className="w-full border-collapse">
                         <thead>
-                            <tr className="bg-[#08384F] text-white ">
-                                <th className="sticky top-0 left-0 z-30 bg-[#08384F] p-5 text-left font-medium text-sm border-b border-white/10 uppercase tracking-wider w-[180px] min-w-[180px]">
+                            <tr className="bg-[#08384F]  bg  text-white ">
+                                <th className="sticky top-0 left-0 z-30 bg-[#08384F]  bg  p-5 text-left font-medium text-sm border-b border-white/10 uppercase tracking-wider w-[180px] min-w-[180px]">
                                     Day
                                 </th>
                                 {slots.length > 0 ? slots.map((slot, idx) => (
                                     <th
                                         key={idx}
-                                        className={`sticky top-0 z-20 p-4 text-center border-b border-white/10 w-[180px] min-w-[180px] ${slot.type === 'break' ? 'bg-[#062c3e] italic text-white' : 'bg-[#08384F]'}`}
+                                        className={`sticky top-0 z-20 p-4 text-center border-b border-white/10 w-[180px] min-w-[180px] ${slot.type === 'break' ? 'bg-[#062c3e] italic text-white' : 'bg-[#08384F]  bg'}`}
                                     >
                                         <div className="flex flex-col gap-1">
                                             {/* <span className="text-[10px] opacity-70 font-medium">
@@ -433,7 +433,7 @@ export default function TimeTable() {
                                                                     </div>
                                                                 </div>
                                                                 <div className="flex items-center gap-1.5 mt-auto">
-                                                                    <div className="w-1 h-1 bg-[#08384F] rounded-full"></div>
+                                                                    <div className="w-1 h-1 bg-[#08384F]  bg  rounded-full"></div>
                                                                     <span className="text-[12px] font-medium text-slate-500 truncate">
                                                                         {periodEntry.facultyName}
                                                                     </span>
@@ -446,7 +446,7 @@ export default function TimeTable() {
                                                                 onClick={() => openModal(row.day, slot.time)}
                                                                 className="opacity-0 group-hover/add:opacity-100 flex flex-col items-center gap-1 text-[10px] font-bold text-[#08384F] transition-all transform hover:scale-105"
                                                             >
-                                                                <div className="bg-[#08384F] p-2 rounded-full mb-1">
+                                                                <div className="bg-[#08384F]  bg  p-2 rounded-full mb-1">
                                                                     <Plus className="w-4 h-4 text-white" />
                                                                 </div>
                                                                 Add
@@ -533,7 +533,7 @@ export default function TimeTable() {
                             <button
                                 onClick={handleSave}
                                 disabled={isSaving}
-                                className={`w-full ${isSaving ? "bg-gray-400 cursor-not-allowed" : "bg-[#08384F] cursor-pointer hover:bg-[#08394fe8]"} text-white py-2 rounded mt-2 flex items-center justify-center gap-2`}
+                                className={`w-full ${isSaving ? "bg-gray-400 cursor-not-allowed" : "bg-[#08384F]  bg  cursor-pointer hover:bg-[#08394fe8]"} text-white py-2 rounded mt-2 flex items-center justify-center gap-2`}
                             >
                                 {isSaving ? "Saving..." : "Save"}
                             </button>

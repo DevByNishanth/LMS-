@@ -72,7 +72,7 @@ const getRandomImage = () => {
 
 const ClassRoomHomepage = () => {
   // Auth
-  const apiUrl = import.meta.env.VITE_API_URL; 
+  const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("LmsToken");
   const decoded = jwtDecode(token);
   const staffName = decoded.name;
@@ -172,7 +172,7 @@ const ClassRoomHomepage = () => {
                   </div>
 
                   {/* Profile Image */}
-                  <div className="w-8 h-8 rounded-full bg-[#0B56A4] text-white flex items-center justify-center font-semibold shadow-sm">
+                  <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
                     {firstName}
                   </div>
                 </div>
@@ -273,7 +273,7 @@ const ClassRoomHomepage = () => {
                   <div className="btn-container flex items-center justify-center mt-3">
                     <button
                       onClick={() => setIsOpen(true)}
-                      className="bg-[#0B56A4] text-white flex items-center gap-2 px-4 py-2 rounded-md hover:bg-[#0b55a4ce] cursor-pointer transition"
+                      className="bg-[#08384F]  bgtext-white flex items-center gap-2 px-4 py-2 rounded-md hover:bg-[#0b55a4ce] cursor-pointer transition"
                     >
                       <Plus /> Create new Class
                     </button>
