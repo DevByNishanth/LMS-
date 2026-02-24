@@ -1,10 +1,10 @@
 import React from 'react'
 import activeRightArrow from "../assets/right-arrow.svg";
 
-const CoursePlanTab = () => {
+const CoursePlanTab = ({ courseDetailsStatus }) => {
     return (
         <>
-            <div className="w-[100%]  p-4 ">
+            <div className="w-full py-2 px-4 ">
                 {/* Title */}
                 <h2 className="text-[18px] font-medium text-gray-800 mb-1">
                     Complete Your Course Plan
@@ -58,16 +58,35 @@ const CoursePlanTab = () => {
                                     >
                                         <div className="flex items-center gap-2">
                                             {/* Circle indicator */}
-                                            <div
-                                                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center
-                    ${isActive
-                                                        ? "border-white bg-white"
-                                                        : "border-gray-400"
-                                                    }`}
-                                            >
-                                                {isActive && (
-                                                    <div className="w-2 h-2 rounded-full bg-[#08384F]"></div>
+                                            <div className="w-5 h-5 rounded-full border-2 flex items-center justify-center relative">
+
+                                                {/* NOT STARTED */}
+                                                {courseDetailsStatus === "not_started" && (
+                                                    <div className="w-full h-full rounded-full border-2 border-gray-400"></div>
                                                 )}
+
+                                                {/* DIRTY → Half circle */}
+                                                {courseDetailsStatus === "dirty" && (
+                                                    <div className="w-full h-full rounded-full border-2 border-yellow-500 overflow-hidden">
+                                                        <div className="w-1/2 h-full bg-yellow-500"></div>
+                                                    </div>
+                                                )}
+
+                                                {/* COMPLETED → Tick */}
+                                                {courseDetailsStatus === "completed" && (
+                                                    <div className="w-full h-full rounded-full bg-green-600 flex items-center justify-center">
+                                                        <svg
+                                                            className="w-3 h-3 text-white"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            strokeWidth="3"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path d="M5 13l4 4L19 7" />
+                                                        </svg>
+                                                    </div>
+                                                )}
+
                                             </div>
 
                                             {/* Tab text */}
