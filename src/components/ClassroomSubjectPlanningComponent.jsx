@@ -42,19 +42,36 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
 
     }, [formData]);
 
+
+
+
+    const [activeTab, setActiveTab] = React.useState(0);
+
+    const tabs = [
+        "Course Details",
+        "CO-PO and CO-PSO Mapping",
+        "Reference and others",
+        "Lesson Planner ( Theory )",
+        "Lesson Planner ( Lab )",
+    ];
+
     return (
         <>
             <div className="main-container w-full flex gap-2 min-h-[calc(100vh-160px)] max-h-[calc(100vh-150px)] ">
                 {/* <UnitComponent onSelect={(unit) => setSelectedUnit(unit)} />
                 <SubjectSubTopicsTable selectedUnit={selectedUnit} subjectId={subjectId} /> */}
                 <div className='w-[30%] border border-gray-300 rounded-md '>
-                    <CoursePlanTab courseDetailsStatus={courseDetailsStatus} />
+                    <CoursePlanTab tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} courseDetailsStatus={courseDetailsStatus} />
                 </div>
                 <div className="form-container border overflow-auto w-[80%] border-gray-300 rounded-md py-2 pl-4 hide-scrollbar">
-                    {/* <CourseDetailsForm formData={formData}
-                        setFormData={setFormData} /> */}
 
-                    <CoPoMapping />
+                    {activeTab === 0 && (
+                        <CourseDetailsForm formData={formData}
+                            setFormData={setFormData} />
+                    )}
+                    {activeTab === 1 && (
+                        <CoPoMapping />
+                    )}
                 </div>
             </div>
 
