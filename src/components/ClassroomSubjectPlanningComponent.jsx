@@ -3,6 +3,7 @@ import UnitComponent from "./UnitComponent";
 import SubjectSubTopicsTable from "./SubjectSubTopicsTable";
 import CoursePlanTab from './CoursePlanTab';
 import CourseDetailsForm from './CourseDetailsForm';
+import CoPoMapping from './CoPoMapping';
 
 const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
     const [selectedUnit, setSelectedUnit] = useState("Unit 1");
@@ -49,9 +50,11 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
                 <div className='w-[30%] border border-gray-300 rounded-md '>
                     <CoursePlanTab courseDetailsStatus={courseDetailsStatus} />
                 </div>
-                <div className="form-container border overflow-auto w-[80%] border-gray-300 rounded-md py-2 px-4 hide-scrollbar">
-                    <CourseDetailsForm formData={formData}
-                        setFormData={setFormData} />
+                <div className="form-container border overflow-auto w-[80%] border-gray-300 rounded-md py-2 pl-4 hide-scrollbar">
+                    {/* <CourseDetailsForm formData={formData}
+                        setFormData={setFormData} /> */}
+
+                    <CoPoMapping />
                 </div>
             </div>
 
