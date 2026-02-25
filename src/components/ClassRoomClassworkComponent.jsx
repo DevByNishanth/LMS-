@@ -18,9 +18,7 @@ import QuestionAssignmentCanvas from "./QuestionAssignmentCanvas";
 import ClassworkDetailView from "./ClassworkDetailView";
 import AddMaterialModal from "./AddMaterialModal";
 
-
 // const classWorkData1 = [];
-
 
 const ClassRoomClassworkComponent = () => {
   // states
@@ -49,12 +47,19 @@ const ClassRoomClassworkComponent = () => {
   const fetchAssignments = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/assignment/subject/${classId}/${sectionId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}api/assignment/subject/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       console.log("Assignments:", response.data.assignments);
-      setAssignments(response.data.assignments.map(a => ({ ...a, itemType: 'assignment' })));
-
+      setAssignments(
+        response.data.assignments.map((a) => ({
+          ...a,
+          itemType: "assignment",
+        })),
+      );
     } catch (error) {
       console.error("Error fetching assignments:", error);
     }
@@ -63,11 +68,16 @@ const ClassRoomClassworkComponent = () => {
   const fetchQuestions = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/question/${classId}/${sectionId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}api/question/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       console.log("Questions:", response.data.questions);
-      setQuestions(response.data.questions.map(q => ({ ...q, itemType: 'question' })));
+      setQuestions(
+        response.data.questions.map((q) => ({ ...q, itemType: "question" })),
+      );
     } catch (error) {
       console.error("Error fetching questions:", error);
     }
@@ -76,11 +86,16 @@ const ClassRoomClassworkComponent = () => {
   const fetchMaterials = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}api/material/subject/${classId}/${sectionId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await axios.get(
+        `${import.meta.env.VITE_API_URL}api/material/subject/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
       console.log("Materials:", response.data.data);
-      setMaterials(response.data.data.map(m => ({ ...m, itemType: 'material' })));
+      setMaterials(
+        response.data.data.map((m) => ({ ...m, itemType: "material" })),
+      );
     } catch (error) {
       console.error("Error fetching materials:", error);
     }
@@ -90,34 +105,36 @@ const ClassRoomClassworkComponent = () => {
     fetchAssignments();
     fetchQuestions();
     fetchMaterials();
-  }
-
+  };
 
   async function handleDetailView(item) {
     setSelectedAssignment(item);
     setIsDetailview(true);
-
   }
 
-  // useEffect calls 
+  // useEffect calls
 
   useEffect(() => {
     fetchAllClasswork();
   }, [classId]);
 
-  const classworkList = [...assignments, ...questions, ...materials].sort((a, b) => {
-    return new Date(b.createdAt) - new Date(a.createdAt);
-  });
+  const classworkList = [...assignments, ...questions, ...materials].sort(
+    (a, b) => {
+      return new Date(b.createdAt) - new Date(a.createdAt);
+    },
+  );
 
   const filteredClasswork = classworkList.filter((item) => {
     const matchesFilter =
       selectedFilter === "All Classwork" ||
-      (selectedFilter === "Assignment" && item.itemType === 'assignment') ||
-      (selectedFilter === "Question" && item.itemType === 'question') ||
-      (selectedFilter === "Material" && item.itemType === 'material');
+      (selectedFilter === "Assignment" && item.itemType === "assignment") ||
+      (selectedFilter === "Question" && item.itemType === "question") ||
+      (selectedFilter === "Material" && item.itemType === "material");
 
     // Filter by search query
-    const matchesSearch = item.title.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = item.title
+      .toLowerCase()
+      .includes(searchQuery.toLowerCase());
 
     return matchesFilter && matchesSearch;
   });
@@ -148,7 +165,11 @@ const ClassRoomClassworkComponent = () => {
             // Initial Empty State: No classwork at all
             <div className="w-full h-full flex flex-col justify-center items-center gap-4 relative">
               <div className="img-container h-[260px]">
-                <img src={noDataImg} className="w-[300px] h-full m-auto" alt="No Data" />
+                <img
+                  src={noDataImg}
+                  className="w-[300px] h-full m-auto"
+                  alt="No Data"
+                />
               </div>
               <div className="text-container text-center ">
                 <h1 className="font-medium text-lg text-[#0B56A4]">
@@ -158,7 +179,10 @@ const ClassRoomClassworkComponent = () => {
                   Start by adding classwork to share lessons, assignments, and
                   resources with your class.
                 </h1>
-                <div ref={dropdownRef} className="btn-container absolute top-0 right-0">
+                <div
+                  ref={dropdownRef}
+                  className="btn-container absolute top-0 right-0"
+                >
                   <button
                     onClick={() => setIsDropdown(!isDropdown)}
                     className="bg-[#08384F]  bghover:bg-[#0b55a4db] cursor-pointer transition-all duration-300 text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit m-auto mt-2"
@@ -205,11 +229,13 @@ const ClassRoomClassworkComponent = () => {
             <>
               <div className="header-container mb-4">
                 <div className="section-1 flex items-center justify-between ">
-                  <h1 className="text-[#282526] font-medium text-lg">Classwork List</h1>
+                  <h1 className="text-[#282526] font-medium text-lg">
+                    Classwork List
+                  </h1>
                   <div ref={dropdownRef} className="btn-container relative">
                     <button
                       onClick={() => setIsDropdown(!isDropdown)}
-                      className="bg-[#08384F]  bgtext-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit cursor-pointer hover:bg-[#0b55a4db]"
+                      className="bg-[#08384F]  text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit cursor-pointer hover:bg-[#0b55a4db]"
                     >
                       <Plus
                         className={`text-white ${isDropdown ? "rotate-135" : "rotate-0"} transition-all duration-300`}
@@ -232,7 +258,10 @@ const ClassRoomClassworkComponent = () => {
                           <FileQuestionMark className="text-gray-600 w-4 h-4" />
                           Question
                         </button>
-                        <button onClick={() => setIsMaterialModalOpen(true)} className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full text-sm font-medium">
+                        <button
+                          onClick={() => setIsMaterialModalOpen(true)}
+                          className="flex items-center gap-2 py-3 px-3 cursor-pointer hover:bg-gray-100 w-full text-sm font-medium"
+                        >
                           <BookOpenIcon className="text-gray-600 w-4 h-4" />
                           Material
                         </button>
@@ -270,7 +299,12 @@ const ClassRoomClassworkComponent = () => {
                     </button>
                     {filterDropdown && (
                       <div className="dropdown-container w-full absolute top-full left-0 bg-[#ffffff] z-30 border border-gray-200 shadow-lg rounded overflow-hidden">
-                        {["All Classwork", "Assignment", "Question", "Material"].map((option) => (
+                        {[
+                          "All Classwork",
+                          "Assignment",
+                          "Question",
+                          "Material",
+                        ].map((option) => (
                           <button
                             key={option}
                             onClick={() => {
@@ -301,19 +335,28 @@ const ClassRoomClassworkComponent = () => {
                       >
                         <div className="flex items-center gap-3 ">
                           <div className="img-container bg-[#08384F]  bgw-9 h-9 rounded-full flex items-center justify-center">
-                            {item.itemType === 'question' ? (
+                            {item.itemType === "question" ? (
                               <FileQuestionMark className="text-white w-5 h-5" />
-                            ) : item.itemType === 'material' ? (
+                            ) : item.itemType === "material" ? (
                               <BookOpenIcon className="text-white w-5 h-5" />
                             ) : (
-                              <img src={assignmentWorkIcon} className="w-5 h-5" alt="Icon" />
+                              <img
+                                src={assignmentWorkIcon}
+                                className="w-5 h-5"
+                                alt="Icon"
+                              />
                             )}
                           </div>
-                          <h1 className="font-medium text-gray-800 group-hover:text-[#0B56A4] transition-colors">{item.title}</h1>
+                          <h1 className="font-medium text-gray-800 group-hover:text-[#0B56A4] transition-colors">
+                            {item.title}
+                          </h1>
                         </div>
                         <div className="flex items-center gap-4">
                           <h1 className="text-[#646464] text-xs">
-                            Posted on : {new Date(item.createdAt || Date.now()).toLocaleDateString()}
+                            Posted on :{" "}
+                            {new Date(
+                              item.createdAt || Date.now(),
+                            ).toLocaleDateString()}
                           </h1>
                           <button className="hover:text-[#0B56A4] cursor-pointer">
                             <span className="">
@@ -338,11 +381,19 @@ const ClassRoomClassworkComponent = () => {
                 // Filtered Empty State: Classwork exists but nothing matches filter/search
                 <div className="flex flex-col items-center justify-center py-10 px-4">
                   <div className="img-container h-[180px] mb-4">
-                    <img src={noDataImg} className="w-[200px] h-full m-auto opacity-60" alt="No Results" />
+                    <img
+                      src={noDataImg}
+                      className="w-[200px] h-full m-auto opacity-60"
+                      alt="No Results"
+                    />
                   </div>
-                  <h2 className="text-lg font-medium text-gray-800 ">No matches found</h2>
+                  <h2 className="text-lg font-medium text-gray-800 ">
+                    No matches found
+                  </h2>
                   <p className="text-gray-500 text-center max-w-xs text-sm">
-                    We couldn't find any classwork matching "{searchQuery}" in {selectedFilter.toLowerCase()}s. Try changing your search query or filter.
+                    We couldn't find any classwork matching "{searchQuery}" in{" "}
+                    {selectedFilter.toLowerCase()}s. Try changing your search
+                    query or filter.
                   </p>
                   <button
                     onClick={() => {
@@ -359,7 +410,10 @@ const ClassRoomClassworkComponent = () => {
           )}
         </section>
       ) : (
-        <ClassworkDetailView selectedAssignment={selectedAssignment} setIsDetailview={setIsDetailview} />
+        <ClassworkDetailView
+          selectedAssignment={selectedAssignment}
+          setIsDetailview={setIsDetailview}
+        />
       )}
 
       {isAssignmentModalOpen && (
@@ -372,15 +426,21 @@ const ClassRoomClassworkComponent = () => {
         />
       )}
 
-      {isQuestionModalOpen && <QuestionAssignmentCanvas
-        setIsAssignmentModalOpen={setIsQuestionModalOpen}
-        onClose={() => {
-          setIsQuestionModalOpen(false);
-          fetchQuestions(); // Refresh questions list
-        }}
-      />}
+      {isQuestionModalOpen && (
+        <QuestionAssignmentCanvas
+          setIsAssignmentModalOpen={setIsQuestionModalOpen}
+          onClose={() => {
+            setIsQuestionModalOpen(false);
+            fetchQuestions(); // Refresh questions list
+          }}
+        />
+      )}
 
-      {quizAssignmentModalOpen && <QuizAssignmentCanvas setIsAssignmentModalOpen={setIsQuizAssignmentModalOpen} />}
+      {quizAssignmentModalOpen && (
+        <QuizAssignmentCanvas
+          setIsAssignmentModalOpen={setIsQuizAssignmentModalOpen}
+        />
+      )}
 
       {isMaterialModalOpen && (
         <AddMaterialModal

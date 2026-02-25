@@ -208,7 +208,7 @@ const ClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
 
                     {/* Review Grades */}
                     <div className="flex justify-end px-4 mb-2">
-                        <button onClick={() => setIsStudentWorkComponent(true)} className="flex items-center gap-2 bg-[#08384F]  bgtext-white text-sm px-4 cursor-pointer py-2 rounded-lg hover:bg-[#0B56A4]/90">
+                        <button onClick={() => setIsStudentWorkComponent(true)} className="flex items-center gap-2 bg-[#08384F]  text-white text-sm px-4 cursor-pointer py-2 rounded-lg hover:bg-[#0B56A4]/90">
                             <Users /> View student work
                         </button>
                     </div>

@@ -14,10 +14,7 @@ const HeaderComponent = ({ title, second, secondColor }) => {
         const decoded = jwtDecode(token);
 
         const name =
-          decoded?.name ||
-          decoded?.username ||
-          decoded?.user?.name ||
-          "";
+          decoded?.name || decoded?.username || decoded?.user?.name || "";
 
         if (name) {
           setFirstLetter(name.charAt(0).toUpperCase());
@@ -33,9 +30,7 @@ const HeaderComponent = ({ title, second, secondColor }) => {
       <div className="flex gap-1 items-center">
         <h1 className="text-lg font-medium text-[#282526]">{title}</h1>
         {second && <ChevronRight />}
-        {second && (
-          <div className={`${secondColor} font-medium`}>{second}</div>
-        )}
+        {second && <div className={`${secondColor} font-medium`}>{second}</div>}
       </div>
 
       <div className="flex items-center gap-3">
@@ -43,7 +38,7 @@ const HeaderComponent = ({ title, second, secondColor }) => {
           <img src={notificationIcon} className="w-4 h-4" />
         </div>
 
-        <div className="w-8 h-8 rounded-full bg-[#08384F]  text-white flex items-center justify-center font-semibold shadow-sm">
+        <div className="w-8 h-8 rounded-full bg-[#08384F] text-white flex items-center justify-center font-semibold shadow-sm">
           {firstLetter}
         </div>
       </div>
