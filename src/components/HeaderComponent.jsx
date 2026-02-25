@@ -47,7 +47,7 @@ const HeaderComponent = ({ title, second, secondColor }) => {
         </div>
 
         {/* Profile Avatar (Letter) */}
-        <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
+        <div className="w-8 h-8 rounded-full bg-[#08384F]  text-white flex items-center justify-center font-semibold shadow-sm">
           {firstLetter}
         </div>
       </div>

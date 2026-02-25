@@ -71,15 +71,15 @@ const ClassroompeopleContainer = () => {
             {/* tab container  */}
 
             <div className="tab-container px-4 py-2 flex items-center gap-2 bg-[#E6E9F5] rounded-full">
-                <button onClick={() => setSelectedTab("Teachers")} className={`w-1/2 py-2 px-3 cursor-pointer rounded-full ${selectedTab == "Teachers" ? "bg-[#08384F]  bgtext-white" : "text-black"}`}>Teachers</button>
-                <button onClick={() => { setSelectedTab("Students") }} className={`w-1/2 py-2 cursor-pointer px-3 rounded-full ${selectedTab == "Students" ? "bg-[#08384F]  bgtext-white" : "text-black"}`}>Students</button>
+                <button onClick={() => setSelectedTab("Teachers")} className={`w-1/2 py-2 px-3 cursor-pointer rounded-full ${selectedTab == "Teachers" ? "bg-[#08384F]  text-white" : "text-black"}`}>Teachers</button>
+                <button onClick={() => { setSelectedTab("Students") }} className={`w-1/2 py-2 cursor-pointer px-3 rounded-full ${selectedTab == "Students" ? "bg-[#08384F]  text-white" : "text-black"}`}>Students</button>
             </div>
 
             <header className='mt-4 flex items-center justify-between relative'>
                 <h1 className='font-medium text-lg'>{selectedTab} List <span className='text-[#0B56A4]'>({selectedTab === "Teachers" ? faculties.length : students.length})</span></h1>
                 <div className="btn-container">
-                    <button onClick={() => setShowAddModal(true)} className='flex items-center cursor-pointer gap-3 text-white bg-[#08384F]  bgpx-7 py-2 rounded-lg'><Plus className="text-white"></Plus> Add</button>
-                    <div className="dropdown-contanier absolute top-full right-0">
+                    <button onClick={() => setShowAddModal(true)} className='flex items-center cursor-pointer gap-1 text-white bg-[#08384F]  px-4 py-2 rounded-lg'><Plus className="text-white"></Plus> Add</button>
+                    <div className="dropdown-contanier absolute top-full right-0 ">
                         {showAddModal && <ClassroomAddStudentsModal selectedTab={selectedTab} onClose={() => {
                             setShowAddModal(false)
                         }} />}
@@ -89,7 +89,6 @@ const ClassroompeopleContainer = () => {
 
             </header>
 
-            {/* people-list  */}
 
             {selectedTab == "Teachers" ? (
                 <div className="teachers-list w-full mt-2 max-h-[calc(100vh-320px)] overflow-auto space-y-2">

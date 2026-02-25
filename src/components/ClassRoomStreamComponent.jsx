@@ -27,14 +27,14 @@ const ClassRoomStreamComponent = () => {
   const [isAnnouncementModal, setIsAnnouncementModal] = useState(false);
   const [copiedText, setCopiedText] = useState(false);
   const [streamData, setStreamData] = useState({});
-  const [feedData, setFeedData] = useState([])
-  const [actionDropdown, setActionDropdown] = useState(null)
+  const [feedData, setFeedData] = useState([]);
+  const [actionDropdown, setActionDropdown] = useState(null);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [activeCommentBox, setActiveCommentBox] = useState(null);
   const [commentText, setCommentText] = useState("");
 
-  // ref 
-  const actionDropdownRef = useRef(null)
+  // ref
+  const actionDropdownRef = useRef(null);
 
   // useEffect calls
 
@@ -67,13 +67,13 @@ const ClassRoomStreamComponent = () => {
     setSelectedAnnouncement(item);
     setIsAnnouncementModal(true);
     setActionDropdown(null);
-  }
+  };
 
   const handleDelete = (item) => {
     // Logic for delete will go here
     setActionDropdown(null);
     console.log("Deleting item", item);
-  }
+  };
 
   const handleToggleComments = (id) => {
     if (activeCommentBox === id) {
@@ -95,7 +95,7 @@ const ClassRoomStreamComponent = () => {
           headers: {
             Authorization: `Bearer ${token}`,
           },
-        }
+        },
       );
       if (response.status === 200 || response.status === 201) {
         setCommentText("");
@@ -108,17 +108,19 @@ const ClassRoomStreamComponent = () => {
 
   useEffect(() => {
     function handleClickOutside(e) {
-      if (actionDropdownRef.current && !actionDropdownRef.current.contains(e.target)) {
-        setActionDropdown(false)
+      if (
+        actionDropdownRef.current &&
+        !actionDropdownRef.current.contains(e.target)
+      ) {
+        setActionDropdown(false);
       }
     }
-    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener("mousedown", handleClickOutside);
 
     return () => {
-      document.removeEventListener('mousedown', handleClickOutside)
-    }
-
-  }, [])
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
 
   // functions
   async function handleCopyText(textToCopy) {
@@ -137,13 +139,16 @@ const ClassRoomStreamComponent = () => {
   //   fetch stream details
   async function getStreamDetails() {
     try {
-      const res = await axios.get(`${apiUrl}api/staff/stream/${classId}/${sectionId}`, {
-        headers: {
-          Authorization: `Bearer ${token}`,
+      const res = await axios.get(
+        `${apiUrl}api/staff/stream/${classId}/${sectionId}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         },
-      });
+      );
       setStreamData(res.data);
-      setFeedData(res.data.stream)
+      setFeedData(res.data.stream);
     } catch (err) {
       console.error(
         "Error occured while fetching Classroom stream details : ",
@@ -268,7 +273,7 @@ const ClassRoomStreamComponent = () => {
                       <div className="flex gap-2">
                         {/* Avatar */}
                         <div>
-                          <p className="bg-[#08384F]  bgtext-white w-10 h-10 flex items-center justify-center rounded-full">
+                          <p className="bg-[#08384F]  text-white w-10 h-10 flex items-center justify-center rounded-full">
                             S
                           </p>
                         </div>
@@ -280,7 +285,16 @@ const ClassRoomStreamComponent = () => {
                             {firstLetter}
                           </p>
                           <p className="text-xs text-gray-500">
-                            Posted on {new Date(item.createdAt).toLocaleDateString('en-GB')} at {new Date(item.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}
+                            Posted on{" "}
+                            {new Date(item.createdAt).toLocaleDateString(
+                              "en-GB",
+                            )}{" "}
+                            at{" "}
+                            {new Date(item.createdAt).toLocaleTimeString([], {
+                              hour: "2-digit",
+                              minute: "2-digit",
+                              hour12: true,
+                            })}
                           </p>
                         </div>
                       </div>
@@ -288,7 +302,11 @@ const ClassRoomStreamComponent = () => {
                       {/* Three dots Action dropdpwn*/}
                       <div className="text-gray-400 cursor-pointer select-none relative">
                         <svg
-                          onClick={() => setActionDropdown(actionDropdown === item._id ? null : item._id)}
+                          onClick={() =>
+                            setActionDropdown(
+                              actionDropdown === item._id ? null : item._id,
+                            )
+                          }
                           xmlns="http://www.w3.org/2000/svg"
                           width="16"
                           height="16"
@@ -310,13 +328,15 @@ const ClassRoomStreamComponent = () => {
                                 onClick={() => handleEdit(item)}
                                 className="w-full text-black cursor-pointer text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2"
                               >
-                                <Pencil className="w-4 h-4 text-green-800" /> Edit
+                                <Pencil className="w-4 h-4 text-green-800" />{" "}
+                                Edit
                               </button>
                               <button
                                 onClick={() => handleDelete(item)}
                                 className="w-full text-black cursor-pointer text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2"
                               >
-                                <Trash className="w-4 h-4 text-red-800" /> Delete
+                                <Trash className="w-4 h-4 text-red-800" />{" "}
+                                Delete
                               </button>
                             </div>
                           </div>
@@ -333,12 +353,22 @@ const ClassRoomStreamComponent = () => {
                       {(item.link || item.youtubeLink) && (
                         <div className="mt-2 flex flex-col gap-1 text-blue-600 text-sm">
                           {item.link && (
-                            <a href={item.link} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            <a
+                              href={item.link}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:underline"
+                            >
                               {item.link}
                             </a>
                           )}
                           {item.youtubeLink && (
-                            <a href={item.youtubeLink} target="_blank" rel="noopener noreferrer" className="hover:underline">
+                            <a
+                              href={item.youtubeLink}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="hover:underline"
+                            >
                               {item.youtubeLink}
                             </a>
                           )}
@@ -351,12 +381,18 @@ const ClassRoomStreamComponent = () => {
                             <div className="file-container ">
                               {item.attachments.map((file, index) => {
                                 return (
-                                  <a key={index} target="_blank" href={file} rel="noopener noreferrer" className="flex items-center gap-2 border border-gray-300 rounded-md py-2 px-4 bg-gray-50 cursor-pointer">
+                                  <a
+                                    key={index}
+                                    target="_blank"
+                                    href={file}
+                                    rel="noopener noreferrer"
+                                    className="flex items-center gap-2 border border-gray-300 rounded-md py-2 px-4 bg-gray-50 cursor-pointer"
+                                  >
                                     {/* <File className="w-4 h-4 text-black-400" /> */}
                                     <img src={fileIcon} alt="" />
                                     <span>{file}</span>
                                   </a>
-                                )
+                                );
                               })}
                             </div>
                           </>
@@ -375,7 +411,9 @@ const ClassRoomStreamComponent = () => {
                         </span>
                         <div className="w-full flex items-center justify-between">
                           <span className="text-black font-medium  ">
-                            {item.comments?.length > 0 ? `${item.comments.length} Comments` : "Comments"}
+                            {item.comments?.length > 0
+                              ? `${item.comments.length} Comments`
+                              : "Comments"}
                           </span>
                           {activeCommentBox === item._id && (
                             <div className="">
@@ -392,10 +430,15 @@ const ClassRoomStreamComponent = () => {
                           <div className="space-y-4 mb-4 max-h-60 overflow-y-auto">
                             {item.comments && item.comments.length > 0 ? (
                               item.comments.map((comment, idx) => (
-                                <div key={comment._id || idx} className="flex gap-3">
+                                <div
+                                  key={comment._id || idx}
+                                  className="flex gap-3"
+                                >
                                   {console.log("comment data : ", comment)}
                                   <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs flex-shrink-0">
-                                    {comment.name ? comment.name[0]?.toUpperCase() : "U"}
+                                    {comment.name
+                                      ? comment.name[0]?.toUpperCase()
+                                      : "U"}
                                   </div>
                                   <div className="bg-gray-100 rounded-lg p-3 flex-1">
                                     <div className="flex justify-between items-center mb-1">
@@ -403,15 +446,24 @@ const ClassRoomStreamComponent = () => {
                                         {comment.name || "User"}
                                       </span>
                                       <span className="text-[10px] text-gray-500">
-                                        {new Date(comment.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        {new Date(
+                                          comment.createdAt,
+                                        ).toLocaleTimeString([], {
+                                          hour: "2-digit",
+                                          minute: "2-digit",
+                                        })}
                                       </span>
                                     </div>
-                                    <p className="text-sm text-gray-700">{comment.comment}</p>
+                                    <p className="text-sm text-gray-700">
+                                      {comment.comment}
+                                    </p>
                                   </div>
                                 </div>
                               ))
                             ) : (
-                              <p className="text-sm text-gray-500 text-center italic">No comments yet. Be the first to comment!</p>
+                              <p className="text-sm text-gray-500 text-center italic">
+                                No comments yet. Be the first to comment!
+                              </p>
                             )}
                           </div>
 
@@ -428,7 +480,8 @@ const ClassRoomStreamComponent = () => {
                                 placeholder="Add a class comment..."
                                 className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 text-sm focus:outline-none focus:border-[#0B56A4]"
                                 onKeyDown={(e) => {
-                                  if (e.key === 'Enter') handlePostComment(item._id);
+                                  if (e.key === "Enter")
+                                    handlePostComment(item._id);
                                 }}
                               />
                               <button

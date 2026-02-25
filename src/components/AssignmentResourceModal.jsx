@@ -42,18 +42,20 @@ const AssignmentResourceModal = ({
       if (allowedExtensions && allowedExtensions.length > 0) {
         const fileName = file.name.toLowerCase();
         const isValidExtension = allowedExtensions.some((ext) =>
-          fileName.endsWith(ext.toLowerCase())
+          fileName.endsWith(ext.toLowerCase()),
         );
 
         if (!isValidExtension) {
-          alert(`Invalid file type. Allowed types: ${allowedExtensions.join(", ")}`);
+          alert(
+            `Invalid file type. Allowed types: ${allowedExtensions.join(", ")}`,
+          );
           e.target.value = null;
           return;
         }
       }
 
       // Explicit SVG check if not covered by allowedExtensions (though if allowedExtensions is used, it should be covered)
-      // But if allowedExtensions is empty, we might want to block SVG if specific global rule? 
+      // But if allowedExtensions is empty, we might want to block SVG if specific global rule?
       // The user request "No svg allowed" was specific to the context.
       // Better to rely on allowedExtensions passed from parent.
 
@@ -162,7 +164,7 @@ const AssignmentResourceModal = ({
           </button>
           <button
             onClick={handleUpload}
-            className="px-4 py-2 cursor-pointer rounded bg-[#08384F]  bgtext-white hover:opacity-90"
+            className="px-4 py-2 cursor-pointer rounded bg-[#08384F]  text-white hover:opacity-90"
           >
             {selectedAttachmentOption === "upload" ? "Upload" : "Add Link"}
           </button>

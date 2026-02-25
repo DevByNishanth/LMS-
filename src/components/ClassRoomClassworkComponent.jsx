@@ -209,7 +209,7 @@ const ClassRoomClassworkComponent = () => {
                   <div ref={dropdownRef} className="btn-container relative">
                     <button
                       onClick={() => setIsDropdown(!isDropdown)}
-                      className="bg-[#08384F]  bgtext-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit cursor-pointer hover:bg-[#0b55a4db]"
+                      className="bg-[#08384F]  text-white flex items-center gap-3 py-2 px-4 rounded-lg w-fit cursor-pointer hover:bg-[#0b55a4db]"
                     >
                       <Plus
                         className={`text-white ${isDropdown ? "rotate-135" : "rotate-0"} transition-all duration-300`}
