@@ -135,7 +135,7 @@ const FacultyTable = () => {
               setEditData(null);
               setIsCanvas(true);
             }}
-            className="flex items-center gap-2 bg-[#08384F]  bgtext-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#094685] transition-colors font-medium text-sm"
+            className="flex items-center gap-2 bg-[#08384F] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#0b3a53] transition-colors font-medium text-sm"
           >
             <Plus size={18} /> Add Faculty
           </button>
@@ -145,7 +145,7 @@ const FacultyTable = () => {
       <div className="overflow-auto rounded-lg border max-h-[calc(100vh-390px)] border-gray-400">
         <table className="w-full">
           <thead className="sticky top-0 z-10">
-            <tr className="bg-[#08384F]  bg  text-white text-sm">
+            <tr className="bg-[#08384F] text-white text-sm">
               <th className="py-3 px-4 text-left whitespace-nowrap">Emp ID</th>
               <th className="py-3 px-4 text-left whitespace-nowrap">
                 Emp Name
@@ -177,55 +177,58 @@ const FacultyTable = () => {
               filtered.map((item, index) => (
                 <tr
                   key={index}
-                  className={`text-sm hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-gray-50" : "bg-white"
-                    } border-b border-gray-200`}
+                  className={`text-sm hover:bg-blue-50 transition-colors ${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } border-b border-gray-200`}
                 >
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap font-medium text-gray-700">
                     {item.employeeId}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.firstName}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.designation}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.department}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">{item.email}</td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
+                    {item.email}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.mobileNumber}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex justify-center gap-4">
-                      <div
+                      <button
                         onClick={() => {
                           setCanvasData(item);
                           setIsDetailCanvas(true);
                         }}
-                        className="bg-[#0567CE] w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
+                        className="bg-blue-500 w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-blue-600 hover:scale-110 transition-all shadow-sm"
                       >
-                        <Eye size={18} className="text-white" />
-                      </div>
-                      <div
+                        <Eye size={16} className="text-white" />
+                      </button>
+                      <button
                         onClick={() => {
                           setIsEdit(true);
                           setEditData(item);
                           setIsCanvas(true);
                         }}
-                        className="bg-[#22DE6F] w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
+                        className="bg-emerald-500 w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-emerald-600 hover:scale-110 transition-all shadow-sm"
                       >
-                        <Pencil size={18} className="text-white" />
-                      </div>
-                      <div
+                        <Pencil size={16} className="text-white" />
+                      </button>
+                      <button
                         onClick={() => {
                           setDeleteId(item._id);
                           setIsDelete(true);
                         }}
-                        className="bg-[#F24343] w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
+                        className="bg-rose-500 w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-rose-600 hover:scale-110 transition-all shadow-sm"
                       >
-                        <Trash2 size={18} className="text-white" />
-                      </div>
+                        <Trash2 size={16} className="text-white" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -234,7 +237,11 @@ const FacultyTable = () => {
               <tr>
                 <td colSpan="7" className="py-10">
                   <div className="flex flex-col items-center justify-center">
-                    <img src={noData} className="w-48 mb-4" alt="No data" />
+                    <img
+                      src={noData}
+                      className="w-48 mb-4 opacity-80"
+                      alt="No data"
+                    />
                     <h1 className="text-gray-500 font-medium">
                       No records found!
                     </h1>

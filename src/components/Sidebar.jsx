@@ -113,7 +113,7 @@ const Sidebar = () => {
   return (
     <div className="relative hidden md:block">
       <div
-        className={`fixed top-0 left-0 h-screen bg-[#08384F]  bg  z-50 transition-all duration-300 flex flex-col ${collapsed ? "w-[83px]" : "w-[20%]"
+        className={`fixed top-0 left-0 h-screen bg-[#08384F]  z-50 transition-all duration-300 flex flex-col ${collapsed ? "w-[83px]" : "w-[20%]"
           }`}
       >
         <div className="logo-container my-5">
