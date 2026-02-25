@@ -152,7 +152,7 @@ const StudentManagementTable = () => {
               setEditData(null);
               setIsModal(true);
             }}
-            className="flex items-center gap-2 bg-[#08384F]  bgtext-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#094685] transition-colors"
+            className="flex items-center gap-2 bg-[#08384F] text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-[#0b3a53] transition-colors"
           >
             <Plus size={18} /> Add Student
           </button>
@@ -162,7 +162,7 @@ const StudentManagementTable = () => {
       <div className="overflow-auto rounded-lg border max-h-[calc(100vh-380px)] border-gray-400">
         <table className="w-full">
           <thead className="sticky top-0 z-10">
-            <tr className="bg-[#08384F]  bg  text-white text-sm">
+            <tr className="bg-[#08384F] text-white text-sm">
               <th className="py-3 px-4 text-left whitespace-nowrap">ID</th>
               <th className="py-3 px-4 text-left whitespace-nowrap">Name</th>
               <th className="py-3 px-4 text-left whitespace-nowrap">Year</th>
@@ -197,53 +197,58 @@ const StudentManagementTable = () => {
               filtered.map((item, index) => (
                 <tr
                   key={index}
-                  className={`text-sm hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-gray-50" : "bg-gray-100"
-                    }`}
+                  className={`text-sm hover:bg-blue-50 transition-colors ${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  } border-b border-gray-100`}
                 >
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap font-medium text-gray-700">
                     {item.registerNumber}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.firstName}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">{item.year}</td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
+                    {item.year}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.department}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.section}
                   </td>
-                  <td className="py-3 px-4 whitespace-nowrap">{item.email}</td>
-                  <td className="py-3 px-4 whitespace-nowrap">
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
+                    {item.email}
+                  </td>
+                  <td className="py-3 px-4 whitespace-nowrap text-gray-600">
                     {item.mobileNumber}
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex justify-center gap-4">
-                      <div
+                      <button
                         onClick={() => {
                           setCanvasData(item);
                           setIsDetailCanvas(true);
                         }}
-                        className="bg-[#0567CE] w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
+                        className="bg-blue-500 w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-blue-600 hover:scale-110 transition-all shadow-sm"
                       >
-                        <Eye size={18} className="text-white" />
-                      </div>
-                      <div
+                        <Eye size={16} className="text-white" />
+                      </button>
+                      <button
                         onClick={() => {
                           setIsEdit(true);
                           setEditData(item);
                           setIsModal(true);
                         }}
-                        className="bg-[#22DE6F] w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
+                        className="bg-emerald-500 w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-emerald-600 hover:scale-110 transition-all shadow-sm"
                       >
-                        <Pencil size={18} className="text-white" />
-                      </div>
-                      <div
+                        <Pencil size={16} className="text-white" />
+                      </button>
+                      <button
                         onClick={() => handleDelete(item)}
-                        className="bg-[#F24343] w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:scale-110 transition-transform"
+                        className="bg-rose-500 w-8 h-8 rounded-full flex justify-center items-center cursor-pointer hover:bg-rose-600 hover:scale-110 transition-all shadow-sm"
                       >
-                        <Trash2 size={18} className="text-white" />
-                      </div>
+                        <Trash2 size={16} className="text-white" />
+                      </button>
                     </div>
                   </td>
                 </tr>
@@ -252,8 +257,14 @@ const StudentManagementTable = () => {
               <tr>
                 <td colSpan="8" className="py-10">
                   <div className="flex flex-col items-center justify-center">
-                    <img src={noData} className="w-48 mb-4" alt="No data" />
-                    <h1 className="text-gray-500">No data found!</h1>
+                    <img
+                      src={noData}
+                      className="w-48 mb-4 opacity-80"
+                      alt="No data"
+                    />
+                    <h1 className="text-gray-500 font-medium">
+                      No data found!
+                    </h1>
                   </div>
                 </td>
               </tr>

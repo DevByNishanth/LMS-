@@ -1,28 +1,21 @@
 import React, { useEffect, useState } from "react";
 import Sidebar from "../components/Sidebar";
-import { Bell, ChevronRight, User } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import notification from "../assets/notification.svg";
 import StudentYearComponent from "../components/StudentYearComponent";
 import StudentSectionComponent from "../components/StudentSectionComponent";
-import StudentmanagementStatCard from "../components/StudentmanagementStatCard";
 import StudentManagementStudentList from "../components/StudentManagementStudentList";
-import StudentList from "../components/StudentList";
 import { jwtDecode } from "jwt-decode";
 import SwapStudentModal from "../components/SwapStudentModal";
 import axios from "axios";
+import HeaderComponent from "../components/HeaderComponent";
 
 const years = ["2024-2025", "2025-2026", "2026-2027", "2027-2028"];
 
 const SectionManagementPage = () => {
-  // Auth
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
-  // const dept = "CSE"
 
-  console.log("tok : ", token);
-
-  // states
-  const [firstLetter, setFirstLetter] = useState("");
   const [selectedAcademicYear, setSelectedAcademicYear] = useState("2025-2026");
   const [selectedYear, setSelectedYear] = useState("1st Year");
   const [sections, setSections] = useState([
@@ -38,57 +31,30 @@ const SectionManagementPage = () => {
   const [dept, setDept] = useState("");
 
   const [modalSectionData, setModalSectionData] = useState([]);
-  // const [years, setYears] = useState([])
   const [data, setData] = useState([]);
 
   useEffect(() => {
-    const token = localStorage.getItem("LmsToken");
-
     if (token) {
       try {
         const decoded = jwtDecode(token);
-
-        const name =
-          decoded?.name || decoded?.username || decoded?.user?.name || "";
         const department =
           decoded?.department || decoded?.user?.department || "";
         setDept(department);
-
-        if (name) {
-          setFirstLetter(name.charAt(0).toUpperCase());
-        }
       } catch (error) {
         console.error("Invalid token");
       }
     }
-  }, []);
-
-  // useEffect call's
+  }, [token]);
 
   useEffect(() => {
-    handleGetData();
-  }, []);
-
-  // functions
-  const onClose = () => {
-    setIsSwapModal(false);
-  };
-
-  // API call
-  async function handleGetData() {
-    const res = await axios.get(
-      `${apiUrl}api/students/department-summary?${dept}`,
-      {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      },
-    );
-    setData(res.data.years);
-  }
+    if (dept) {
+      handleGetData();
+    }
+  }, [dept]);
 
   useEffect(() => {
     async function getData() {
+      if (!dept) return;
       try {
         const res = await axios.get(
           `${apiUrl}api/students/filter?department=${dept}&year=${selectedYear}&section=${selectedSection}`,
@@ -104,93 +70,93 @@ const SectionManagementPage = () => {
       }
     }
     getData();
-  }, [selectedSection, selectedYear, dept]);
+  }, [selectedSection, selectedYear, dept, apiUrl, token]);
+
+  const onClose = () => {
+    setIsSwapModal(false);
+  };
+
+  async function handleGetData() {
+    try {
+      const res = await axios.get(
+        `${apiUrl}api/students/department-summary?department=${dept}`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
+      );
+      setData(res.data.years);
+    } catch (err) {
+      console.error("Error fetching department summary:", err);
+    }
+  }
 
   return (
     <>
-      <section className="w-full h-screen flex">
-        <div className="w-[20%]">
+      <section className="w-full h-screen flex overflow-hidden">
+        <div className="w-[20%] h-full">
           <Sidebar />
         </div>
-        <div className="container-2 w-[80%] h-full px-6">
-          {/* header section  */}
-          <div className="w-full flex items-center justify-between py-4  bg-white">
-            {/* Left: Breadcrumb */}
-            <div className="flex items-center">
-              <span className="text-lg font-medium text-[#282526]">
-                Section Management
-              </span>
-              <span className="text-gray-600">
-                <ChevronRight />
-              </span>
+        <div className="w-[80%] h-full flex flex-col bg-gray-50/30">
+          <HeaderComponent
+            title="Section Management"
+            second={dept}
+            secondColor="text-[#0B56A4]"
+          />
 
-              <span className="text-[#0B56A4] font-medium text-lg">{dept}</span>
-            </div>
+          <div className="flex-1 overflow-y-auto px-6 pb-6">
+            <div className="main-container mt-4">
+              <header className="flex items-center justify-between mb-6">
+                <h1 className="text-[#282526] font-semibold text-lg">
+                  Student Details - Academic Year ({selectedAcademicYear})
+                </h1>
+                <select
+                  value={selectedAcademicYear}
+                  onChange={(e) => setSelectedAcademicYear(e.target.value)}
+                  className="border border-gray-300 outline-none px-4 py-2 rounded-lg bg-white text-sm font-medium focus:ring-1 focus:ring-[#08384F] transition-all"
+                >
+                  {years.map((item) => (
+                    <option key={item} value={item}>
+                      {item}
+                    </option>
+                  ))}
+                </select>
+              </header>
 
-            {/* Right: Icons */}
-            <div className="flex items-center gap-4">
-              {/* Notification */}
-              <div className="p-2 rounded-full bg-gray-50 shadow-sm hover:shadow-md transition">
-                <img src={notification} className="w-4 h-4" />
-              </div>
-
-              {/* Profile Image */}
-              <div className="w-8 h-8 rounded-full bg-[#08384F]  bgtext-white flex items-center justify-center font-semibold shadow-sm">
-                {firstLetter}
-              </div>
-            </div>
-          </div>
-
-          {/* main-content-container */}
-          <div className="main-container mt-2">
-            {/* heading  */}
-            <header className="flex items-center justify-between">
-              <h1 className="text-[#282526] font-medium text-lg">
-                Student Details - Academic Year ({selectedAcademicYear})
-              </h1>
-              <select
-                onChange={(e) => setSelectedAcademicYear(e.target.value)}
-                className="border w-fit outline-none px-4 py-2 border-gray-300 rounded"
-              >
-                {years.map((item) => {
-                  return <option value={item}>{item}</option>;
-                })}
-              </select>
-            </header>
-
-            {/* content section  */}
-            <div className="content-container mt-4 grid grid-cols-12 gap-4 h-[calc(100vh-160px)]">
-              {/* year container  */}
-              <div className="year-container col-span-3 h-[100%]">
-                <StudentYearComponent
-                  setSelectedSection={setSelectedSection}
-                  years={data}
-                  selectedYear={selectedYear}
-                  setSelectedYear={setSelectedYear}
-                />
-              </div>
-              <div className="year-container col-span-4 h-[100%]">
-                <StudentSectionComponent
-                  setModalSectionData={setModalSectionData}
-                  selectedYear={selectedYear}
-                  sections={data}
-                  setSelectedSection={setSelectedSection}
-                  selectedSection={selectedSection}
-                />
-              </div>
-              <div className="year-container col-span-5  h-[100%]">
-                <StudentManagementStudentList
-                  setIsSwapModal={setIsSwapModal}
-                  students={students}
-                  selectedStudents={selectedStudents}
-                  setSelectedStudents={setSelectedStudents}
-                  selectedSection={selectedSection}
-                />
+              <div className="content-container grid grid-cols-12 gap-4 h-[calc(100vh-220px)]">
+                <div className="col-span-3 h-full">
+                  <StudentYearComponent
+                    setSelectedSection={setSelectedSection}
+                    years={data}
+                    selectedYear={selectedYear}
+                    setSelectedYear={setSelectedYear}
+                  />
+                </div>
+                <div className="col-span-4 h-full">
+                  <StudentSectionComponent
+                    setModalSectionData={setModalSectionData}
+                    selectedYear={selectedYear}
+                    sections={data}
+                    setSelectedSection={setSelectedSection}
+                    selectedSection={selectedSection}
+                  />
+                </div>
+                <div className="col-span-5 h-full">
+                  <StudentManagementStudentList
+                    setIsSwapModal={setIsSwapModal}
+                    students={students}
+                    selectedStudents={selectedStudents}
+                    setSelectedStudents={setSelectedStudents}
+                    selectedSection={selectedSection}
+                  />
+                </div>
               </div>
             </div>
           </div>
         </div>
       </section>
+
       {isSwapModal && (
         <SwapStudentModal
           sections={sections}

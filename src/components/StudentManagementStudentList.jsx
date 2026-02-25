@@ -47,19 +47,17 @@ const StudentManagementStudentList = ({
 
     return (
         <div className="w-full h-full bg-white border border-[#D6D6D6] rounded-xl p-4 flex flex-col">
-            {/* Header */}
             <div className="flex items-center justify-between">
                 <h2 className="text-[#282526] font-medium">
                     Total Students (<span className="text-[#0B56A4]">{students.length}</span>)
                 </h2>
 
-                {selectedSection !== "Unallocated" && <button onClick={() => setIsSwapModal(true)} className="flex items-center gap-2 text-white bg-[#08384F]  bgpx-3 py-1.5 rounded-md text-sm">
+                {selectedSection !== "Unallocated" && <button onClick={() => setIsSwapModal(true)} className="flex items-center gap-2 text-white bg-[#08384F]  px-3 py-1.5 rounded-md text-sm">
                     <Pencil size={14} />
                     Edit
                 </button>}
             </div>
 
-            {/* Search */}
             <div className="relative mt-3">
                 <input
                     type="text"
@@ -71,7 +69,6 @@ const StudentManagementStudentList = ({
                 <Search className="absolute right-3 top-2.5 text-gray-700 w-4 h-4" />
             </div>
 
-            {/* Student list */}
             <div className="mt-3 min-h-[calc(100vh-300px)] max-h-[calc(100vh-300px)] overflow-auto pr-1 relative ">
                 {filteredStudents.length > 0 ? (
                     filteredStudents.map((student) => (
@@ -87,8 +84,12 @@ const StudentManagementStudentList = ({
                             />
 
 
-                            <span className="text-gray-700">
-                                {student.registerNumber} - {student.firstName}
+                            <span className="text-gray-700 w-[30%]">
+                                {student.registerNumber} 
+                            </span>
+                            -
+                            <span className="font-semibold">
+                                {student.firstName}
                             </span>
                         </label>
                     ))
