@@ -2,6 +2,7 @@ import React, { useMemo, useState } from "react";
 import CoursePlanTab from "./CoursePlanTab";
 import CourseDetailsForm from "./CourseDetailsForm";
 import CoPoMapping from "./CoPoMapping";
+import ReferenceTab from "./ReferenceTab"; // Import the new tab
 
 const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
   const [activeTab, setActiveTab] = useState(0);
@@ -21,8 +22,10 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
   });
 
   const [coPoMapping, setCoPoMapping] = useState({});
+  const [referenceData, setReferenceData] = useState({ textBooks: [] }); // Track for progress
 
   const tabStats = useMemo(() => {
+    // 1. Details %
     const detailsValues = [
       formData.courseType,
       formData.coRequisites,
@@ -30,16 +33,15 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
       formData.courseDescription,
       ...formData.courseObjectives,
       ...formData.courseOutcomes.map((o) => o.statement),
-      ...formData.courseOutcomes.map((o) => o.rtbl),
     ];
-    const detailsFilled = detailsValues.filter(
-      (v) => v && v.trim() !== "",
-    ).length;
+    const detailsFilled = detailsValues.filter((v) => v?.trim() !== "").length;
     const detailsPercent = Math.round(
       (detailsFilled / detailsValues.length) * 100,
     );
 
+    // 2. Mapping %
     const mappingKeys = [
+      "PO0",
       "PO1",
       "PO2",
       "PO3",
@@ -55,39 +57,36 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
       "PSO2",
       "PSO3",
     ];
-    const cos = ["C01", "C02", "C03", "C04", "C05"];
-    let mappingFilledCount = 0;
-    cos.forEach((co) => {
-      mappingKeys.forEach((key) => {
-        if (coPoMapping[co]?.[key]?.justification?.trim()) mappingFilledCount++;
-      });
-    });
-    const mappingTotal = mappingKeys.length * cos.length;
+    const cos = ["CO1", "CO2", "CO3", "CO4", "CO5"];
+    let mapCount = 0;
+    cos.forEach((co) =>
+      mappingKeys.forEach((k) => {
+        if (coPoMapping[co]?.[k]?.justification?.trim()) mapCount++;
+      }),
+    );
     const mappingPercent = Math.round(
-      (mappingFilledCount / mappingTotal) * 100,
+      (mapCount / (mappingKeys.length * cos.length)) * 100,
     );
 
     const individualProgress = [detailsPercent, mappingPercent, 0, 0, 0];
     const overallProgress = Math.round(
-      individualProgress.reduce((a, b) => a + b, 0) / individualProgress.length,
+      individualProgress.reduce((a, b) => a + b, 0) / 5,
     );
 
     return { individualProgress, overallProgress };
   }, [formData, coPoMapping]);
 
-  const tabs = [
-    "Course Details",
-    "CO-PO and CO-PSO Mapping",
-    "Reference and others",
-    "Lesson Planner ( Theory )",
-    "Lesson Planner ( Lab )",
-  ];
-
   return (
-    <div className="main-container w-full flex gap-2 min-h-[calc(100vh-160px)] max-h-[calc(100vh-150px)] ">
-      <div className="w-[30%] border border-gray-300 rounded-md ">
+    <div className="main-container w-full flex gap-2 min-h-[calc(100vh-160px)] max-h-[calc(100vh-150px)]">
+      <div className="w-[30%] border border-gray-300 rounded-md">
         <CoursePlanTab
-          tabs={tabs}
+          tabs={[
+            "Course Details",
+            "CO-PO Mapping",
+            "References",
+            "Theory Planner",
+            "Lab Planner",
+          ]}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           tabProgress={tabStats.individualProgress}
@@ -110,10 +109,14 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
             onPrev={() => setActiveTab(0)}
           />
         )}
-        {activeTab > 1 && (
-          <div className="flex items-center justify-center h-full text-gray-400">
-            Content for {tabs[activeTab]} coming soon...
-          </div>
+        {activeTab === 2 && (
+          <ReferenceTab
+            onNext={() => setActiveTab(3)}
+            onPrev={() => setActiveTab(1)}
+          />
+        )}
+        {activeTab > 2 && (
+          <div className="text-gray-400 text-center mt-20">Coming Soon...</div>
         )}
       </div>
     </div>

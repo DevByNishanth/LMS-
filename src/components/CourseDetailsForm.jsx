@@ -1,9 +1,96 @@
 import { Plus } from "lucide-react";
-import React from "react";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useParams } from "react-router-dom";
 
 const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
+  const { classId, sectionId } = useParams();
+  const token = localStorage.getItem("LmsToken");
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const [loading, setLoading] = useState(false);
+
   const courseTypeOptions = ["T", "TP", "TPJ", "P", "PJ", "I"];
   const rtblOptions = ["K1", "K2", "K3", "K4", "K5", "K6"];
+
+  useEffect(() => {
+    const fetchCourseDetails = async () => {
+      try {
+        const res = await axios.get(
+          `${apiUrl}api/subject-planning/course-details/${sectionId}/${classId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          },
+        );
+        console.log(res);
+        if (res.data && res.data.data) {
+          const details = res.data.data;
+          setFormData({
+            courseType: details.courseType || "",
+            coRequisites: details.coRequisites || "",
+            preRequisites: details.preRequisites || "",
+            courseDescription: details.courseDescription || "",
+            courseObjectives: details.courseObjectives
+              ? details.courseObjectives.split("\n")
+              : [""],
+            courseOutcomes: details.courseOutcomes?.length
+              ? details.courseOutcomes
+              : [
+                  { unit: "Unit 1", statement: "", rtbl: "K1" },
+                  { unit: "Unit 2", statement: "", rtbl: "K1" },
+                  { unit: "Unit 3", statement: "", rtbl: "K1" },
+                  { unit: "Unit 4", statement: "", rtbl: "K1" },
+                  { unit: "Unit 5", statement: "", rtbl: "K1" },
+                ],
+          });
+        }
+      } catch (err) {
+        console.error("Error fetching course details:", err.message);
+      }
+    };
+
+    if (sectionId && classId) {
+      fetchCourseDetails();
+    }
+  }, [sectionId, classId, apiUrl, token, setFormData]);
+
+  const handleSaveAndNext = async () => {
+    setLoading(true);
+    try {
+      const payload = {
+        subjectId: classId,
+        sectionId: sectionId,
+        courseDetails: {
+          courseType: formData.courseType,
+          preRequisites: formData.preRequisites,
+          coRequisites: formData.coRequisites,
+          courseDescription: formData.courseDescription,
+          courseObjectives: formData.courseObjectives
+            .filter((obj) => obj.trim() !== "")
+            .join("\n"),
+          courseOutcomes: formData.courseOutcomes,
+        },
+      };
+
+      const res = await axios.patch(
+        `${apiUrl}api/subject-planning/course-details`,
+        payload,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (res.data.success) {
+        onNext();
+      }
+    } catch (err) {
+      console.error(
+        "Error updating course details:",
+        err.response?.data || err.message,
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -34,7 +121,7 @@ const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
         className="h-[91%] mb-2 overflow-auto"
         onSubmit={(e) => e.preventDefault()}
       >
-        <div className="form-content  ">
+        <div className="form-content">
           <h1 className="font-medium text-lg bg-white sticky top-0 pb-2">
             Course Details
           </h1>
@@ -48,7 +135,9 @@ const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
               >
                 <option value="">Select type</option>
                 {courseTypeOptions.map((type) => (
-                  <option key={type}>{type}</option>
+                  <option key={type} value={type}>
+                    {type}
+                  </option>
                 ))}
               </select>
             </div>
@@ -132,7 +221,9 @@ const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
                 >
                   <option value="">RTBL</option>
                   {rtblOptions.map((rtbl) => (
-                    <option key={rtbl}>{rtbl}</option>
+                    <option key={rtbl} value={rtbl}>
+                      {rtbl}
+                    </option>
                   ))}
                 </select>
               </div>
@@ -142,10 +233,11 @@ const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
       </form>
       <div className="flex justify-end">
         <button
-          onClick={onNext}
-          className="bg-[#08384f] text-white px-6 py-2 rounded"
+          onClick={handleSaveAndNext}
+          disabled={loading}
+          className="bg-[#08384f] text-white px-6 py-2 rounded disabled:opacity-50"
         >
-          Next
+          {loading ? "Saving..." : "Next"}
         </button>
       </div>
     </>
