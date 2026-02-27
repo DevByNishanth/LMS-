@@ -40,7 +40,7 @@ const ClassroomHeader = ({ activeTab, setActiveTab }) => {
                 <div className="tabs flex flex-wrap items-center gap-4">
                     <button
                         onClick={() => setActiveTab("stream")}
-                        className={`${activeTab.toLowerCase() == "stream" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full `}
+                        className={`${activeTab.toLowerCase() == "stream" ? "bg-[#08384F]  bg  text-white" : "bg-slate-100 border border-gray-200 text-black"} flex items-center gap-2 py-2 px-5 rounded-full text-sm`}
                     >
                         <span>
                             <img
