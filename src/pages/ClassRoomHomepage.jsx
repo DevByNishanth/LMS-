@@ -46,6 +46,7 @@ const ClassRoomHomepage = () => {
         },
       });
       setClasses(res.data.data);
+      console.log(res);
     } catch (error) {
       console.error("Error fetching allocated subjects:", error);
     } finally {
