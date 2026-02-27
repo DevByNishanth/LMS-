@@ -1,45 +1,73 @@
-import React, { useMemo, useState } from "react";
+import React, { useMemo, useState, useEffect, useCallback } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import CoursePlanTab from "./CoursePlanTab";
 import CourseDetailsForm from "./CourseDetailsForm";
 import CoPoMapping from "./CoPoMapping";
+import ReferenceTab from "./ReferenceTab";
 
-const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
+const ClassroomSubjectPlanningComponent = () => {
+  const { classId, sectionId } = useParams();
+  const token = localStorage.getItem("LmsToken");
+  const apiUrl = import.meta.env.VITE_API_URL;
+
   const [activeTab, setActiveTab] = useState(0);
-  const [formData, setFormData] = useState({
-    courseType: "",
-    coRequisites: "",
-    preRequisites: "",
-    courseDescription: "",
-    courseObjectives: [""],
-    courseOutcomes: [
-      { unit: "Unit 1", statement: "", rtbl: "" },
-      { unit: "Unit 2", statement: "", rtbl: "" },
-      { unit: "Unit 3", statement: "", rtbl: "" },
-      { unit: "Unit 4", statement: "", rtbl: "" },
-      { unit: "Unit 5", statement: "", rtbl: "" },
-    ],
-  });
+  const [loading, setLoading] = useState(false);
+  const [planningData, setPlanningData] = useState(null);
 
-  const [coPoMapping, setCoPoMapping] = useState({});
+  const fetchAllData = useCallback(async () => {
+    if (!classId || !sectionId) return;
+    setLoading(true);
+    try {
+      const res = await axios.get(
+        `${apiUrl}api/course-plan/all/${sectionId}/${classId}`,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+      if (res.data?.data) {
+        setPlanningData(res.data.data);
+      }
+    } catch (err) {
+      console.error("Error fetching all data:", err);
+    } finally {
+      setLoading(false);
+    }
+  }, [classId, sectionId, apiUrl, token]);
+
+  useEffect(() => {
+    fetchAllData();
+  }, [fetchAllData]);
+
+  // LIVE UPDATE FUNCTION: Updates parent state so useMemo re-runs instantly
+  const updateLivePlanningData = useCallback((key, updatedValue) => {
+    setPlanningData((prev) => ({
+      ...prev,
+      [key]: updatedValue,
+    }));
+  }, []);
 
   const tabStats = useMemo(() => {
+    if (!planningData)
+      return { individualProgress: [0, 0, 0, 0, 0], overallProgress: 0 };
+
+    // 1. Details Calculation
+    const details = planningData.courseDetails || {};
     const detailsValues = [
-      formData.courseType,
-      formData.coRequisites,
-      formData.preRequisites,
-      formData.courseDescription,
-      ...formData.courseObjectives,
-      ...formData.courseOutcomes.map((o) => o.statement),
-      ...formData.courseOutcomes.map((o) => o.rtbl),
+      details.courseType,
+      details.coRequisites,
+      details.preRequisites,
+      details.courseDescription,
+      ...(details.courseObjectives ? details.courseObjectives.split("\n") : []),
+      ...(details.courseOutcomes?.map((o) => o.statement) || []),
     ];
-    const detailsFilled = detailsValues.filter(
-      (v) => v && v.trim() !== "",
-    ).length;
+    const detailsFilled = detailsValues.filter((v) => v?.trim()).length;
     const detailsPercent = Math.round(
-      (detailsFilled / detailsValues.length) * 100,
+      (detailsFilled / Math.max(detailsValues.length, 1)) * 100,
     );
 
+    // 2. Mapping Calculation
+    const mapping = planningData.coPoMapping || {};
     const mappingKeys = [
+      "PO0",
       "PO1",
       "PO2",
       "PO3",
@@ -55,39 +83,58 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
       "PSO2",
       "PSO3",
     ];
-    const cos = ["C01", "C02", "C03", "C04", "C05"];
-    let mappingFilledCount = 0;
-    cos.forEach((co) => {
-      mappingKeys.forEach((key) => {
-        if (coPoMapping[co]?.[key]?.justification?.trim()) mappingFilledCount++;
-      });
-    });
-    const mappingTotal = mappingKeys.length * cos.length;
+    const cos = ["CO1", "CO2", "CO3", "CO4", "CO5"];
+    let mapCount = 0;
+    cos.forEach((co) =>
+      mappingKeys.forEach((k) => {
+        if (mapping[co]?.[k]?.justification?.trim()) mapCount++;
+      }),
+    );
     const mappingPercent = Math.round(
-      (mappingFilledCount / mappingTotal) * 100,
+      (mapCount / (mappingKeys.length * cos.length)) * 100,
     );
 
-    const individualProgress = [detailsPercent, mappingPercent, 0, 0, 0];
+    // 3. References Calculation (Tab 3)
+    const refs = planningData.references || {};
+    const refValues = [
+      ...(refs.textBooks || []),
+      ...(refs.referenceBooks || []),
+      ...(refs.journals || []),
+      ...(refs.webResources || []),
+      ...(refs.moocCourses?.map((m) => m.courseName) || []),
+      ...(refs.projects || []),
+    ];
+    const refFilled = refValues.filter((v) => v?.trim()).length;
+    const refPercent = Math.min(Math.round((refFilled / 6) * 100), 100); // 6 items threshold for 100%
+
+    const individualProgress = [
+      detailsPercent,
+      mappingPercent,
+      refPercent,
+      0,
+      0,
+    ];
     const overallProgress = Math.round(
-      individualProgress.reduce((a, b) => a + b, 0) / individualProgress.length,
+      individualProgress.reduce((a, b) => a + b, 0) / 5,
     );
 
     return { individualProgress, overallProgress };
-  }, [formData, coPoMapping]);
+  }, [planningData]);
 
-  const tabs = [
-    "Course Details",
-    "CO-PO and CO-PSO Mapping",
-    "Reference and others",
-    "Lesson Planner ( Theory )",
-    "Lesson Planner ( Lab )",
-  ];
+  if (loading && !planningData)
+    return <div className="p-10">Loading Planning Data...</div>;
 
   return (
-    <div className="main-container w-full flex gap-2 min-h-[calc(100vh-160px)] max-h-[calc(100vh-150px)] ">
-      <div className="w-[30%] border border-gray-300 rounded-md ">
+    <div className="main-container w-full flex gap-2 min-h-[calc(100vh-160px)] max-h-[calc(100vh-150px)]">
+      <div className="w-[30%] border border-gray-300 rounded-md">
         <CoursePlanTab
-          tabs={tabs}
+          tabs={[
+            "Course Details",
+            "CO-PO Mapping",
+            "References",
+            "Theory Planner",
+            "Lab Planner",
+          ]}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           tabProgress={tabStats.individualProgress}
@@ -97,23 +144,38 @@ const ClassroomSubjectPlanningComponent = ({ subjectId }) => {
       <div className="form-container border overflow-auto w-[80%] border-gray-300 rounded-md py-2 pl-4 hide-scrollbar">
         {activeTab === 0 && (
           <CourseDetailsForm
-            formData={formData}
-            setFormData={setFormData}
+            data={planningData?.courseDetails}
+            refreshData={fetchAllData}
+            updateLivePlanningData={(val) =>
+              updateLivePlanningData("courseDetails", val)
+            }
             onNext={() => setActiveTab(1)}
           />
         )}
         {activeTab === 1 && (
           <CoPoMapping
-            coPoMapping={coPoMapping}
-            setCoPoMapping={setCoPoMapping}
+            data={planningData?.coPoMapping}
+            refreshData={fetchAllData}
+            updateLivePlanningData={(val) =>
+              updateLivePlanningData("coPoMapping", val)
+            }
             onNext={() => setActiveTab(2)}
             onPrev={() => setActiveTab(0)}
           />
         )}
-        {activeTab > 1 && (
-          <div className="flex items-center justify-center h-full text-gray-400">
-            Content for {tabs[activeTab]} coming soon...
-          </div>
+        {activeTab === 2 && (
+          <ReferenceTab
+            data={planningData?.references}
+            refreshData={fetchAllData}
+            updateLivePlanningData={(val) =>
+              updateLivePlanningData("references", val)
+            }
+            onNext={() => setActiveTab(3)}
+            onPrev={() => setActiveTab(1)}
+          />
+        )}
+        {activeTab > 2 && (
+          <div className="text-gray-400 text-center mt-20">Coming Soon...</div>
         )}
       </div>
     </div>
