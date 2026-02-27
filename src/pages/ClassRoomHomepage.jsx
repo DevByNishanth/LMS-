@@ -85,7 +85,6 @@ const ClassRoomHomepage = () => {
           </div>
         </div>
 
-        {/* Cards Grid */}
         <div
           className={`${filteredClasses.length > 0 ? "grid" : "flex"} grid-cols-1 md:grid-cols-2 gap-6 max-h-[calc(100vh-160px)] overflow-y-auto hide-scrollbar`}
         >

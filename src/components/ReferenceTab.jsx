@@ -22,8 +22,8 @@ const ReferenceTab = ({
     webResources: [""],
     moocCourses: [{ platform: "", courseName: "" }],
     projects: [""],
-    termWork: { enabled: false, activities: [""] },
-    gapIdentification: { enabled: false, entries: [""] },
+    termWork: { enabled: false, activity: "" },
+    gapIdentification: { enabled: false, entry: "" },
   };
 
   const [references, setReferences] = useState(initialStructure);
@@ -61,38 +61,22 @@ const ReferenceTab = ({
     const lastKey = keys[keys.length - 1];
 
     if (subField) target[lastKey][index][subField] = value;
-    else target[lastKey][index] = value;
+    else if (index !== null) target[lastKey][index] = value;
+    else target[lastKey] = value;
 
     handleLiveUpdate(newData);
   };
 
-  const addField = (path, index) => {
-    const keys = path.split(".");
-    let target = references;
-    keys.forEach((key) => {
-      target = target[key];
-    });
-
-    const currentItem = target[index];
-    const isEmpty =
-      typeof currentItem === "object"
-        ? !currentItem.platform?.trim() || !currentItem.courseName?.trim()
-        : !currentItem?.trim();
-
-    if (isEmpty) {
-      alert("Please fill the current field before adding a new one.");
-      return;
-    }
-
+  const addField = (path) => {
     const newData = JSON.parse(JSON.stringify(references));
-    let innerTarget = newData;
-    for (let i = 0; i < keys.length - 1; i++)
-      innerTarget = innerTarget[keys[i]];
+    const keys = path.split(".");
+    let target = newData;
+    for (let i = 0; i < keys.length - 1; i++) target = target[keys[i]];
     const lastKey = keys[keys.length - 1];
 
     const newItem =
       lastKey === "moocCourses" ? { platform: "", courseName: "" } : "";
-    innerTarget[lastKey] = [...innerTarget[lastKey], newItem];
+    target[lastKey] = [...target[lastKey], newItem];
     handleLiveUpdate(newData);
   };
 
@@ -105,8 +89,11 @@ const ReferenceTab = ({
 
     if (target[lastKey].length > 1) {
       target[lastKey].splice(index, 1);
-      handleLiveUpdate(newData);
+    } else {
+      target[lastKey][0] =
+        lastKey === "moocCourses" ? { platform: "", courseName: "" } : "";
     }
+    handleLiveUpdate(newData);
   };
 
   const toggleSection = (key, value) => {
@@ -122,11 +109,7 @@ const ReferenceTab = ({
     try {
       const res = await axios.patch(
         `${apiUrl}api/course-plan/references`,
-        {
-          subjectId: classId,
-          sectionId,
-          data: references,
-        },
+        { subjectId: classId, sectionId, data: references },
         { headers: { Authorization: `Bearer ${token}` } },
       );
       if (res.data.success) {
@@ -161,19 +144,17 @@ const ReferenceTab = ({
               value={val}
               onChange={(e) => updateField(path, idx, e.target.value)}
             />
-            {references[path].length > 1 && (
-              <button
-                onClick={() => removeField(path, idx)}
-                className="px-2 text-red-400 hover:bg-red-50"
-              >
-                <X size={16} />
-              </button>
-            )}
-          </div>
-          {idx === references[path].length - 1 && (
             <button
-              onClick={() => addField(path, idx)}
-              className="text-[#08384f] border border-[#08384f] rounded-full p-0.5 hover:bg-gray-100"
+              onClick={() => removeField(path, idx)}
+              className="px-2 text-red-400"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          {idx === references[path].length - 1 && val?.trim() !== "" && (
+            <button
+              onClick={() => addField(path)}
+              className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
             >
               <Plus size={18} />
             </button>
@@ -184,7 +165,7 @@ const ReferenceTab = ({
   );
 
   return (
-    <div className="h-full flex flex-col p-2 bg-white relative">
+    <div className="h-full flex flex-col p-2 bg-white">
       <div className="flex-1 overflow-auto pr-2 hide-scrollbar">
         {renderSimpleFields(
           "TextBook",
@@ -211,9 +192,9 @@ const ReferenceTab = ({
           </label>
           {references.moocCourses.map((course, idx) => (
             <div key={idx} className="flex items-center gap-2 mb-2">
-              <div className="flex flex-1 gap-2">
+              <div className="flex flex-1 gap-2 border border-gray-300 rounded overflow-hidden p-1">
                 <input
-                  className="w-1/3 border border-gray-300 rounded px-3 py-2 text-sm outline-none"
+                  className="w-1/3 px-3 py-1.5 text-sm outline-none border-r border-gray-200"
                   placeholder="Platform"
                   value={course.platform}
                   onChange={(e) =>
@@ -221,7 +202,7 @@ const ReferenceTab = ({
                   }
                 />
                 <input
-                  className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm outline-none"
+                  className="flex-1 px-3 py-1.5 text-sm outline-none"
                   placeholder="Course Name"
                   value={course.courseName}
                   onChange={(e) =>
@@ -233,15 +214,23 @@ const ReferenceTab = ({
                     )
                   }
                 />
-              </div>
-              {idx === references.moocCourses.length - 1 && (
                 <button
-                  onClick={() => addField("moocCourses", idx)}
-                  className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
+                  onClick={() => removeField("moocCourses", idx)}
+                  className="px-2 text-red-400"
                 >
-                  <Plus size={18} />
+                  <X size={16} />
                 </button>
-              )}
+              </div>
+              {idx === references.moocCourses.length - 1 &&
+                course.platform.trim() !== "" &&
+                course.courseName.trim() !== "" && (
+                  <button
+                    onClick={() => addField("moocCourses")}
+                    className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
+                  >
+                    <Plus size={18} />
+                  </button>
+                )}
             </div>
           ))}
         </div>
@@ -252,90 +241,86 @@ const ReferenceTab = ({
           "Enter Project Name",
         )}
 
-        {[
-          {
-            label: "Term Work (TW) Activities",
-            key: "termWork",
-            list: "activities",
-          },
-          {
-            label: "Gap Identification",
-            key: "gapIdentification",
-            list: "entries",
-          },
-        ].map((sec) => (
-          <div key={sec.key} className="mb-6">
-            <label className="text-sm font-medium block text-gray-700 mb-2">
-              {sec.label}
+        <div className="mb-6">
+          <label className="text-sm font-medium block text-gray-700 mb-2">
+            Term Work (TW) Activities
+          </label>
+          <div className="flex gap-4 mb-3">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                checked={references.termWork.enabled}
+                onChange={() => toggleSection("termWork", true)}
+              />{" "}
+              Yes
             </label>
-            <div className="flex gap-4 mb-3">
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  checked={references[sec.key].enabled}
-                  onChange={() => toggleSection(sec.key, true)}
-                />{" "}
-                Yes
-              </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
-                <input
-                  type="radio"
-                  checked={!references[sec.key].enabled}
-                  onChange={() => toggleSection(sec.key, false)}
-                />{" "}
-                No
-              </label>
-            </div>
-            {references[sec.key].enabled &&
-              references[sec.key][sec.list].map((val, idx) => (
-                <div key={idx} className="flex items-center gap-2 mb-2">
-                  <div className="flex flex-1 border border-gray-300 rounded overflow-hidden">
-                    <input
-                      className="flex-1 px-3 py-2 text-sm outline-none"
-                      value={val}
-                      onChange={(e) =>
-                        updateField(
-                          `${sec.key}.${sec.list}`,
-                          idx,
-                          e.target.value,
-                        )
-                      }
-                    />
-                    {references[sec.key][sec.list].length > 1 && (
-                      <button
-                        onClick={() =>
-                          removeField(`${sec.key}.${sec.list}`, idx)
-                        }
-                        className="px-2 text-red-400"
-                      >
-                        <X size={16} />
-                      </button>
-                    )}
-                  </div>
-                  {idx === references[sec.key][sec.list].length - 1 && (
-                    <button
-                      onClick={() => addField(`${sec.key}.${sec.list}`, idx)}
-                      className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
-                    >
-                      <Plus size={18} />
-                    </button>
-                  )}
-                </div>
-              ))}
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                checked={!references.termWork.enabled}
+                onChange={() => toggleSection("termWork", false)}
+              />{" "}
+              No
+            </label>
           </div>
-        ))}
+          {references.termWork.enabled && (
+            <textarea
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none min-h-[100px] resize-y"
+              placeholder="Describe the Term Work activity..."
+              value={references.termWork.activity || ""}
+              onChange={(e) =>
+                updateField("termWork.activity", null, e.target.value)
+              }
+            />
+          )}
+        </div>
+
+        <div className="mb-6">
+          <label className="text-sm font-medium block text-gray-700 mb-2">
+            Gap Identification
+          </label>
+          <div className="flex gap-4 mb-3">
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                checked={references.gapIdentification.enabled}
+                onChange={() => toggleSection("gapIdentification", true)}
+              />{" "}
+              Yes
+            </label>
+            <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <input
+                type="radio"
+                checked={!references.gapIdentification.enabled}
+                onChange={() => toggleSection("gapIdentification", false)}
+              />{" "}
+              No
+            </label>
+          </div>
+          {references.gapIdentification.enabled && (
+            <textarea
+              className="w-full border border-gray-300 rounded px-3 py-2 text-sm outline-none min-h-[100px] resize-y"
+              placeholder="Describe the identified gap..."
+              value={references.gapIdentification.entry || ""}
+              onChange={(e) =>
+                updateField("gapIdentification.entry", null, e.target.value)
+              }
+            />
+          )}
+        </div>
       </div>
-      <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
+
+      <div className="flex justify-end gap-3 mt-4 pt-4">
         <button
           onClick={onPrev}
-          className="bg-gray-100 px-6 py-2 rounded text-sm text-gray-700"
+          className="bg-gray-100 px-6 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-200"
         >
           Previous
         </button>
         <button
           onClick={handleSaveAndNext}
           disabled={loading}
-          className="bg-[#08384f] text-white px-6 py-2 rounded text-sm disabled:opacity-50"
+          className="bg-[#08384f] text-white px-6 py-2 rounded text-sm font-medium disabled:opacity-50"
         >
           {loading ? "Saving..." : "Next"}
         </button>
