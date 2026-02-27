@@ -13,7 +13,6 @@ const tabDatas = [
 ];
 
 const PO_LIST = [
-  "PO0",
   "PO1",
   "PO2",
   "PO3",
@@ -25,12 +24,19 @@ const PO_LIST = [
   "PO9",
   "PO10",
   "PO11",
+  "PO12",
   "PSO1",
   "PSO2",
   "PSO3",
 ];
 
-const CoPoMapping = ({ data, refreshData, onNext, onPrev }) => {
+const CoPoMapping = ({
+  data,
+  refreshData,
+  onNext,
+  onPrev,
+  updateLivePlanningData,
+}) => {
   const { classId, sectionId } = useParams();
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
@@ -42,6 +48,13 @@ const CoPoMapping = ({ data, refreshData, onNext, onPrev }) => {
     if (data) setCoPoMapping(data);
   }, [data]);
 
+  const handleLiveUpdate = (updatedState) => {
+    setCoPoMapping(updatedState);
+    if (updateLivePlanningData) {
+      updateLivePlanningData(updatedState);
+    }
+  };
+
   const handleSaveAndNext = async () => {
     setLoading(true);
     try {
@@ -49,9 +62,7 @@ const CoPoMapping = ({ data, refreshData, onNext, onPrev }) => {
       const res = await axios.patch(
         `${apiUrl}api/course-plan/coPoMapping`,
         payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       if (res.data.success) {
         await refreshData();
@@ -65,31 +76,40 @@ const CoPoMapping = ({ data, refreshData, onNext, onPrev }) => {
   };
 
   const updateMapping = (item, field, value) => {
-    setCoPoMapping((prev) => ({
-      ...prev,
+    const updatedState = {
+      ...coPoMapping,
       [selectedTab]: {
-        ...prev[selectedTab],
+        ...coPoMapping[selectedTab],
         [item]: {
-          ...(prev[selectedTab]?.[item] || { justification: "", credit: 0 }),
-          [field]: field === "credit" ? Number(value) : value,
+          ...(coPoMapping[selectedTab]?.[item] || {
+            justification: "",
+            level: 0,
+          }),
+          [field]: field === "level" ? Number(value) : value,
         },
       },
-    }));
+    };
+    handleLiveUpdate(updatedState);
   };
 
   return (
-    <>
-      <div className="h-[91%] mb-2 overflow-auto">
+    <div className="h-full flex flex-col bg-white relative">
+      <div className="flex-1 overflow-auto pr-2 hide-scrollbar">
         <div className="form-content">
-          <h1 className="font-medium text-lg bg-white sticky top-0 pb-2">
+          <h1 className="font-medium text-lg bg-white sticky top-0 pb-2 z-20">
             CO-PO and CO-PSO Mapping
           </h1>
-          <div className="tabs-container flex items-center gap-2 mt-2 sticky top-7 bg-white z-10">
+
+          <div className="tabs-container flex items-center gap-2 mt-2 sticky top-8 bg-white z-10 py-2">
             {tabDatas.map((tab, index) => (
               <button
                 key={index}
                 onClick={() => setSelectedTab(tab.lable)}
-                className={`tab ${selectedTab === tab.lable ? "active bg-[#08384f] text-white" : "bg-[#f1f5f9] text-[#08384f]"} flex items-center gap-3 w-fit px-6 py-2 border border-gray-300 rounded-xl transition-colors`}
+                className={`tab ${
+                  selectedTab === tab.lable
+                    ? "active bg-[#08384f] text-white shadow-md"
+                    : "bg-[#f1f5f9] text-[#08384f] hover:bg-gray-200"
+                } flex items-center gap-3 w-fit px-5 py-2 border border-gray-200 rounded-xl transition-all duration-200`}
               >
                 <img
                   src={
@@ -100,68 +120,96 @@ const CoPoMapping = ({ data, refreshData, onNext, onPrev }) => {
                   alt={tab.lable}
                   className="w-4 h-4"
                 />
-                <span>{tab.lable}</span>
+                <span className="text-sm font-semibold">{tab.lable}</span>
               </button>
             ))}
           </div>
-          <div className="mt-4 space-y-2">
+
+          <div className="mt-4 space-y-3 pb-4">
             {PO_LIST.map((item) => {
-              const value = coPoMapping[selectedTab]?.[item] || {
+              const mappingEntry = coPoMapping[selectedTab]?.[item] || {
                 justification: "",
-                credit: 0,
+                level: 0,
               };
+
+              // Validation: Treat as one entity. Row is "complete" only if level > 0 AND justification exists.
+              const isEntryValid =
+                mappingEntry.level > 0 &&
+                mappingEntry.justification.trim() !== "";
+
               return (
                 <div
                   key={item}
-                  className="flex items-center border border-gray-300 p-2 rounded-lg bg-gray-50"
+                  className={`flex items-center gap-0 border rounded-lg overflow-hidden transition-all duration-200 ${
+                    isEntryValid
+                      ? "border-gray-200 bg-gray-50/30"
+                      : "border-gray-200 bg-gray-50"
+                  }`}
                 >
-                  <div className="w-16 text-center rounded-md bg-[#e6e9f5] text-gray-700 font-medium text-sm px-3 py-2 border border-gray-300">
+                  {/* PO Label */}
+                  <div className="w-16 h-12 flex items-center justify-center bg-[#e6e9f5] text-[#08384f] font-bold text-xs border-r border-gray-300">
                     {item}
                   </div>
-                  <input
-                    type="text"
-                    placeholder="Enter Justification"
-                    value={value.justification}
-                    onChange={(e) =>
-                      updateMapping(item, "justification", e.target.value)
-                    }
-                    className="flex-1 px-3 py-2 outline-none bg-transparent text-sm"
-                  />
-                  <select
-                    value={value.credit}
-                    onChange={(e) =>
-                      updateMapping(item, "credit", e.target.value)
-                    }
-                    className="w-20 px-2 py-2 border-l border-gray-300 text-sm outline-none bg-white"
-                  >
-                    {[0, 1, 2, 3].map((v) => (
-                      <option key={v} value={v}>
-                        {v}
-                      </option>
-                    ))}
-                  </select>
+
+                  {/* Justification Input */}
+                  <div className="flex-1 h-12 flex items-center px-3 bg-white">
+                    <input
+                      type="text"
+                      placeholder={`Enter justification for ${item} mapping...`}
+                      value={mappingEntry.justification}
+                      onChange={(e) =>
+                        updateMapping(item, "justification", e.target.value)
+                      }
+                      className="w-full outline-none text-sm text-gray-700 bg-transparent"
+                    />
+                  </div>
+
+                  {/* Level Selection */}
+                  <div className="flex items-center gap-2 px-3 h-12 bg-white border-l border-gray-200">
+                    <span className="text-[10px] uppercase font-bold text-gray-400">
+                      Level
+                    </span>
+                    <select
+                      value={mappingEntry.level}
+                      onChange={(e) =>
+                        updateMapping(item, "level", e.target.value)
+                      }
+                      className={`w-14 h-8 px-1 border rounded text-sm font-bold outline-none cursor-pointer transition-colors ${
+                        mappingEntry.level > 0
+                          ? "border-gray-700 text-gray-700"
+                          : "border-gray-300 text-gray-400"
+                      }`}
+                    >
+                      {[0, 1, 2, 3].map((v) => (
+                        <option key={v} value={v}>
+                          {v}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                 </div>
               );
             })}
           </div>
         </div>
       </div>
-      <div className="flex justify-end gap-3">
+
+      <div className="flex justify-end gap-3 mt-4 pt-4 border-t border-gray-100 bg-white">
         <button
           onClick={onPrev}
-          className="bg-gray-200 border border-gray-300 text-black px-6 py-2 rounded hover:bg-gray-300 transition-colors"
+          className="bg-gray-100 text-gray-700 font-medium px-6 py-2 rounded-md hover:bg-gray-200 border border-gray-200"
         >
           Previous
         </button>
         <button
           onClick={handleSaveAndNext}
           disabled={loading}
-          className="bg-[#08384f] text-white px-6 py-2 rounded disabled:opacity-50"
+          className="bg-[#08384f] text-white font-medium px-8 py-2 rounded-md disabled:opacity-50 shadow-md hover:bg-[#062c3e]"
         >
           {loading ? "Saving..." : "Next"}
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
