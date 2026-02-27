@@ -5,6 +5,7 @@ import CoursePlanTab from "./CoursePlanTab";
 import CourseDetailsForm from "./CourseDetailsForm";
 import CoPoMapping from "./CoPoMapping";
 import ReferenceTab from "./ReferenceTab";
+import SubjectSubTopicsTable from "./SubjectSubTopicsTable";
 
 const ClassroomSubjectPlanningComponent = () => {
   const { classId, sectionId } = useParams();
@@ -37,7 +38,6 @@ const ClassroomSubjectPlanningComponent = () => {
     fetchAllData();
   }, [fetchAllData]);
 
-  // LIVE UPDATE FUNCTION: Updates parent state so useMemo re-runs instantly
   const updateLivePlanningData = useCallback((key, updatedValue) => {
     setPlanningData((prev) => ({
       ...prev,
@@ -49,14 +49,22 @@ const ClassroomSubjectPlanningComponent = () => {
     if (!planningData)
       return { individualProgress: [0, 0, 0, 0, 0], overallProgress: 0 };
 
-    // 1. Details Calculation
     const details = planningData.courseDetails || {};
+
+    // FIX: Check if courseObjectives is already an array from live updates
+    const rawObjectives = details.courseObjectives;
+    const objectivesArray = Array.isArray(rawObjectives)
+      ? rawObjectives
+      : typeof rawObjectives === "string"
+        ? rawObjectives.split("\n")
+        : [];
+
     const detailsValues = [
       details.courseType,
       details.coRequisites,
       details.preRequisites,
       details.courseDescription,
-      ...(details.courseObjectives ? details.courseObjectives.split("\n") : []),
+      ...objectivesArray,
       ...(details.courseOutcomes?.map((o) => o.statement) || []),
     ];
     const detailsFilled = detailsValues.filter((v) => v?.trim()).length;
@@ -64,7 +72,6 @@ const ClassroomSubjectPlanningComponent = () => {
       (detailsFilled / Math.max(detailsValues.length, 1)) * 100,
     );
 
-    // 2. Mapping Calculation
     const mapping = planningData.coPoMapping || {};
     const mappingKeys = [
       "PO0",
@@ -94,7 +101,6 @@ const ClassroomSubjectPlanningComponent = () => {
       (mapCount / (mappingKeys.length * cos.length)) * 100,
     );
 
-    // 3. References Calculation (Tab 3)
     const refs = planningData.references || {};
     const refValues = [
       ...(refs.textBooks || []),
@@ -105,7 +111,7 @@ const ClassroomSubjectPlanningComponent = () => {
       ...(refs.projects || []),
     ];
     const refFilled = refValues.filter((v) => v?.trim()).length;
-    const refPercent = Math.min(Math.round((refFilled / 6) * 100), 100); // 6 items threshold for 100%
+    const refPercent = Math.min(Math.round((refFilled / 6) * 100), 100);
 
     const individualProgress = [
       detailsPercent,
@@ -174,8 +180,10 @@ const ClassroomSubjectPlanningComponent = () => {
             onPrev={() => setActiveTab(1)}
           />
         )}
-        {activeTab > 2 && (
-          <div className="text-gray-400 text-center mt-20">Coming Soon...</div>
+        {activeTab === 3 && (
+          <div className="text-gray-400 text-center mt-20">
+            <SubjectSubTopicsTable />
+          </div>
         )}
       </div>
     </div>

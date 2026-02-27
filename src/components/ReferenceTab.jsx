@@ -80,7 +80,6 @@ const ReferenceTab = ({
         : !currentItem?.trim();
 
     if (isEmpty) {
-      alert("Please fill the current field before adding a new one.");
       return;
     }
 
@@ -146,7 +145,7 @@ const ReferenceTab = ({
         {label}
       </label>
       {references[path].map((val, idx) => (
-        <div key={idx} className="flex items-center gap-2 mb-2">
+        <div key={idx} className="flex items-start gap-2 mb-2">
           <div className="flex flex-1 items-center border border-gray-300 rounded overflow-hidden bg-white">
             {prefix && (
               <span className="bg-[#e6e9f5] px-3 py-2 text-xs font-bold border-r border-gray-300 text-gray-600 min-w-[45px] text-center">
@@ -170,10 +169,10 @@ const ReferenceTab = ({
               </button>
             )}
           </div>
-          {idx === references[path].length - 1 && (
+          {idx === references[path].length - 1 && val.trim() !== "" && (
             <button
               onClick={() => addField(path, idx)}
-              className="text-[#08384f] border border-[#08384f] rounded-full p-0.5 hover:bg-gray-100"
+              className="text-[#08384f] border border-[#08384f] rounded-full p-0.5 mt-1.5 hover:bg-gray-100"
             >
               <Plus size={18} />
             </button>
@@ -234,14 +233,16 @@ const ReferenceTab = ({
                   }
                 />
               </div>
-              {idx === references.moocCourses.length - 1 && (
-                <button
-                  onClick={() => addField("moocCourses", idx)}
-                  className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
-                >
-                  <Plus size={18} />
-                </button>
-              )}
+              {idx === references.moocCourses.length - 1 &&
+                course.platform.trim() !== "" &&
+                course.courseName.trim() !== "" && (
+                  <button
+                    onClick={() => addField("moocCourses", idx)}
+                    className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
+                  >
+                    <Plus size={18} />
+                  </button>
+                )}
             </div>
           ))}
         </div>
@@ -257,11 +258,13 @@ const ReferenceTab = ({
             label: "Term Work (TW) Activities",
             key: "termWork",
             list: "activities",
+            placeholder: "Describe the Term Work activity...",
           },
           {
             label: "Gap Identification",
             key: "gapIdentification",
             list: "entries",
+            placeholder: "Enter details about the identified gap...",
           },
         ].map((sec) => (
           <div key={sec.key} className="mb-6">
@@ -269,7 +272,7 @@ const ReferenceTab = ({
               {sec.label}
             </label>
             <div className="flex gap-4 mb-3">
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <label className="flex items-center gap-2 text-sm cursor-pointer font-medium text-gray-600">
                 <input
                   type="radio"
                   checked={references[sec.key].enabled}
@@ -277,7 +280,7 @@ const ReferenceTab = ({
                 />{" "}
                 Yes
               </label>
-              <label className="flex items-center gap-2 text-sm cursor-pointer">
+              <label className="flex items-center gap-2 text-sm cursor-pointer font-medium text-gray-600">
                 <input
                   type="radio"
                   checked={!references[sec.key].enabled}
@@ -286,12 +289,15 @@ const ReferenceTab = ({
                 No
               </label>
             </div>
+
+            {/* TEXTAREA Logic for Yes selection */}
             {references[sec.key].enabled &&
               references[sec.key][sec.list].map((val, idx) => (
-                <div key={idx} className="flex items-center gap-2 mb-2">
-                  <div className="flex flex-1 border border-gray-300 rounded overflow-hidden">
-                    <input
-                      className="flex-1 px-3 py-2 text-sm outline-none"
+                <div key={idx} className="flex items-start gap-2 mb-2">
+                  <div className="flex flex-1 border border-gray-300 rounded overflow-hidden bg-white">
+                    <textarea
+                      className="flex-1 px-3 py-2 text-sm outline-none min-h-[80px] resize-y"
+                      placeholder={sec.placeholder}
                       value={val}
                       onChange={(e) =>
                         updateField(
@@ -306,36 +312,38 @@ const ReferenceTab = ({
                         onClick={() =>
                           removeField(`${sec.key}.${sec.list}`, idx)
                         }
-                        className="px-2 text-red-400"
+                        className="px-2 text-red-400 self-start mt-2 hover:bg-red-50 rounded"
                       >
                         <X size={16} />
                       </button>
                     )}
                   </div>
-                  {idx === references[sec.key][sec.list].length - 1 && (
-                    <button
-                      onClick={() => addField(`${sec.key}.${sec.list}`, idx)}
-                      className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
-                    >
-                      <Plus size={18} />
-                    </button>
-                  )}
+                  {idx === references[sec.key][sec.list].length - 1 &&
+                    val.trim() !== "" && (
+                      <button
+                        onClick={() => addField(`${sec.key}.${sec.list}`, idx)}
+                        className="text-[#08384f] border border-[#08384f] rounded-full p-0.5 mt-2"
+                      >
+                        <Plus size={18} />
+                      </button>
+                    )}
                 </div>
               ))}
           </div>
         ))}
       </div>
-      <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
+
+      <div className="flex justify-end gap-3 mt-4 pt-4  bg-white">
         <button
           onClick={onPrev}
-          className="bg-gray-100 px-6 py-2 rounded text-sm text-gray-700"
+          className="bg-gray-100 px-6 py-2 rounded text-sm font-medium text-gray-700 hover:bg-gray-200 transition-colors"
         >
           Previous
         </button>
         <button
           onClick={handleSaveAndNext}
           disabled={loading}
-          className="bg-[#08384f] text-white px-6 py-2 rounded text-sm disabled:opacity-50"
+          className="bg-[#08384f] text-white px-6 py-2 rounded text-sm font-medium disabled:opacity-50 hover:bg-[#062c3e] transition-colors"
         >
           {loading ? "Saving..." : "Next"}
         </button>
