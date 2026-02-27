@@ -1,51 +1,137 @@
-import { Plus, X, CheckCircle2 } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const ReferenceTab = ({ onNext, onPrev }) => {
+const ReferenceTab = ({
+  data,
+  refreshData,
+  onNext,
+  onPrev,
+  updateLivePlanningData,
+}) => {
   const { classId, sectionId } = useParams();
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
-  const [showModal, setShowModal] = useState(false);
 
-  const [references, setReferences] = useState({
+  const initialStructure = {
     textBooks: [""],
     referenceBooks: [""],
     journals: [""],
     webResources: [""],
-    moocCourses: [{ platform: "", name: "" }],
+    moocCourses: [{ platform: "", courseName: "" }],
     projects: [""],
     termWork: { enabled: false, activities: [""] },
     gapIdentification: { enabled: false, entries: [""] },
-  });
+  };
+
+  const [references, setReferences] = useState(initialStructure);
 
   useEffect(() => {
-    const fetchReferences = async () => {
-      try {
-        const res = await axios.get(
-          `${apiUrl}api/staff/subject-planning/references/${sectionId}/${classId}`,
-          { headers: { Authorization: `Bearer ${token}` } },
-        );
-        if (res.data?.data) setReferences(res.data.data);
-      } catch (err) {
-        console.error("Error fetching references:", err.message);
-      }
-    };
-    if (classId && sectionId) fetchReferences();
-  }, [classId, sectionId, apiUrl, token]);
+    if (data) {
+      setReferences({
+        textBooks: data.textBooks?.length ? data.textBooks : [""],
+        referenceBooks: data.referenceBooks?.length
+          ? data.referenceBooks
+          : [""],
+        journals: data.journals?.length ? data.journals : [""],
+        webResources: data.webResources?.length ? data.webResources : [""],
+        moocCourses: data.moocCourses?.length
+          ? data.moocCourses
+          : [{ platform: "", courseName: "" }],
+        projects: data.projects?.length ? data.projects : [""],
+        termWork: data.termWork || initialStructure.termWork,
+        gapIdentification:
+          data.gapIdentification || initialStructure.gapIdentification,
+      });
+    }
+  }, [data]);
 
-  const handleSave = async () => {
+  const handleLiveUpdate = (updatedState) => {
+    setReferences(updatedState);
+    updateLivePlanningData(updatedState);
+  };
+
+  const updateField = (path, index, value, subField = null) => {
+    const newData = JSON.parse(JSON.stringify(references));
+    const keys = path.split(".");
+    let target = newData;
+    for (let i = 0; i < keys.length - 1; i++) target = target[keys[i]];
+    const lastKey = keys[keys.length - 1];
+
+    if (subField) target[lastKey][index][subField] = value;
+    else target[lastKey][index] = value;
+
+    handleLiveUpdate(newData);
+  };
+
+  const addField = (path, index) => {
+    const keys = path.split(".");
+    let target = references;
+    keys.forEach((key) => {
+      target = target[key];
+    });
+
+    const currentItem = target[index];
+    const isEmpty =
+      typeof currentItem === "object"
+        ? !currentItem.platform?.trim() || !currentItem.courseName?.trim()
+        : !currentItem?.trim();
+
+    if (isEmpty) {
+      alert("Please fill the current field before adding a new one.");
+      return;
+    }
+
+    const newData = JSON.parse(JSON.stringify(references));
+    let innerTarget = newData;
+    for (let i = 0; i < keys.length - 1; i++)
+      innerTarget = innerTarget[keys[i]];
+    const lastKey = keys[keys.length - 1];
+
+    const newItem =
+      lastKey === "moocCourses" ? { platform: "", courseName: "" } : "";
+    innerTarget[lastKey] = [...innerTarget[lastKey], newItem];
+    handleLiveUpdate(newData);
+  };
+
+  const removeField = (path, index) => {
+    const newData = JSON.parse(JSON.stringify(references));
+    const keys = path.split(".");
+    let target = newData;
+    for (let i = 0; i < keys.length - 1; i++) target = target[keys[i]];
+    const lastKey = keys[keys.length - 1];
+
+    if (target[lastKey].length > 1) {
+      target[lastKey].splice(index, 1);
+      handleLiveUpdate(newData);
+    }
+  };
+
+  const toggleSection = (key, value) => {
+    const newData = {
+      ...references,
+      [key]: { ...references[key], enabled: value },
+    };
+    handleLiveUpdate(newData);
+  };
+
+  const handleSaveAndNext = async () => {
     setLoading(true);
     try {
       const res = await axios.patch(
-        `${apiUrl}api/staff/subject-planning/references`,
-        { subjectId: classId, sectionId, references },
+        `${apiUrl}api/course-plan/references`,
+        {
+          subjectId: classId,
+          sectionId,
+          data: references,
+        },
         { headers: { Authorization: `Bearer ${token}` } },
       );
       if (res.data.success) {
-        setShowModal(true);
+        await refreshData();
+        onNext();
       }
     } catch (err) {
       console.error("Error saving references:", err.message);
@@ -54,68 +140,16 @@ const ReferenceTab = ({ onNext, onPrev }) => {
     }
   };
 
-  const addField = (path, index) => {
-    const keys = path.split(".");
-    let current = references;
-    keys.forEach((key) => {
-      current = current[key];
-    });
-
-    const valueToVerify =
-      path === "moocCourses" ? current[index].name : current[index];
-
-    if (valueToVerify.trim() === "") {
-      alert("Please fill the current field before adding a new one.");
-      return;
-    }
-
-    setReferences((prev) => {
-      const newData = { ...prev };
-      let target = newData;
-      for (let i = 0; i < keys.length - 1; i++) target = target[keys[i]];
-      const lastKey = keys[keys.length - 1];
-      const newItem =
-        lastKey === "moocCourses" ? { platform: "", name: "" } : "";
-      target[lastKey] = [...target[lastKey], newItem];
-      return newData;
-    });
-  };
-
-  const removeField = (path, index) => {
-    setReferences((prev) => {
-      const newData = { ...prev };
-      const keys = path.split(".");
-      let target = newData;
-      for (let i = 0; i < keys.length - 1; i++) target = target[keys[i]];
-      const lastKey = keys[keys.length - 1];
-      if (target[lastKey].length > 1) {
-        target[lastKey] = target[lastKey].filter((_, i) => i !== index);
-      }
-      return newData;
-    });
-  };
-
-  const updateField = (path, index, value, subField = null) => {
-    setReferences((prev) => {
-      const newData = { ...prev };
-      const keys = path.split(".");
-      let target = newData;
-      for (let i = 0; i < keys.length - 1; i++) target = target[keys[i]];
-      const lastKey = keys[keys.length - 1];
-      if (subField) target[lastKey][index][subField] = value;
-      else target[lastKey][index] = value;
-      return newData;
-    });
-  };
-
   const renderSimpleFields = (label, path, placeholder, prefix) => (
     <div className="mb-4">
-      <label className="text-sm font-medium mb-1 block">{label}</label>
+      <label className="text-sm font-medium mb-1 block text-gray-700">
+        {label}
+      </label>
       {references[path].map((val, idx) => (
         <div key={idx} className="flex items-center gap-2 mb-2">
-          <div className="flex flex-1 items-center border border-gray-300 rounded overflow-hidden">
+          <div className="flex flex-1 items-center border border-gray-300 rounded overflow-hidden bg-white">
             {prefix && (
-              <span className="bg-[#e6e9f5] px-3 py-2 text-xs font-bold border-r border-gray-300">
+              <span className="bg-[#e6e9f5] px-3 py-2 text-xs font-bold border-r border-gray-300 text-gray-600 min-w-[45px] text-center">
                 {prefix}
                 {idx + 1}
               </span>
@@ -130,7 +164,7 @@ const ReferenceTab = ({ onNext, onPrev }) => {
             {references[path].length > 1 && (
               <button
                 onClick={() => removeField(path, idx)}
-                className="px-2 text-red-500 hover:bg-red-50"
+                className="px-2 text-red-400 hover:bg-red-50"
               >
                 <X size={16} />
               </button>
@@ -139,7 +173,7 @@ const ReferenceTab = ({ onNext, onPrev }) => {
           {idx === references[path].length - 1 && (
             <button
               onClick={() => addField(path, idx)}
-              className="text-blue-900 border border-blue-900 rounded-full p-0.5 hover:bg-blue-50"
+              className="text-[#08384f] border border-[#08384f] rounded-full p-0.5 hover:bg-gray-100"
             >
               <Plus size={18} />
             </button>
@@ -172,14 +206,14 @@ const ReferenceTab = ({ onNext, onPrev }) => {
         )}
 
         <div className="mb-4">
-          <label className="text-sm font-medium mb-1 block">
+          <label className="text-sm font-medium mb-1 block text-gray-700">
             MOOC/NPTEL/SWAYAM Courses
           </label>
           {references.moocCourses.map((course, idx) => (
             <div key={idx} className="flex items-center gap-2 mb-2">
               <div className="flex flex-1 gap-2">
                 <input
-                  className="w-1/3 border border-gray-300 rounded px-3 py-2 text-sm"
+                  className="w-1/3 border border-gray-300 rounded px-3 py-2 text-sm outline-none"
                   placeholder="Platform"
                   value={course.platform}
                   onChange={(e) =>
@@ -187,18 +221,23 @@ const ReferenceTab = ({ onNext, onPrev }) => {
                   }
                 />
                 <input
-                  className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm"
+                  className="flex-1 border border-gray-300 rounded px-3 py-2 text-sm outline-none"
                   placeholder="Course Name"
-                  value={course.name}
+                  value={course.courseName}
                   onChange={(e) =>
-                    updateField("moocCourses", idx, e.target.value, "name")
+                    updateField(
+                      "moocCourses",
+                      idx,
+                      e.target.value,
+                      "courseName",
+                    )
                   }
                 />
               </div>
               {idx === references.moocCourses.length - 1 && (
                 <button
                   onClick={() => addField("moocCourses", idx)}
-                  className="text-blue-900 border border-blue-900 rounded-full p-0.5"
+                  className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
                 >
                   <Plus size={18} />
                 </button>
@@ -225,28 +264,27 @@ const ReferenceTab = ({ onNext, onPrev }) => {
             list: "entries",
           },
         ].map((sec) => (
-          <div key={sec.key} className="mb-4">
-            <label className="text-sm font-medium block">{sec.label}</label>
-            <div className="flex gap-4 my-2">
-              {["Yes", "No"].map((opt) => (
-                <label
-                  key={opt}
-                  className="flex items-center gap-1 text-sm cursor-pointer"
-                >
-                  <input
-                    type="radio"
-                    name={sec.key}
-                    checked={(opt === "Yes") === references[sec.key].enabled}
-                    onChange={() =>
-                      setReferences((p) => ({
-                        ...p,
-                        [sec.key]: { ...p[sec.key], enabled: opt === "Yes" },
-                      }))
-                    }
-                  />{" "}
-                  {opt}
-                </label>
-              ))}
+          <div key={sec.key} className="mb-6">
+            <label className="text-sm font-medium block text-gray-700 mb-2">
+              {sec.label}
+            </label>
+            <div className="flex gap-4 mb-3">
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="radio"
+                  checked={references[sec.key].enabled}
+                  onChange={() => toggleSection(sec.key, true)}
+                />{" "}
+                Yes
+              </label>
+              <label className="flex items-center gap-2 text-sm cursor-pointer">
+                <input
+                  type="radio"
+                  checked={!references[sec.key].enabled}
+                  onChange={() => toggleSection(sec.key, false)}
+                />{" "}
+                No
+              </label>
             </div>
             {references[sec.key].enabled &&
               references[sec.key][sec.list].map((val, idx) => (
@@ -263,17 +301,21 @@ const ReferenceTab = ({ onNext, onPrev }) => {
                         )
                       }
                     />
-                    <button
-                      onClick={() => removeField(`${sec.key}.${sec.list}`, idx)}
-                      className="px-2 text-red-500"
-                    >
-                      <X size={16} />
-                    </button>
+                    {references[sec.key][sec.list].length > 1 && (
+                      <button
+                        onClick={() =>
+                          removeField(`${sec.key}.${sec.list}`, idx)
+                        }
+                        className="px-2 text-red-400"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
                   </div>
                   {idx === references[sec.key][sec.list].length - 1 && (
                     <button
                       onClick={() => addField(`${sec.key}.${sec.list}`, idx)}
-                      className="text-blue-900 border border-blue-900 rounded-full p-0.5"
+                      className="text-[#08384f] border border-[#08384f] rounded-full p-0.5"
                     >
                       <Plus size={18} />
                     </button>
@@ -283,43 +325,21 @@ const ReferenceTab = ({ onNext, onPrev }) => {
           </div>
         ))}
       </div>
-
-      <div className="flex justify-end gap-3 mt-4">
+      <div className="flex justify-end gap-3 mt-4 pt-4 border-t">
         <button
           onClick={onPrev}
-          className="bg-gray-200 px-6 py-2 rounded text-sm hover:bg-gray-300"
+          className="bg-gray-100 px-6 py-2 rounded text-sm text-gray-700"
         >
           Previous
         </button>
         <button
-          onClick={handleSave}
+          onClick={handleSaveAndNext}
           disabled={loading}
           className="bg-[#08384f] text-white px-6 py-2 rounded text-sm disabled:opacity-50"
         >
-          {loading ? "Saving..." : "Save & Finish"}
+          {loading ? "Saving..." : "Next"}
         </button>
       </div>
-
-      {/* Success Modal */}
-      {showModal && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-[100]">
-          <div className="bg-white p-8 rounded-lg shadow-xl flex flex-col items-center gap-4 max-w-sm w-full mx-4">
-            <CheckCircle2 size={60} className="text-green-500" />
-            <h2 className="text-xl font-bold text-gray-800">
-              Plan Saved Successfully!
-            </h2>
-            <p className="text-gray-500 text-center text-sm">
-              Your subject planning data has been updated on the server.
-            </p>
-            <button
-              onClick={onNext}
-              className="w-full bg-[#08384f] text-white py-2 rounded mt-2 hover:bg-[#0a4661]"
-            >
-              Proceed to Lesson Planner
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 };

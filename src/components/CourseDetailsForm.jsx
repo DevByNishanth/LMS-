@@ -3,55 +3,76 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
 
-const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
+const CourseDetailsForm = ({
+  data,
+  refreshData,
+  onNext,
+  updateLivePlanningData,
+}) => {
   const { classId, sectionId } = useParams();
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
   const [loading, setLoading] = useState(false);
 
-  const courseTypeOptions = ["T", "TP", "TPJ", "P", "PJ", "I"];
-  const rtblOptions = ["K1", "K2", "K3", "K4", "K5", "K6"];
+  const [formData, setFormData] = useState({
+    courseType: "",
+    coRequisites: "",
+    preRequisites: "",
+    courseDescription: "",
+    courseObjectives: [""],
+    courseOutcomes: [
+      { unit: "Unit 1", statement: "", rtbl: "K1" },
+      { unit: "Unit 2", statement: "", rtbl: "K1" },
+      { unit: "Unit 3", statement: "", rtbl: "K1" },
+      { unit: "Unit 4", statement: "", rtbl: "K1" },
+      { unit: "Unit 5", statement: "", rtbl: "K1" },
+    ],
+  });
 
   useEffect(() => {
-    const fetchCourseDetails = async () => {
-      try {
-        const res = await axios.get(
-          `${apiUrl}api/subject-planning/course-details/${sectionId}/${classId}`,
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          },
-        );
-        console.log(res);
-        if (res.data && res.data.data) {
-          const details = res.data.data;
-          setFormData({
-            courseType: details.courseType || "",
-            coRequisites: details.coRequisites || "",
-            preRequisites: details.preRequisites || "",
-            courseDescription: details.courseDescription || "",
-            courseObjectives: details.courseObjectives
-              ? details.courseObjectives.split("\n")
-              : [""],
-            courseOutcomes: details.courseOutcomes?.length
-              ? details.courseOutcomes
-              : [
-                  { unit: "Unit 1", statement: "", rtbl: "K1" },
-                  { unit: "Unit 2", statement: "", rtbl: "K1" },
-                  { unit: "Unit 3", statement: "", rtbl: "K1" },
-                  { unit: "Unit 4", statement: "", rtbl: "K1" },
-                  { unit: "Unit 5", statement: "", rtbl: "K1" },
-                ],
-          });
-        }
-      } catch (err) {
-        console.error("Error fetching course details:", err.message);
-      }
-    };
-
-    if (sectionId && classId) {
-      fetchCourseDetails();
+    if (data) {
+      setFormData({
+        courseType: data.courseType || "",
+        coRequisites: data.coRequisites || "",
+        preRequisites: data.preRequisites || "",
+        courseDescription: data.courseDescription || "",
+        courseObjectives: data.courseObjectives
+          ? data.courseObjectives.split("\n")
+          : [""],
+        courseOutcomes: data.courseOutcomes?.length
+          ? data.courseOutcomes
+          : formData.courseOutcomes,
+      });
     }
-  }, [sectionId, classId, apiUrl, token, setFormData]);
+  }, [data]);
+
+  const handleLiveUpdate = (updatedState) => {
+    setFormData(updatedState);
+    updateLivePlanningData(updatedState);
+  };
+
+  const handleChange = (field, value) => {
+    handleLiveUpdate({ ...formData, [field]: value });
+  };
+
+  const handleObjectiveChange = (index, value) => {
+    const updated = [...formData.courseObjectives];
+    updated[index] = value;
+    handleLiveUpdate({ ...formData, courseObjectives: updated });
+  };
+
+  const addObjective = () => {
+    handleLiveUpdate({
+      ...formData,
+      courseObjectives: [...formData.courseObjectives, ""],
+    });
+  };
+
+  const handleOutcomeChange = (index, field, value) => {
+    const updated = [...formData.courseOutcomes];
+    updated[index][field] = value;
+    handleLiveUpdate({ ...formData, courseOutcomes: updated });
+  };
 
   const handleSaveAndNext = async () => {
     setLoading(true);
@@ -59,66 +80,35 @@ const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
       const payload = {
         subjectId: classId,
         sectionId: sectionId,
-        courseDetails: {
-          courseType: formData.courseType,
-          preRequisites: formData.preRequisites,
-          coRequisites: formData.coRequisites,
-          courseDescription: formData.courseDescription,
+        data: {
+          ...formData,
           courseObjectives: formData.courseObjectives
-            .filter((obj) => obj.trim() !== "")
+            .filter((obj) => obj.trim())
             .join("\n"),
-          courseOutcomes: formData.courseOutcomes,
         },
       };
-
       const res = await axios.patch(
-        `${apiUrl}api/subject-planning/course-details`,
+        `${apiUrl}api/course-plan/courseDetails`,
         payload,
         {
           headers: { Authorization: `Bearer ${token}` },
         },
       );
-
       if (res.data.success) {
+        await refreshData();
         onNext();
       }
     } catch (err) {
-      console.error(
-        "Error updating course details:",
-        err.response?.data || err.message,
-      );
+      console.error("Error updating course details:", err.message);
     } finally {
       setLoading(false);
     }
   };
 
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
-  };
-
-  const handleObjectiveChange = (index, value) => {
-    const updated = [...formData.courseObjectives];
-    updated[index] = value;
-    setFormData((prev) => ({ ...prev, courseObjectives: updated }));
-  };
-
-  const addObjective = () => {
-    setFormData((prev) => ({
-      ...prev,
-      courseObjectives: [...prev.courseObjectives, ""],
-    }));
-  };
-
-  const handleOutcomeChange = (index, field, value) => {
-    const updated = [...formData.courseOutcomes];
-    updated[index][field] = value;
-    setFormData((prev) => ({ ...prev, courseOutcomes: updated }));
-  };
-
   return (
     <>
       <form
-        className="h-[91%] mb-2 overflow-auto"
+        className="h-[91%] mb-2 overflow-auto pr-2"
         onSubmit={(e) => e.preventDefault()}
       >
         <div className="form-content">
@@ -134,10 +124,8 @@ const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
               >
                 <option value="">Select type</option>
-                {courseTypeOptions.map((type) => (
-                  <option key={type} value={type}>
-                    {type}
-                  </option>
+                {["T", "TP", "TPJ", "P", "PJ", "I"].map((t) => (
+                  <option key={t}>{t}</option>
                 ))}
               </select>
             </div>
@@ -219,11 +207,8 @@ const CourseDetailsForm = ({ formData, setFormData, onNext }) => {
                   }
                   className="col-span-3 border border-gray-300 rounded px-2 py-2 text-sm"
                 >
-                  <option value="">RTBL</option>
-                  {rtblOptions.map((rtbl) => (
-                    <option key={rtbl} value={rtbl}>
-                      {rtbl}
-                    </option>
+                  {["K1", "K2", "K3", "K4", "K5", "K6"].map((k) => (
+                    <option key={k}>{k}</option>
                   ))}
                 </select>
               </div>
