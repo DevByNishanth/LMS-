@@ -49,9 +49,8 @@ const ClassroomSubjectPlanningComponent = () => {
     if (!planningData)
       return { individualProgress: [0, 0, 0, 0, 0], overallProgress: 0 };
 
+    // 1. Course Details Progress
     const details = planningData.courseDetails || {};
-
-    // FIX: Check if courseObjectives is already an array from live updates
     const rawObjectives = details.courseObjectives;
     const objectivesArray = Array.isArray(rawObjectives)
       ? rawObjectives
@@ -72,9 +71,9 @@ const ClassroomSubjectPlanningComponent = () => {
       (detailsFilled / Math.max(detailsValues.length, 1)) * 100,
     );
 
+    // 2. CO-PO Mapping Progress (Uses 'credit' and checks justification)
     const mapping = planningData.coPoMapping || {};
     const mappingKeys = [
-      "PO0",
       "PO1",
       "PO2",
       "PO3",
@@ -94,32 +93,48 @@ const ClassroomSubjectPlanningComponent = () => {
     let mapCount = 0;
     cos.forEach((co) =>
       mappingKeys.forEach((k) => {
-        if (mapping[co]?.[k]?.justification?.trim()) mapCount++;
+        const entry = mapping[co]?.[k];
+        if (entry?.credit > 0 && entry?.justification?.trim()) mapCount++;
       }),
     );
     const mappingPercent = Math.round(
       (mapCount / (mappingKeys.length * cos.length)) * 100,
     );
 
+    // 3. References Progress (Checks categories and MOOC objects)
     const refs = planningData.references || {};
-    const refValues = [
-      ...(refs.textBooks || []),
-      ...(refs.referenceBooks || []),
-      ...(refs.journals || []),
-      ...(refs.webResources || []),
-      ...(refs.moocCourses?.map((m) => m.courseName) || []),
-      ...(refs.projects || []),
+    const refCategories = [
+      (refs.textBooks || []).some((v) => v?.trim()),
+      (refs.referenceBooks || []).some((v) => v?.trim()),
+      (refs.journals || []).some((v) => v?.trim()),
+      (refs.webResources || []).some((v) => v?.trim()),
+      (refs.moocCourses || []).some(
+        (m) => m.courseName?.trim() && m.platform?.trim(),
+      ),
+      (refs.projects || []).some((v) => v?.trim()),
     ];
-    const refFilled = refValues.filter((v) => v?.trim()).length;
-    const refPercent = Math.min(Math.round((refFilled / 6) * 100), 100);
+    const categoriesFilled = refCategories.filter(Boolean).length;
+    const refPercent = Math.round((categoriesFilled / 6) * 100);
+
+    // 4. Theory Planner Progress (Checks UNIT keys and nested topics array)
+    const tp = planningData.theoryPlanner || {};
+    const theoryUnitsToCheck = ["UNIT1", "UNIT2", "UNIT3", "UNIT4", "UNIT5"];
+    const unitsFilled = theoryUnitsToCheck.filter((u) => {
+      const unitEntry = tp[u];
+      // Handles both direct array of topics or object with topics key
+      const topics = Array.isArray(unitEntry) ? unitEntry : unitEntry?.topics;
+      return Array.isArray(topics) && topics.length > 0;
+    }).length;
+    const theoryPercent = Math.round((unitsFilled / 5) * 100);
 
     const individualProgress = [
       detailsPercent,
       mappingPercent,
       refPercent,
-      0,
-      0,
+      theoryPercent,
+      0, // Lab Planner
     ];
+
     const overallProgress = Math.round(
       individualProgress.reduce((a, b) => a + b, 0) / 5,
     );
@@ -128,11 +143,15 @@ const ClassroomSubjectPlanningComponent = () => {
   }, [planningData]);
 
   if (loading && !planningData)
-    return <div className="p-10">Loading Planning Data...</div>;
+    return (
+      <div className="p-10 text-center font-medium">
+        Loading Planning Data...
+      </div>
+    );
 
   return (
-    <div className="main-container w-full flex gap-2 min-h-[calc(100vh-160px)] max-h-[calc(100vh-150px)]">
-      <div className="w-[30%] border border-gray-300 rounded-md">
+    <div className="main-container w-full flex gap-2 min-h-[calc(100vh-160px)] max-h-[calc(100vh-150px)] p-2">
+      <div className="w-[25%] border border-gray-300 rounded-md bg-white">
         <CoursePlanTab
           tabs={[
             "Course Details",
@@ -147,7 +166,7 @@ const ClassroomSubjectPlanningComponent = () => {
           overallProgress={tabStats.overallProgress}
         />
       </div>
-      <div className="form-container border overflow-auto w-[80%] border-gray-300 rounded-md py-2 pl-4 hide-scrollbar">
+      <div className="form-container border overflow-auto w-[75%] border-gray-300 rounded-md py-4 px-4 bg-white hide-scrollbar">
         {activeTab === 0 && (
           <CourseDetailsForm
             data={planningData?.courseDetails}
@@ -181,8 +200,19 @@ const ClassroomSubjectPlanningComponent = () => {
           />
         )}
         {activeTab === 3 && (
-          <div className="text-gray-400 text-center mt-20">
-            <SubjectSubTopicsTable />
+          <SubjectSubTopicsTable
+            data={planningData?.theoryPlanner}
+            refreshData={fetchAllData}
+            updateLivePlanningData={(val) =>
+              updateLivePlanningData("theoryPlanner", val)
+            }
+            onNext={() => setActiveTab(4)}
+            onPrev={() => setActiveTab(2)}
+          />
+        )}
+        {activeTab === 4 && (
+          <div className="flex items-center justify-center h-full text-gray-400 font-medium py-10">
+            Lab Planner - Coming Soon
           </div>
         )}
       </div>

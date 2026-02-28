@@ -71,7 +71,6 @@ const CoursePlanTab = ({
         Complete all sections to finalize your subject planning.
       </p>
 
-      {/* Main Progress Bar Container */}
       <div className="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-100">
         <div className="flex justify-between items-center mb-1.5">
             <span className="text-[11px] uppercase tracking-wider font-bold text-gray-400">Overall Progress</span>

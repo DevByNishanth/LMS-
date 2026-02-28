@@ -24,7 +24,6 @@ const PO_LIST = [
   "PO9",
   "PO10",
   "PO11",
-  "PO12",
   "PSO1",
   "PSO2",
   "PSO3",
@@ -83,9 +82,9 @@ const CoPoMapping = ({
         [item]: {
           ...(coPoMapping[selectedTab]?.[item] || {
             justification: "",
-            level: 0,
+            credit: 0,
           }),
-          [field]: field === "level" ? Number(value) : value,
+          [field]: field === "credit" ? Number(value) : value,
         },
       },
     };
@@ -129,12 +128,11 @@ const CoPoMapping = ({
             {PO_LIST.map((item) => {
               const mappingEntry = coPoMapping[selectedTab]?.[item] || {
                 justification: "",
-                level: 0,
+                credit: 0,
               };
 
-              // Validation: Treat as one entity. Row is "complete" only if level > 0 AND justification exists.
               const isEntryValid =
-                mappingEntry.level > 0 &&
+                mappingEntry.credit > 0 &&
                 mappingEntry.justification.trim() !== "";
 
               return (
@@ -146,12 +144,10 @@ const CoPoMapping = ({
                       : "border-gray-200 bg-gray-50"
                   }`}
                 >
-                  {/* PO Label */}
                   <div className="w-16 h-12 flex items-center justify-center bg-[#e6e9f5] text-[#08384f] font-bold text-xs border-r border-gray-300">
                     {item}
                   </div>
 
-                  {/* Justification Input */}
                   <div className="flex-1 h-12 flex items-center px-3 bg-white">
                     <input
                       type="text"
@@ -164,18 +160,17 @@ const CoPoMapping = ({
                     />
                   </div>
 
-                  {/* Level Selection */}
                   <div className="flex items-center gap-2 px-3 h-12 bg-white border-l border-gray-200">
                     <span className="text-[10px] uppercase font-bold text-gray-400">
-                      Level
+                      Credit
                     </span>
                     <select
-                      value={mappingEntry.level}
+                      value={mappingEntry.credit}
                       onChange={(e) =>
-                        updateMapping(item, "level", e.target.value)
+                        updateMapping(item, "credit", e.target.value)
                       }
                       className={`w-14 h-8 px-1 border rounded text-sm font-bold outline-none cursor-pointer transition-colors ${
-                        mappingEntry.level > 0
+                        mappingEntry.credit > 0
                           ? "border-gray-700 text-gray-700"
                           : "border-gray-300 text-gray-400"
                       }`}
