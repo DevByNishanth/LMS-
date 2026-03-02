@@ -1,4 +1,4 @@
-import { Plus } from "lucide-react";
+import { Plus, X } from "lucide-react";
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useParams } from "react-router-dom";
@@ -31,14 +31,19 @@ const CourseDetailsForm = ({
 
   useEffect(() => {
     if (data) {
+      let objectives = [""];
+      if (Array.isArray(data.courseObjectives)) {
+        objectives = data.courseObjectives.length ? data.courseObjectives : [""];
+      } else if (typeof data.courseObjectives === "string" && data.courseObjectives.trim()) {
+        objectives = data.courseObjectives.split("\n");
+      }
+
       setFormData({
         courseType: data.courseType || "",
         coRequisites: data.coRequisites || "",
         preRequisites: data.preRequisites || "",
         courseDescription: data.courseDescription || "",
-        courseObjectives: data.courseObjectives
-          ? data.courseObjectives.split("\n")
-          : [""],
+        courseObjectives: objectives,
         courseOutcomes: data.courseOutcomes?.length
           ? data.courseOutcomes
           : formData.courseOutcomes,
@@ -68,9 +73,18 @@ const CourseDetailsForm = ({
     });
   };
 
+  const removeObjective = (index) => {
+    const updated = formData.courseObjectives.filter((_, i) => i !== index);
+    // Ensure there is always at least one input field
+    handleLiveUpdate({
+      ...formData,
+      courseObjectives: updated.length ? updated : [""],
+    });
+  };
+
   const handleOutcomeChange = (index, field, value) => {
     const updated = [...formData.courseOutcomes];
-    updated[index][field] = value;
+    updated[index] = { ...updated[index], [field]: value };
     handleLiveUpdate({ ...formData, courseOutcomes: updated });
   };
 
@@ -83,16 +97,14 @@ const CourseDetailsForm = ({
         data: {
           ...formData,
           courseObjectives: formData.courseObjectives
-            .filter((obj) => obj.trim())
+            .filter((obj) => obj && obj.trim())
             .join("\n"),
         },
       };
       const res = await axios.patch(
         `${apiUrl}api/course-plan/courseDetails`,
         payload,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-        },
+        { headers: { Authorization: `Bearer ${token}` } }
       );
       if (res.data.success) {
         await refreshData();
@@ -136,7 +148,6 @@ const CourseDetailsForm = ({
                 value={formData.coRequisites}
                 onChange={(e) => handleChange("coRequisites", e.target.value)}
                 className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
-                placeholder="Select co-requisites"
               />
             </div>
           </div>
@@ -162,14 +173,26 @@ const CourseDetailsForm = ({
           <div className="mb-4">
             <label className="text-sm mb-1 block">Course Objective</label>
             {formData.courseObjectives.map((obj, index) => (
-              <div key={index} className="flex gap-2 mb-2">
+              <div key={index} className="flex gap-2 mb-2 items-center">
                 <input
                   type="text"
                   value={obj}
                   onChange={(e) => handleObjectiveChange(index, e.target.value)}
                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
+                  placeholder={`Objective ${index + 1}`}
                 />
-                {index === formData.courseObjectives.length - 1 && (
+                
+                {/* Remove Button */}
+                <button
+                  type="button"
+                  onClick={() => removeObjective(index)}
+                  className="text-red-500 hover:bg-red-50 p-2 rounded"
+                >
+                  <X size={18} />
+                </button>
+
+                {/* Add Button Logic: Show only for the last item and if input is not empty */}
+                {index === formData.courseObjectives.length - 1 && obj.trim() !== "" && (
                   <button
                     type="button"
                     onClick={addObjective}
@@ -189,7 +212,7 @@ const CourseDetailsForm = ({
                   type="text"
                   value={outcome.unit}
                   disabled
-                  className="col-span-2 border border-gray-300 rounded px-2 py-2 text-sm bg-[#e6e9f5]"
+                  className="col-span-1 border border-gray-300 rounded px-2 py-2 text-sm bg-[#e6e9f5]"
                 />
                 <input
                   type="text"
@@ -198,14 +221,14 @@ const CourseDetailsForm = ({
                   onChange={(e) =>
                     handleOutcomeChange(index, "statement", e.target.value)
                   }
-                  className="col-span-7 border border-gray-300 rounded px-3 py-2 text-sm"
+                  className="col-span-10 border border-gray-300 rounded px-3 py-2 text-sm"
                 />
                 <select
                   value={outcome.rtbl}
                   onChange={(e) =>
                     handleOutcomeChange(index, "rtbl", e.target.value)
                   }
-                  className="col-span-3 border border-gray-300 rounded px-2 py-2 text-sm"
+                  className="col-span-1 border border-gray-300 rounded px-2 py-2 text-sm"
                 >
                   {["K1", "K2", "K3", "K4", "K5", "K6"].map((k) => (
                     <option key={k}>{k}</option>

@@ -10,7 +10,7 @@ const ProgressRing = ({ percentage, isActive }) => {
 
   if (percentage === 100) {
     return (
-      <div className="w-5 h-5 rounded-full bg-green-500 flex items-center justify-center shadow-sm">
+      <div className="w-5 h-5 rounded-full bg-green-700 flex items-center justify-center shadow-sm">
         <svg
           className="w-3.5 h-3.5 text-white"
           fill="none"
@@ -62,7 +62,7 @@ const CoursePlanTab = ({
   overallProgress,
 }) => {
   return (
-    <div className="w-full py-4 px-4 bg-white rounded-md">
+    <div className="w-full py-4 px-4 bg-white rounded-md h-full overflow-auto hide-scrollbar">
       <h2 className="text-[18px] font-bold text-gray-800 mb-1">
         Complete Your Course Plan
       </h2>
@@ -71,7 +71,6 @@ const CoursePlanTab = ({
         Complete all sections to finalize your subject planning.
       </p>
 
-      {/* Main Progress Bar Container */}
       <div className="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-100">
         <div className="flex justify-between items-center mb-1.5">
             <span className="text-[11px] uppercase tracking-wider font-bold text-gray-400">Overall Progress</span>
