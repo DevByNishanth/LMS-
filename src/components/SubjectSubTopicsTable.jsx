@@ -458,8 +458,8 @@ export default function SubjectSubTopicsTable({
       {/* Custom Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
-          <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center p-4 border-b bg-[#08384f] text-white">
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
+            <div className="flex justify-between items-center p-4 border-b  text-black">
               <div className="flex items-center gap-2 font-bold">
                 <AlertTriangle size={20} />
                 <h2>Confirm Delete</h2>
@@ -487,14 +487,14 @@ export default function SubjectSubTopicsTable({
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
                 disabled={loading}
-                className="flex-1 px-4 py-2 border border-gray-300 rounded-xl text-sm font-bold text-gray-600 hover:bg-white"
+                className="flex-1 px-4 py-2 border cursor-pointer border-gray-400 rounded-lg text-sm font-medium text-gray-800 hover:bg-white"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
                 disabled={loading}
-                className="flex-1 px-4 py-2 bg-[#08384f] text-white rounded-xl text-sm font-bold shadow-lg hover:bg-[#08384f] transition-all flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 bg-[#08384f] text-white rounded-lg text-sm font-medium cursor-pointer shadow-lg hover:bg-[#08384f] transition-all flex items-center justify-center gap-2"
               >
                 {loading ? "Deleting..." : "Yes, Delete"}
               </button>
