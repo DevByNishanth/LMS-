@@ -181,7 +181,7 @@ const CourseDetailsForm = ({
                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                   placeholder={`Objective ${index + 1}`}
                 />
-                
+
                 {/* Remove Button */}
                 <button
                   type="button"
@@ -212,7 +212,7 @@ const CourseDetailsForm = ({
                   type="text"
                   value={outcome.unit}
                   disabled
-                  className="col-span-1 border border-gray-300 rounded px-2 py-2 text-sm bg-[#e6e9f5]"
+                  className="col-span-2 border border-gray-300 rounded px-2 py-2 text-sm bg-[#e6e9f5]"
                 />
                 <input
                   type="text"
@@ -221,14 +221,14 @@ const CourseDetailsForm = ({
                   onChange={(e) =>
                     handleOutcomeChange(index, "statement", e.target.value)
                   }
-                  className="col-span-10 border border-gray-300 rounded px-3 py-2 text-sm"
+                  className="col-span-8 border border-gray-300 rounded px-3 py-2 text-sm"
                 />
                 <select
                   value={outcome.rtbl}
                   onChange={(e) =>
                     handleOutcomeChange(index, "rtbl", e.target.value)
                   }
-                  className="col-span-1 border border-gray-300 rounded px-2 py-2 text-sm"
+                  className="col-span-2 border border-gray-300 rounded px-2 py-2 text-sm"
                 >
                   {["K1", "K2", "K3", "K4", "K5", "K6"].map((k) => (
                     <option key={k}>{k}</option>
