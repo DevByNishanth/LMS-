@@ -80,6 +80,7 @@ const Classpage = () => {
                   subjectId={classId}
                 />
               )}
+
             </div>
           </section>
         </div>
