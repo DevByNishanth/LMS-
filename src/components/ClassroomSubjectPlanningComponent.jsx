@@ -6,6 +6,7 @@ import CourseDetailsForm from "./CourseDetailsForm";
 import CoPoMapping from "./CoPoMapping";
 import ReferenceTab from "./ReferenceTab";
 import SubjectSubTopicsTable from "./SubjectSubTopicsTable";
+import DownloadPdf from "./DownloadPdf";
 
 const ClassroomSubjectPlanningComponent = () => {
   const { classId, sectionId } = useParams();
@@ -159,6 +160,7 @@ const ClassroomSubjectPlanningComponent = () => {
             "References",
             "Theory Planner",
             "Lab Planner",
+            "Download Your Course Plan"
           ]}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
@@ -215,6 +217,7 @@ const ClassroomSubjectPlanningComponent = () => {
             Lab Planner - Coming Soon
           </div>
         )}
+        {activeTab == 5 && <DownloadPdf />}
       </div>
     </div>
   );
