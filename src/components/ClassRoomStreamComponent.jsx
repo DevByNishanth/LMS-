@@ -177,9 +177,13 @@ const ClassRoomStreamComponent = () => {
 
             <div className="profile-container absolute bottom-2 left-6">
               <h1 className="font-medium text-md text-[#333333] flex items-center gap-3">
-                <span>
+                {/* <span>
                   <img src={profileImg} className="w-8 h-8" />
-                </span>{" "}
+                </span>{" "} */}
+
+                <p className="bg-[#ffffff] w-7 h-7 rounded-full text-[#08384f] flex items-center justify-center">
+                  {firstLetter.slice(0, 1)}
+                </p>
                 {firstLetter}
               </h1>
             </div>

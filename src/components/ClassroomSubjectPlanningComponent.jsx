@@ -160,7 +160,7 @@ const ClassroomSubjectPlanningComponent = () => {
             "References",
             "Theory Planner",
             "Lab Planner",
-            "Download Your Course Plan"
+            "Get Course Plan"
           ]}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
