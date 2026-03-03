@@ -22,6 +22,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
     // params 
     const location = useLocation()
     const classData = location.state
+    console.log("class data from location state : ", classData)
     const sectionName = classData.sectionName
 
     console.log("class data for attendance : ", classData)
@@ -268,6 +269,49 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
         }
     }
 
+    // Handle attendance Excel download
+    const handleDownloadExcel = async () => {
+        try {
+            const department = streamData.department;
+            const year = streamData.year || streamData.targetYear;
+            const normalizedSection = streamData.section || sectionName?.split(" ").pop();
+            const hourLabel = HOURS[activeHour].split(" (")[0].replace(" ", "");
+
+            const params = new URLSearchParams({
+                department: department,
+                year: classData.year,
+                section: normalizedSection,
+                subjectId: subjectId,
+                date: date,
+                hour: hourLabel
+            });
+
+            const downloadUrl = `${apiUrl}api/attendance/download-excel?${params.toString()}`;
+
+            const response = await axios.get(downloadUrl, {
+                headers: {
+                    Authorization: `Bearer ${token}`
+                },
+                responseType: 'blob'
+            });
+
+            // Create blob link to download
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', `attendance_${date}_hour${hourLabel}.xlsx`);
+            document.body.appendChild(link);
+            link.click();
+            link.parentNode.removeChild(link);
+            window.URL.revokeObjectURL(url);
+
+            console.log("Excel file downloaded successfully");
+        } catch (error) {
+            console.error("Error downloading Excel file:", error);
+            alert(error.response?.data?.message || "Failed to download Excel file");
+        }
+    }
+
     return (
         <div className="h-full">
             {/* Header */}
@@ -285,6 +329,11 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                         onChange={(e) => setSearch(e.target.value)}
                     />
 
+                    <button
+                        onClick={handleDownloadExcel}
+                        className='bg-[#08384F]  text-white px-4 py-2 rounded hover:bg-[#084282]'>
+                        Generate report
+                    </button>
                     {selectedStudentsCount > 0 && (
                         <button
                             onClick={() => setShowBulkModal(true)}
