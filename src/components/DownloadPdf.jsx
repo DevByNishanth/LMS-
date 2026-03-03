@@ -31,6 +31,8 @@ const DownloadPdf = () => {
                 }
             );
 
+          
+
             const html = res.data;
 
             const printWindow = window.open("", "_blank");
@@ -62,6 +64,7 @@ const DownloadPdf = () => {
                     responseType: "text",
                 }
             );
+              console.log("pdf  res : ", res)
 
             const html = res.data;
 

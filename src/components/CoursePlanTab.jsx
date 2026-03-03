@@ -106,11 +106,11 @@ const CoursePlanTab = ({
               </div>
               
               {isActive ? (
-                <div className="bg-white/10 p-1 rounded-lg">
+                <div className="p-1 rounded-lg">
                     <img
                         src={activeRightArrow}
                         alt="Right Arrow"
-                        className="w-4 h-4 brightness-0 invert"
+                        className="w-7 h-7 brightness-0 invert"
                     />
                 </div>
               ) : (
