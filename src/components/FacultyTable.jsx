@@ -177,9 +177,8 @@ const FacultyTable = () => {
               filtered.map((item, index) => (
                 <tr
                   key={index}
-                  className={`text-sm hover:bg-blue-50 transition-colors ${
-                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
-                  } border-b border-gray-200`}
+                  className={`text-sm hover:bg-blue-50 transition-colors ${index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                    } border-b border-gray-200`}
                 >
                   <td className="py-3 px-4 whitespace-nowrap font-medium text-gray-700">
                     {item.employeeId}
