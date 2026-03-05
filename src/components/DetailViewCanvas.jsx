@@ -10,10 +10,22 @@ import {
   UserCog,
   X,
 } from "lucide-react";
+import axios from "axios";
 
 const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
+
+  // Auth 
+  const apiUrl = import.meta.env.VITE_API_URL;
+  const token = localStorage.getItem("LmsToken");
+
+
   const canvasRef = useRef(null);
+  // states ==========================================
   const [activeTab, setActiveTab] = useState("Attendance");
+  const [subjectData, setSubjectData] = useState([]);
+
+
+
 
   useEffect(() => {
     function handleOutsideClick(e) {
@@ -32,29 +44,29 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
     hours: "8hrs",
   });
 
-  const subjectData = [
-    {
-      reg: "2019",
-      name: "Digital Signal and Processing",
-      year: "3 Year",
-      dept: "ECE",
-      sec: "Section A",
-    },
-    {
-      reg: "2013",
-      name: "Object oriented Programming",
-      year: "1 Year",
-      dept: "EEE",
-      sec: "Section B",
-    },
-    {
-      reg: "2019",
-      name: "Object oriented Programming",
-      year: "4 Year",
-      dept: "MECH",
-      sec: "Section B",
-    },
-  ];
+  // const subjectData = [
+  //   {
+  //     reg: "2019",
+  //     name: "Digital Signal and Processing",
+  //     year: "3 Year",
+  //     dept: "ECE",
+  //     sec: "Section A",
+  //   },
+  //   {
+  //     reg: "2013",
+  //     name: "Object oriented Programming",
+  //     year: "1 Year",
+  //     dept: "EEE",
+  //     sec: "Section B",
+  //   },
+  //   {
+  //     reg: "2019",
+  //     name: "Object oriented Programming",
+  //     year: "4 Year",
+  //     dept: "MECH",
+  //     sec: "Section B",
+  //   },
+  // ];
 
   const timetableData = [
     {
@@ -79,15 +91,42 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
 
   const tabs = ["Attendance", "Subject List", "Timetable"];
 
+
+  // functions =============================
+
+  async function fetchSubjectList() {
+    try {
+      const res = await axios.get(`${apiUrl}api/admin/faculty/${canvasData._id}/subjects`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Subject List Response:", res.data.data);
+      setSubjectData(res.data.data);
+    } catch (err) {
+      console.error("Error fetching subject list:", err);
+    }
+  }
+
+  useEffect(() => {
+    fetchSubjectList()
+  }, [canvasData])
+
+  // consoles ------------------------------------------------------
+
+  console.log("Canvas Data:", canvasData);
+
+
+  // jsx --------------------------------------------------------- 
   return (
     <>
       <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-50 transition-opacity"></div>
       <section
         ref={canvasRef}
-        className="w-[90%] bg-white h-[95vh] rounded-2xl z-[60] fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 shadow-2xl flex flex-col overflow-hidden animate-in zoom-in-95 duration-200"
+        className="w-[96%] bg-white h-[95vh] rounded  z-[60] fixed left-1/2 -translate-x-1/2 top-1/2 -translate-y-1/2 shadow-2xl flex flex-col overflow-auto animate-in zoom-in-95 duration-200"
       >
-        <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white sticky top-0 z-20">
-          <h2 className="text-xl font-bold text-[#08384F]">
+        <div className="flex justify-between items-center px-6 py-2 border-b border-gray-100 bg-white sticky top-0 z-20">
+          <h2 className="text-lg font-semibold text-[#08384F]">
             Faculty Profile Information
           </h2>
           <button
@@ -101,13 +140,13 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
         <div className="flex-1 flex flex-col overflow-hidden">
           <div className="p-6 shrink-0 space-y-6">
             <div className="flex gap-8 items-start">
-              <div className="w-[140px] h-[140px] shrink-0 border-2 border-blue-50 bg-blue-50/50 rounded-2xl flex items-center justify-center shadow-inner">
+              <div className="w-[160px] h-[150px] shrink-0 border-2 border-gray-300 bg-gray-50 rounded flex items-center justify-center">
                 <span className="text-5xl font-bold text-[#08384F]">
                   {canvasData?.firstName?.slice(0, 1) || "--"}
                 </span>
               </div>
 
-              <div className="flex-1 bg-gray-50 border border-gray-100 rounded-2xl p-5 grid grid-cols-4 gap-6 shadow-sm">
+              <div className="flex-1 bg-gray-50 border border-gray-300 rounded p-5 grid grid-cols-4 gap-6 shadow-sm">
                 {[
                   { label: "First Name", value: canvasData?.firstName },
                   { label: "Last Name", value: canvasData?.lastName },
@@ -129,10 +168,10 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
               </div>
             </div>
 
-            <div className="bg-white border border-gray-100 rounded-2xl p-5 shadow-sm">
+            <div className="bg-white border border-gray-300 rounded p-5 shadow">
               <div className="flex items-center gap-2 mb-4">
                 <div className="w-1.5 h-6 bg-[#0B56A4] rounded-full"></div>
-                <h3 className="text-lg font-bold text-gray-800">Employment Overview</h3>
+                <h3 className="text-lg font-semibold text-gray-800">Employment Overview</h3>
               </div>
 
               <div className="grid grid-cols-4 gap-y-6 gap-x-4">
@@ -164,18 +203,17 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col p-6 bg-white overflow-hidden border-t border-gray-100">
+          <div className="flex-1 flex flex-col px-6">
             <div className="flex items-center justify-between mb-5 shrink-0">
               <div className="flex bg-gray-100 p-1.5 rounded-xl">
                 {tabs.map((tab) => (
                   <button
                     key={tab}
                     onClick={() => setActiveTab(tab)}
-                    className={`px-10 py-2.5 text-xs font-bold rounded-lg transition-all ${
-                      activeTab === tab
-                        ? "bg-[#08384F] text-white shadow-lg"
-                        : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
-                    }`}
+                    className={`px-10 py-2.5 text-xs font-bold rounded-lg transition-all ${activeTab === tab
+                      ? "bg-[#08384F] text-white shadow-lg"
+                      : "text-gray-500 hover:text-gray-700 hover:bg-gray-200"
+                      }`}
                   >
                     {tab}
                   </button>
@@ -203,7 +241,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                     )}
                     {activeTab === "Subject List" && (
                       <>
-                        <th className="p-4 font-bold border-r border-white/10">Reg</th>
+                        <th className="p-4 font-bold border-r border-white/10">Sub code</th>
                         <th className="p-4 font-bold border-r border-white/10">Subject Name</th>
                         <th className="p-4 font-bold border-r border-white/10">Year</th>
                         <th className="p-4 font-bold border-r border-white/10">Department</th>
@@ -236,7 +274,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                   {activeTab === "Subject List" &&
                     subjectData.map((row, i) => (
                       <tr key={i} className="hover:bg-blue-50 transition-colors">
-                        <td className="p-4 text-gray-500 font-bold">{row.reg}</td>
+                        <td className="p-4 text-gray-500 font-bold">{row.subjectCode}</td>
                         <td className="p-4 text-gray-800 font-bold">{row.name}</td>
                         <td className="p-4 text-gray-600 font-medium">{row.year}</td>
                         <td className="p-4 text-gray-600 font-medium">{row.dept}</td>
