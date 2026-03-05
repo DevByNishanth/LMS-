@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import axios from "axios";
 import { jwtDecode } from "jwt-decode";
-import { Plus, X } from "lucide-react";
+import { Plus, X, Download } from "lucide-react";
 import deleteIcon from "../assets/delete.svg";
 import editIcon from "../assets/edit.svg";
 import TimetableDeleteModal from "./TimetableDeleteModal";
@@ -30,6 +30,7 @@ export default function TimeTable() {
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteData, setDeleteData] = useState(null);
     const [loading, setLoading] = useState(false);
+    const timetableRef = React.useRef(null);
 
     const fetchTimetable = async () => {
         setLoading(true);
@@ -163,6 +164,146 @@ export default function TimeTable() {
 
     const handleFilterChange = (e) => {
         setFilters({ ...filters, [e.target.name]: e.target.value });
+    };
+
+    const handleDownloadPDF = () => {
+        if (!timetableRef.current) return;
+
+        const printWindow = window.open("", "", "height=800,width=1200");
+        const htmlContent = `
+            <!DOCTYPE html>
+            <html>
+                <head>
+                    <title>Timetable - ${tableData.department || "Timetable"}</title>
+                    <style>
+                        body { 
+                            font-family: Arial, sans-serif; 
+                            margin: 20px; 
+                            background-color: #f5f5f5;
+                        }
+                        .header {
+                            text-align: center;
+                            margin-bottom: 30px;
+                            border-bottom: 3px solid #08384F;
+                            padding-bottom: 15px;
+                        }
+                        .header h1 {
+                            color: #08384F;
+                            margin: 0;
+                            font-size: 24px;
+                        }
+                        .header p {
+                            color: #666;
+                            margin: 5px 0 0 0;
+                            font-size: 14px;
+                        }
+                        table {
+                            width: 100%;
+                            border-collapse: collapse;
+                            background-color: white;
+                            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+                        }
+                        thead tr {
+                            background-color: #08384F;
+                            color: white;
+                        }
+                        th {
+                            padding: 12px;
+                            text-align: left;
+                            font-weight: 600;
+                            border: 1px solid #ddd;
+                            font-size: 12px;
+                        }
+                        td {
+                            padding: 10px 12px;
+                            border: 1px solid #ddd;
+                            font-size: 12px;
+                        }
+                        tbody tr:nth-child(even) {
+                            background-color: #f9f9f9;
+                        }
+                        tbody tr:hover {
+                            background-color: #f0f0f0;
+                        }
+                        .break-cell {
+                            background-color: #e8e8e8;
+                            font-weight: bold;
+                            text-align: center;
+                            color: #333;
+                        }
+                        .day-cell {
+                            background-color: #f5f5f5;
+                            font-weight: 600;
+                            color: #08384F;
+                            width: 120px;
+                        }
+                        .empty-cell {
+                            background-color: #fafafa;
+                            text-align: center;
+                            color: #999;
+                        }
+                        @media print {
+                            body { margin: 0; }
+                        }
+                        /* Hide action buttons and edit/delete icons in PDF */
+                        button { display: none !important; }
+                        img[alt="Edit"],
+                        img[alt="Delete"] {
+                            display: none !important;
+                        }
+                        .group\/card > div > div:first-child {
+                            display: flex;
+                            justify-content: space-between;
+                            align-items: flex-start;
+                        }
+                        .group\/card > div > div:first-child span:last-child {
+                            display: none !important;
+                        }
+                        /* Show only subject and faculty in clean format */
+                        .group\/card {
+                            display: flex;
+                            flex-direction: column;
+                            justify-content: center;
+                            height: 100%;
+                        }
+                        .group\/card > div {
+                            display: flex;
+                            flex-direction: column;
+                            gap: 8px;
+                        }
+                        .group\/add {
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            height: 100%;
+                            color: #888;
+                        }
+                        .group\/add::before {
+                            content: "-";
+                            font-size: 18px;
+                            font-weight: bold;
+                            color: #888;
+                        }
+                        .group\/add button,
+                        .group\/add svg {
+                            display: none !important;
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>${tableData.department || "Timetable"}</h1>
+                        <p>${filters.year} • Semester ${filters.semester} • ${filters.section}</p>
+                    </div>
+                    ${timetableRef.current.innerHTML}
+                    <script>
+                        window.print();
+                    </script>
+                </body>
+            </html>
+        `;
+        printWindow.document.write(htmlContent);
+        printWindow.document.close();
     };
 
     const openModal = (day, time) => {
@@ -343,10 +484,16 @@ export default function TimeTable() {
                         ))}
                     </select>
                 </div>
+                <button
+                    onClick={handleDownloadPDF}
+                    className="flex items-center gap-2 bg-emerald-600 text-white px-4 py-2 rounded-lg cursor-pointer hover:bg-emerald-700 transition-all font-medium text-sm shadow-md hover:shadow-lg"
+                >
+                    <Download size={18} /> Download PDF
+                </button>
             </div>
 
             {/* Table Container */}
-            <div className="bg-white border border-slate-100 overflow-hidden">
+            <div className="time-table-container bg-white border border-slate-100 overflow-hidden" ref={timetableRef}>
                 <div className="overflow-x-auto max-h-[calc(100vh-220px)]">
                     <table className="w-full border-collapse">
                         <thead>
