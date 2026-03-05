@@ -23,6 +23,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
   // states ==========================================
   const [activeTab, setActiveTab] = useState("Attendance");
   const [subjectData, setSubjectData] = useState([]);
+  const [timetableData, setTimetableData] = useState([]);
 
 
 
@@ -68,28 +69,9 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
   //   },
   // ];
 
-  const timetableData = [
-    {
-      slot: "08:40 AM - 09:35 AM",
-      mon: "3 Year - CSE A",
-      tue: "3 Year - CSE A",
-      wed: "FREE",
-      thu: "FREE",
-      fri: "3 Year - CSE A",
-      sat: "3 Year - CSE A",
-    },
-    {
-      slot: "09:35 AM - 10:30 AM",
-      mon: "3 Year - CSE A",
-      tue: "3 Year - CSE A",
-      wed: "3 Year - CSE A",
-      thu: "3 Year - CSE A",
-      fri: "3 Year - CSE A",
-      sat: "FREE",
-    },
-  ];
 
-  const tabs = ["Attendance", "Subject List", "Timetable"];
+
+  const tabs = ["Employee Overview", "Attendance", "Subject List", "Timetable"];
 
 
   // functions =============================
@@ -108,8 +90,73 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
     }
   }
 
+  async function fetchTimetable() {
+    try {
+      const res = await axios.get(`${apiUrl}api/admin/faculty/${canvasData._id}/timetable`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      console.log("Timetable Response:", res.data.data);
+
+      // Transform timetable data
+      const transformedData = transformTimetableData(res.data.data);
+      setTimetableData(transformedData);
+    } catch (err) {
+      console.error("Error fetching timetable:", err);
+    }
+  }
+
+  function transformTimetableData(apiData) {
+    if (!apiData || apiData.length === 0) return [];
+
+    const data = apiData[0]; // Get first item
+    const daysMap = {};
+    const timeSlots = new Set();
+
+    // Map days to their slots and collect all time slots
+    data.days.forEach(dayObj => {
+      daysMap[dayObj.day] = dayObj.slots;
+      dayObj.slots.forEach(slot => timeSlots.add(slot.time));
+    });
+
+    // Convert timeSlots Set to sorted array
+    const sortedTimeSlots = Array.from(timeSlots).sort();
+
+    // Create mapping from full day names to short keys
+    const dayKeyMap = {
+      'Monday': 'mon',
+      'Tuesday': 'tue',
+      'Wednesday': 'wed',
+      'Thursday': 'thu',
+      'Friday': 'fri',
+      'Saturday': 'sat',
+      'Sunday': 'sun'
+    };
+
+    // Build rows for each time slot
+    const rows = sortedTimeSlots.map(timeSlot => {
+      const row = { slot: timeSlot };
+
+      // Define day order
+      const dayOrder = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+
+      dayOrder.forEach(day => {
+        const key = dayKeyMap[day];
+        const daySlots = daysMap[day] || [];
+        const subject = daySlots.find(s => s.time === timeSlot);
+        row[key] = subject ? subject.subjectName : '--';
+      });
+
+      return row;
+    });
+
+    return rows;
+  }
+
   useEffect(() => {
-    fetchSubjectList()
+    fetchSubjectList();
+    fetchTimetable();
   }, [canvasData])
 
   // consoles ------------------------------------------------------
@@ -138,7 +185,9 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
         </div>
 
         <div className="flex-1 flex flex-col overflow-hidden">
+          {/* faculty information section  */}
           <div className="p-6 shrink-0 space-y-6">
+            {/* basic information section  */}
             <div className="flex gap-8 items-start">
               <div className="w-[160px] h-[150px] shrink-0 border-2 border-gray-300 bg-gray-50 rounded flex items-center justify-center">
                 <span className="text-5xl font-bold text-[#08384F]">
@@ -168,39 +217,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
               </div>
             </div>
 
-            <div className="bg-white border border-gray-300 rounded p-5 shadow">
-              <div className="flex items-center gap-2 mb-4">
-                <div className="w-1.5 h-6 bg-[#0B56A4] rounded-full"></div>
-                <h3 className="text-lg font-semibold text-gray-800">Employment Overview</h3>
-              </div>
 
-              <div className="grid grid-cols-4 gap-y-6 gap-x-4">
-                {[
-                  { icon: IdCardLanyard, label: "Employee Id", value: canvasData.employeeId },
-                  { icon: Briefcase, label: "Designation", value: canvasData.designation },
-                  { icon: Building2, label: "Department", value: canvasData.department },
-                  { icon: UserCog, label: "Reporting Manager", value: canvasData?.reportingManager },
-                  { icon: Calendar1Icon, label: "Joining Date", value: canvasData?.joiningDate },
-                  { icon: Clock, label: "Notice Period", value: canvasData?.noticePeriod },
-                  { icon: Key, label: "Role", value: canvasData?.role },
-                  { icon: Badge, label: "Job Title", value: canvasData?.jobTitle },
-                ].map((item, idx) => (
-                  <div key={idx} className="flex items-start gap-3">
-                    <div className="p-2 bg-blue-50 rounded-lg shrink-0">
-                      <item.icon size={18} className="text-[#0B56A4]" />
-                    </div>
-                    <div className="flex flex-col">
-                      <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                        {item.label}
-                      </span>
-                      <span className="text-sm text-gray-700 font-semibold">
-                        {item.value || "--"}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
           </div>
 
           <div className="flex-1 flex flex-col px-6">
@@ -220,17 +237,21 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                 ))}
               </div>
               {activeTab === "Attendance" && (
-                <select className="border border-gray-200 rounded-xl px-4 py-2 text-xs font-bold text-gray-700 bg-white outline-none cursor-pointer hover:border-[#0B56A4] transition-colors">
+                <select className="border border-gray-300 rounded px-4 py-2 text-xs font-semibold text-gray-700 bg-white outline-none cursor-pointer hover:border-[#0B56A4] transition-colors">
                   <option>November 2024</option>
                   <option>October 2024</option>
                 </select>
               )}
             </div>
 
-            <div className="flex-1 border border-gray-200 rounded-2xl overflow-auto shadow-sm">
+            <div className="flex-1 border bg-white border-gray-700 max-h-[calc(100vh-380px)] rounded overflow-auto ">
               <table className="w-full text-left text-sm border-separate border-spacing-0">
                 <thead className="sticky top-0 bg-[#08384F] text-white z-10">
                   <tr>
+                    {activeTab === "Employee Overview" && (
+                      // <th className="p-4 font-bold">Employment Summary</th>
+                      ""
+                    )}
                     {activeTab === "Attendance" && (
                       <>
                         <th className="p-4 font-bold border-r border-white/10">Date</th>
@@ -262,24 +283,63 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-100">
+                  {activeTab === "Employee Overview" && (
+                    <tr>
+                      <td colSpan="5" className="p-6">
+                        <div className="employee-overview-section bg-white  border-gray-300 rounded">
+                          <div className="flex items-center gap-2 mb-4">
+                            <div className="w-1.5 h-6 bg-[#0B56A4] rounded-full"></div>
+                            <h3 className="text-lg font-semibold text-gray-800">Employment Overview</h3>
+                          </div>
+
+                          <div className="grid grid-cols-4 gap-y-6 gap-x-4">
+                            {[
+                              { icon: IdCardLanyard, label: "Employee Id", value: canvasData.employeeId },
+                              { icon: Briefcase, label: "Designation", value: canvasData.designation },
+                              { icon: Building2, label: "Department", value: canvasData.department },
+                              { icon: UserCog, label: "Reporting Manager", value: canvasData?.reportingManager },
+                              { icon: Calendar1Icon, label: "Joining Date", value: canvasData?.joiningDate },
+                              { icon: Clock, label: "Notice Period", value: canvasData?.noticePeriod },
+                              { icon: Key, label: "Role", value: canvasData?.role },
+                              { icon: Badge, label: "Job Title", value: canvasData?.jobTitle },
+                            ].map((item, idx) => (
+                              <div key={idx} className="flex items-start gap-3">
+                                <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+                                  <item.icon size={18} className="text-[#0B56A4]" />
+                                </div>
+                                <div className="flex flex-col">
+                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                                    {item.label}
+                                  </span>
+                                  <span className="text-sm text-gray-700 font-semibold">
+                                    {item.value || "--"}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        </div>
+                      </td>
+                    </tr>
+                  )}
                   {activeTab === "Attendance" &&
                     attendanceData.map((row, i) => (
                       <tr key={i} className="hover:bg-blue-50 transition-colors">
                         <td className="p-4 text-gray-700 font-medium">{row.date}</td>
-                        <td className="p-4 text-emerald-600 font-bold">{row.clockIn}</td>
-                        <td className="p-4 text-rose-500 font-bold">{row.clockOut}</td>
-                        <td className="p-4 text-gray-800 font-bold">{row.hours}</td>
+                        <td className="p-4 text-emerald-700 font-semibold">{row.clockIn}</td>
+                        <td className="p-4 text-rose-700 font-semibold">{row.clockOut}</td>
+                        <td className="p-4 text-gray-700 font-semibold">{row.hours}</td>
                       </tr>
                     ))}
                   {activeTab === "Subject List" &&
                     subjectData.map((row, i) => (
                       <tr key={i} className="hover:bg-blue-50 transition-colors">
                         <td className="p-4 text-gray-500 font-bold">{row.subjectCode}</td>
-                        <td className="p-4 text-gray-800 font-bold">{row.name}</td>
+                        <td className="p-4 text-gray-800 font-bold">{row.subject}</td>
                         <td className="p-4 text-gray-600 font-medium">{row.year}</td>
-                        <td className="p-4 text-gray-600 font-medium">{row.dept}</td>
+                        <td className="p-4 text-gray-600 font-medium">{row.department}</td>
                         <td className="p-4">
-                          <span className="bg-blue-100 text-[#0B56A4] px-3 py-1 rounded-full text-xs font-bold">
+                          <span className=" font-medium">
                             {row.sec}
                           </span>
                         </td>
