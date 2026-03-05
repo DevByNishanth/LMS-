@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import axios from 'axios';
-import { CheckCircle, XCircle } from "lucide-react";
-import presentIcon from '../assets/presentIcon.svg'
-import absentIcon from '../assets/absentIcon.svg'
-import onDutyIcon from '../assets/onDutyIcon.svg'
+import { CheckCircle, Download, XCircle } from "lucide-react";
+import presentIcon from '../assets/present.svg'
+import absentIcon from '../assets/absent.svg'
+import onDutyIcon from '../assets/onDuty.svg'
 import { useLocation } from 'react-router-dom';
+import RaiseRequestComponent from './RaiseRequestComponent';
 
 
 const HOURS = [
@@ -34,6 +35,8 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
     const [studentsList, setStudentsList] = useState([]);
     const [showBulkModal, setShowBulkModal] = useState(false);
     const [bulkLoading, setBulkLoading] = useState(false);
+    const [modal, setModal] = useState();
+
 
     const token = localStorage.getItem("LmsToken");
     const apiUrl = import.meta.env.VITE_API_URL;
@@ -137,8 +140,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
         }
     }
 
-    console.log("subject id : ", subjectId);
-    console.log("stream data : ", streamData);
+
     useEffect(() => {
         if (subjectId && streamData) {
             getStudents();
@@ -192,6 +194,13 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
 
     // habndle attendace 
     const markAttendance = async (student, status) => {
+
+        console.log("student : ", student)
+
+        if (student.status && student.status !== "present") {
+            return setModal(true);
+        }
+
         const normalizedSection = streamData.section || streamData.sectionName?.split(" ").pop();
 
         try {
@@ -329,10 +338,17 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                         onChange={(e) => setSearch(e.target.value)}
                     />
 
+                    <input
+                        type="date"
+                        value={date}
+                        onChange={(e) => setDate(e.target.value)}
+                        className="border border-gray-300 text-gray-600 rounded px-3 py-2"
+                    />
+
                     <button
                         onClick={handleDownloadExcel}
-                        className='bg-[#08384F]  text-white px-4 py-2 rounded hover:bg-[#084282]'>
-                        Generate report
+                        className='bg-[#08384F]  text-white px-4 py-2 rounded hover:bg-[#084282] flex items-center gap-2'>
+                        <span><Download size={16} /></span> report
                     </button>
                     {selectedStudentsCount > 0 && (
                         <button
@@ -421,7 +437,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                                             <img
                                                 src={presentIcon}
                                                 onClick={() => markAttendance(student, "Present")}
-                                                className="w-7 h-7 cursor-pointer inline transition-all scale-125"
+                                                className="w-7 h-7 cursor-pointer inline transition-all"
                                                 alt="Present"
                                             />
                                         ) : (
@@ -437,7 +453,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                                             <img
                                                 src={absentIcon}
                                                 onClick={() => markAttendance(student, "Absent")}
-                                                className="w-7 h-7 cursor-pointer inline transition-all scale-125"
+                                                className="w-7 h-7 cursor-pointer inline transition-all"
                                                 alt="Absent"
                                             />
                                         ) : (
@@ -453,7 +469,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                                             <img
                                                 src={onDutyIcon}
                                                 onClick={() => markAttendance(student, "On-Duty")}
-                                                className="w-7 h-7 cursor-pointer inline transition-all scale-125"
+                                                className="w-7 h-7 cursor-pointer inline transition-all"
                                                 alt="On-Duty"
                                             />
                                         ) : (
@@ -524,6 +540,11 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                     </div>
                 </>
             )}
+
+            {/* child components ------------------------ */}
+            <>
+                {modal && <RaiseRequestComponent setModal={setModal} filteredStudents={filteredStudents} />}
+            </>
         </div>
     )
 }

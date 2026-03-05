@@ -11,6 +11,7 @@ import {
   X,
 } from "lucide-react";
 import axios from "axios";
+import noData from "../assets/noData.svg";
 
 const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
 
@@ -21,7 +22,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
 
   const canvasRef = useRef(null);
   // states ==========================================
-  const [activeTab, setActiveTab] = useState("Attendance");
+  const [activeTab, setActiveTab] = useState("Employee Overview");
   const [subjectData, setSubjectData] = useState([]);
   const [timetableData, setTimetableData] = useState([]);
 
@@ -159,10 +160,23 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
     fetchTimetable();
   }, [canvasData])
 
+  // Helper function to check if data is available for current tab
+  const isDataAvailable = () => {
+    switch (activeTab) {
+      case "Employee Overview":
+        return true; // Always show employee overview
+      case "Attendance":
+        return attendanceData && attendanceData.length > 0;
+      case "Subject List":
+        return subjectData && subjectData.length > 0;
+      case "Timetable":
+        return timetableData && timetableData.length > 0;
+      default:
+        return false;
+    }
+  };
+
   // consoles ------------------------------------------------------
-
-  console.log("Canvas Data:", canvasData);
-
 
   // jsx --------------------------------------------------------- 
   return (
@@ -245,119 +259,132 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
             </div>
 
             <div className="flex-1 border bg-white border-gray-700 max-h-[calc(100vh-380px)] rounded overflow-auto ">
-              <table className="w-full text-left text-sm border-separate border-spacing-0">
-                <thead className="sticky top-0 bg-[#08384F] text-white z-10">
-                  <tr>
-                    {activeTab === "Employee Overview" && (
-                      // <th className="p-4 font-bold">Employment Summary</th>
-                      ""
-                    )}
-                    {activeTab === "Attendance" && (
-                      <>
-                        <th className="p-4 font-bold border-r border-white/10">Date</th>
-                        <th className="p-4 font-bold border-r border-white/10">Clock-In</th>
-                        <th className="p-4 font-bold border-r border-white/10">Clock-out</th>
-                        <th className="p-4 font-bold">Working hours</th>
-                      </>
-                    )}
-                    {activeTab === "Subject List" && (
-                      <>
-                        <th className="p-4 font-bold border-r border-white/10">Sub code</th>
-                        <th className="p-4 font-bold border-r border-white/10">Subject Name</th>
-                        <th className="p-4 font-bold border-r border-white/10">Year</th>
-                        <th className="p-4 font-bold border-r border-white/10">Department</th>
-                        <th className="p-4 font-bold">Section</th>
-                      </>
-                    )}
-                    {activeTab === "Timetable" && (
-                      <>
-                        <th className="p-4 font-bold border-r border-white/10">Time Slot</th>
-                        <th className="p-4 font-bold border-r border-white/10">Mon</th>
-                        <th className="p-4 font-bold border-r border-white/10">Tue</th>
-                        <th className="p-4 font-bold border-r border-white/10">Wed</th>
-                        <th className="p-4 font-bold border-r border-white/10">Thu</th>
-                        <th className="p-4 font-bold border-r border-white/10">Fri</th>
-                        <th className="p-4 font-bold">Sat</th>
-                      </>
-                    )}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-100">
-                  {activeTab === "Employee Overview" && (
+              {isDataAvailable() ? (
+                <table className="w-full text-left text-sm border-separate border-spacing-0">
+                  <thead className="sticky top-0 bg-[#08384F] text-white z-10">
                     <tr>
-                      <td colSpan="5" className="p-6">
-                        <div className="employee-overview-section bg-white  border-gray-300 rounded">
-                          <div className="flex items-center gap-2 mb-4">
-                            <div className="w-1.5 h-6 bg-[#0B56A4] rounded-full"></div>
-                            <h3 className="text-lg font-semibold text-gray-800">Employment Overview</h3>
-                          </div>
-
-                          <div className="grid grid-cols-4 gap-y-6 gap-x-4">
-                            {[
-                              { icon: IdCardLanyard, label: "Employee Id", value: canvasData.employeeId },
-                              { icon: Briefcase, label: "Designation", value: canvasData.designation },
-                              { icon: Building2, label: "Department", value: canvasData.department },
-                              { icon: UserCog, label: "Reporting Manager", value: canvasData?.reportingManager },
-                              { icon: Calendar1Icon, label: "Joining Date", value: canvasData?.joiningDate },
-                              { icon: Clock, label: "Notice Period", value: canvasData?.noticePeriod },
-                              { icon: Key, label: "Role", value: canvasData?.role },
-                              { icon: Badge, label: "Job Title", value: canvasData?.jobTitle },
-                            ].map((item, idx) => (
-                              <div key={idx} className="flex items-start gap-3">
-                                <div className="p-2 bg-blue-50 rounded-lg shrink-0">
-                                  <item.icon size={18} className="text-[#0B56A4]" />
-                                </div>
-                                <div className="flex flex-col">
-                                  <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
-                                    {item.label}
-                                  </span>
-                                  <span className="text-sm text-gray-700 font-semibold">
-                                    {item.value || "--"}
-                                  </span>
-                                </div>
-                              </div>
-                            ))}
-                          </div>
-                        </div>
-                      </td>
+                      {activeTab === "Employee Overview" && (
+                        // <th className="p-4 font-bold">Employment Summary</th>
+                        ""
+                      )}
+                      {activeTab === "Attendance" && (
+                        <>
+                          <th className="p-4 font-bold border-r border-white/10">Date</th>
+                          <th className="p-4 font-bold border-r border-white/10">Clock-In</th>
+                          <th className="p-4 font-bold border-r border-white/10">Clock-out</th>
+                          <th className="p-4 font-bold">Working hours</th>
+                        </>
+                      )}
+                      {activeTab === "Subject List" && (
+                        <>
+                          <th className="p-4 font-bold border-r border-white/10">Sub code</th>
+                          <th className="p-4 font-bold border-r border-white/10">Subject Name</th>
+                          <th className="p-4 font-bold border-r border-white/10">Year</th>
+                          <th className="p-4 font-bold border-r border-white/10">Department</th>
+                          <th className="p-4 font-bold">Section</th>
+                        </>
+                      )}
+                      {activeTab === "Timetable" && (
+                        <>
+                          <th className="p-4 font-bold border-r border-white/10">Time Slot</th>
+                          <th className="p-4 font-bold border-r border-white/10">Mon</th>
+                          <th className="p-4 font-bold border-r border-white/10">Tue</th>
+                          <th className="p-4 font-bold border-r border-white/10">Wed</th>
+                          <th className="p-4 font-bold border-r border-white/10">Thu</th>
+                          <th className="p-4 font-bold border-r border-white/10">Fri</th>
+                          <th className="p-4 font-bold">Sat</th>
+                        </>
+                      )}
                     </tr>
-                  )}
-                  {activeTab === "Attendance" &&
-                    attendanceData.map((row, i) => (
-                      <tr key={i} className="hover:bg-blue-50 transition-colors">
-                        <td className="p-4 text-gray-700 font-medium">{row.date}</td>
-                        <td className="p-4 text-emerald-700 font-semibold">{row.clockIn}</td>
-                        <td className="p-4 text-rose-700 font-semibold">{row.clockOut}</td>
-                        <td className="p-4 text-gray-700 font-semibold">{row.hours}</td>
-                      </tr>
-                    ))}
-                  {activeTab === "Subject List" &&
-                    subjectData.map((row, i) => (
-                      <tr key={i} className="hover:bg-blue-50 transition-colors">
-                        <td className="p-4 text-gray-500 font-bold">{row.subjectCode}</td>
-                        <td className="p-4 text-gray-800 font-bold">{row.subject}</td>
-                        <td className="p-4 text-gray-600 font-medium">{row.year}</td>
-                        <td className="p-4 text-gray-600 font-medium">{row.department}</td>
-                        <td className="p-4">
-                          <span className=" font-medium">
-                            {row.sec}
-                          </span>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {activeTab === "Employee Overview" && (
+                      <tr>
+                        <td colSpan="5" className="p-6">
+                          <div className="employee-overview-section bg-white  border-gray-300 rounded">
+                            <div className="flex items-center gap-2 mb-4">
+                              <div className="w-1.5 h-6 bg-[#0B56A4] rounded-full"></div>
+                              <h3 className="text-lg font-semibold text-gray-800">Employment Overview</h3>
+                            </div>
+
+                            <div className="grid grid-cols-4 gap-y-6 gap-x-4">
+                              {[
+                                { icon: IdCardLanyard, label: "Employee Id", value: canvasData.employeeId },
+                                { icon: Briefcase, label: "Designation", value: canvasData.designation },
+                                { icon: Building2, label: "Department", value: canvasData.department },
+                                { icon: UserCog, label: "Reporting Manager", value: canvasData?.reportingManager },
+                                { icon: Calendar1Icon, label: "Joining Date", value: canvasData?.joiningDate },
+                                { icon: Clock, label: "Notice Period", value: canvasData?.noticePeriod },
+                                { icon: Key, label: "Role", value: canvasData?.role },
+                                { icon: Badge, label: "Job Title", value: canvasData?.jobTitle },
+                              ].map((item, idx) => (
+                                <div key={idx} className="flex items-start gap-3">
+                                  <div className="p-2 bg-blue-50 rounded-lg shrink-0">
+                                    <item.icon size={18} className="text-[#0B56A4]" />
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">
+                                      {item.label}
+                                    </span>
+                                    <span className="text-sm text-gray-700 font-semibold">
+                                      {item.value || "--"}
+                                    </span>
+                                  </div>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
                         </td>
                       </tr>
-                    ))}
-                  {activeTab === "Timetable" &&
-                    timetableData.map((row, i) => (
-                      <tr key={i} className="hover:bg-blue-50 transition-colors">
-                        <td className="p-4 text-[#08384F] font-bold bg-gray-50/80">{row.slot}</td>
-                        {[row.mon, row.tue, row.wed, row.thu, row.fri, row.sat].map((day, idx) => (
-                          <td key={idx} className={`p-4 text-xs font-bold ${day === "FREE" ? "text-gray-300 italic" : "text-gray-600"}`}>
-                            {day}
+                    )}
+                    {activeTab === "Attendance" &&
+                      attendanceData.map((row, i) => (
+                        <tr key={i} className="hover:bg-blue-50 transition-colors">
+                          <td className="p-4 text-gray-700 font-medium">{row.date}</td>
+                          <td className="p-4 text-emerald-700 font-semibold">{row.clockIn}</td>
+                          <td className="p-4 text-rose-700 font-semibold">{row.clockOut}</td>
+                          <td className="p-4 text-gray-700 font-semibold">{row.hours}</td>
+                        </tr>
+                      ))}
+                    {activeTab === "Subject List" &&
+                      subjectData.map((row, i) => (
+                        <tr key={i} className="hover:bg-blue-50 transition-colors">
+                          <td className="p-4 text-gray-500 font-bold">{row.subjectCode}</td>
+                          <td className="p-4 text-gray-800 font-bold">{row.subject}</td>
+                          <td className="p-4 text-gray-600 font-medium">{row.year}</td>
+                          <td className="p-4 text-gray-600 font-medium">{row.department}</td>
+                          <td className="p-4">
+                            <span className=" font-medium">
+                              {row.sec}
+                            </span>
                           </td>
-                        ))}
-                      </tr>
-                    ))}
-                </tbody>
-              </table>
+                        </tr>
+                      ))}
+                    {activeTab === "Timetable" &&
+                      timetableData.map((row, i) => (
+                        <tr key={i} className="hover:bg-blue-50 transition-colors">
+                          <td className="p-4 text-[#08384F] font-bold bg-gray-50/80">{row.slot}</td>
+                          {[row.mon, row.tue, row.wed, row.thu, row.fri, row.sat].map((day, idx) => (
+                            <td key={idx} className={`p-4 text-xs font-bold ${day === "FREE" ? "text-gray-300 italic" : "text-gray-600"}`}>
+                              {day}
+                            </td>
+                          ))}
+                        </tr>
+                      ))}
+                  </tbody>
+                </table>
+              ) : (
+                <div className="flex flex-col items-center justify-center h-full gap-4">
+                  <img
+                    src={noData}
+                    alt="No data available"
+                    className="w-[220px] h-[220px] "
+                  />
+                  <p className="text-gray-800 text-lg -mt-10 font-medium">
+                    No data available
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
