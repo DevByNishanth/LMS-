@@ -355,7 +355,7 @@ const DetailViewCanvas = ({ setIsDetailCanvas, canvasData }) => {
                           <td className="p-4 text-gray-600 font-medium">{row.department}</td>
                           <td className="p-4">
                             <span className=" font-medium">
-                              {row.sec}
+                             Section {row.section}
                             </span>
                           </td>
                         </tr>

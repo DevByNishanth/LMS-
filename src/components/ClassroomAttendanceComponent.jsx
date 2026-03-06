@@ -109,7 +109,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                 rollNo: student.rollNumber,
                 name: student.name,
                 selected: false,
-                status: student.status || "present" // default status
+                status: student.status ?? null
             }));
 
             setStudentsList(fetchedStudents);
@@ -192,12 +192,20 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
     const selectedStudentsCount = students.filter(s => s.selected).length;
 
 
+
+
     // habndle attendace 
     const markAttendance = async (student, status) => {
 
-        console.log("student : ", student)
+        console.log("selected student : ", student)
 
-        if (student.status && student.status !== "present") {
+        // Future date validation
+        const today = new Date().toISOString().split('T')[0];
+        if (date > today) {
+            return alert("You're not allowed to mark attendance for future dates.");
+        }
+
+        if (student.status && student.status !== null) {
             return setModal(true);
         }
 
@@ -433,7 +441,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                                     </td>
 
                                     <td className="p-3 text-center">
-                                        {student.status === "Present" ? (
+                                        {student.status?.toLowerCase() === "present" ? (
                                             <img
                                                 src={presentIcon}
                                                 onClick={() => markAttendance(student, "Present")}
@@ -449,7 +457,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                                     </td>
 
                                     <td className="p-3 text-center">
-                                        {student.status === "Absent" ? (
+                                        {student.status?.toLowerCase() === "absent" ? (
                                             <img
                                                 src={absentIcon}
                                                 onClick={() => markAttendance(student, "Absent")}
@@ -465,7 +473,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
                                     </td>
 
                                     <td className="p-3 text-center">
-                                        {student.status === "On-Duty" ? (
+                                        {student.status?.toLowerCase() === "on-duty" ? (
                                             <img
                                                 src={onDutyIcon}
                                                 onClick={() => markAttendance(student, "On-Duty")}
@@ -543,7 +551,7 @@ const ClassroomAttendanceComponent = ({ subjectId, streamData }) => {
 
             {/* child components ------------------------ */}
             <>
-                {modal && <RaiseRequestComponent setModal={setModal} filteredStudents={filteredStudents} />}
+                {modal && <RaiseRequestComponent setModal={setModal} filteredStudents={filteredStudents} activeHour={HOURS[activeHour]} subjectId={subjectId} sectionId={classData.sectionId} date={date} />}
             </>
         </div>
     )
