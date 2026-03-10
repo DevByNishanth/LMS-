@@ -102,20 +102,21 @@ const HodRequestsDetails = () => {
             setSubmitError(null);
             setSubmitSuccess(false);
 
-            // Filter data to only include items with clickedStatus set (approved or rejected)
-            const submissionData = data
-                .filter(item => item.clickedStatus !== null)
-                .map(item => ({
-                    requestId: item.requestId,
-                    clickedStatus: item.clickedStatus
-                }));
+            // Check if any item has null clickedStatus
+            const hasNullStatus = data.some(item => item.clickedStatus === null);
 
-            // Check if there are any items to submit
-            if (submissionData.length === 0) {
-                setSubmitError('Please approve or reject at least one request before submitting');
+            if (hasNullStatus) {
+                // alert('Please approve or reject all requests before submitting');
+                setSubmitError('Please approve or reject all requests before submitting');
                 setSubmitting(false);
                 return;
             }
+
+            // Map all data for submission
+            const submissionData = data.map(item => ({
+                requestId: item.requestId,
+                clickedStatus: item.clickedStatus
+            }));
 
             const token = localStorage.getItem("LmsToken");
 
@@ -132,7 +133,7 @@ const HodRequestsDetails = () => {
 
             setSubmitSuccess(true);
             console.log('Successfully submitted requests:', response.data);
-            
+
             // Optional: Show success message and reset state after delay
             setTimeout(() => {
                 setSubmitSuccess(false);
@@ -235,12 +236,11 @@ const HodRequestsDetails = () => {
                         </div>
                     )}
 
-                    <button 
-                        onClick={handleSubmit} 
-                        disabled={submitting} 
-                        className={`text-white px-4 py-2 rounded cursor-pointer absolute bottom-4 right-4 ${
-                            submitting ? 'bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-[#08384f] hover:bg-[#05263a]'
-                        }`}
+                    <button
+                        onClick={handleSubmit}
+                        disabled={submitting}
+                        className={`text-white px-4 py-2 rounded cursor-pointer absolute bottom-4 right-4 ${submitting ? 'bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-[#08384f] hover:bg-[#05263a]'
+                            }`}
                     >
                         {submitting ? 'Submitting...' : 'Submit'}
                     </button>
