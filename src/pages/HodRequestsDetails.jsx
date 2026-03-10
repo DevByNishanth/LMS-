@@ -3,6 +3,7 @@ import axios from 'axios'
 import Sidebar from '../components/Sidebar'
 import { Check, X } from 'lucide-react';
 import AnimatedList from '../components/AnimatedList';
+import { useLocation } from 'react-router-dom';
 
 const HodRequestsDetails = () => {
     // Auth 
@@ -12,7 +13,16 @@ const HodRequestsDetails = () => {
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [submitting, setSubmitting] = useState(false);
+    const [submitError, setSubmitError] = useState(null);
+    const [submitSuccess, setSubmitSuccess] = useState(false);
 
+
+    // params ===========================================
+    const location = useLocation();
+    const paramsData = location.state
+
+    console.log(paramsData, "paramsData HodRequestsDetails")
 
     // functions 
     const fetchRequestDetails = async () => {
@@ -21,11 +31,33 @@ const HodRequestsDetails = () => {
 
             const token = localStorage.getItem("LmsToken");
 
-            const res = await axios.get(`${apiUrl}attendance/request-slot-details`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                }
+            // Extract params from paramsData
+            if (!paramsData?._id) {
+                setError('Missing required parameters');
+                setData([]);
+                setLoading(false);
+                return;
+            }
+
+            const { facultyId, subjectId, sectionId, date, hour } = paramsData._id;
+
+            // Construct query parameters
+            const queryParams = new URLSearchParams({
+                facultyId,
+                subjectId,
+                sectionId,
+                date,
+                hour
             });
+
+            const res = await axios.get(
+                `${apiUrl}api/attendance/request-slot-details?${queryParams.toString()}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+            );
 
             const fetchedData = res.data?.data || res.data || [];
             const addField = Array.isArray(fetchedData) ? fetchedData.map((item) => {
@@ -46,20 +78,72 @@ const HodRequestsDetails = () => {
         }
     }
 
-    const handleApprove = (index) => {
-        setData(prevData => prevData.map((item, i) =>
-            i === index ? { ...item, clickedStatus: 'approved' } : item
+    const handleApprove = (requestId) => {
+        setData(prevData => prevData.map((item) =>
+            item.requestId === requestId ? { ...item, clickedStatus: 'approved' } : item
         ));
     };
 
-    const handleReject = (index) => {
-        setData(prevData => prevData.map((item, i) =>
-            i === index ? { ...item, clickedStatus: 'rejected' } : item
+    const handleReject = (requestId) => {
+        console.log("reject", requestId)
+        setData(prevData => prevData.map((item) =>
+            item.requestId === requestId ? { ...item, clickedStatus: 'rejected' } : item
         ));
     };
 
-    const handleSubmit = () => {
-        console.log(data)
+    function formatDate(dateString) {
+        const options = { year: 'numeric', month: 'long', day: 'numeric' };
+        return new Date(dateString).toLocaleDateString(undefined, options);
+    }
+
+    const handleSubmit = async () => {
+        try {
+            setSubmitting(true);
+            setSubmitError(null);
+            setSubmitSuccess(false);
+
+            // Filter data to only include items with clickedStatus set (approved or rejected)
+            const submissionData = data
+                .filter(item => item.clickedStatus !== null)
+                .map(item => ({
+                    requestId: item.requestId,
+                    clickedStatus: item.clickedStatus
+                }));
+
+            // Check if there are any items to submit
+            if (submissionData.length === 0) {
+                setSubmitError('Please approve or reject at least one request before submitting');
+                setSubmitting(false);
+                return;
+            }
+
+            const token = localStorage.getItem("LmsToken");
+
+            const response = await axios.post(
+                `${apiUrl}api/attendance/requests/submit`,
+                submissionData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            setSubmitSuccess(true);
+            console.log('Successfully submitted requests:', response.data);
+            
+            // Optional: Show success message and reset state after delay
+            setTimeout(() => {
+                setSubmitSuccess(false);
+            }, 3000);
+
+        } catch (err) {
+            console.error('Error submitting requests:', err);
+            setSubmitError(err.response?.data?.message || err.message || 'Failed to submit requests');
+        } finally {
+            setSubmitting(false);
+        }
     }
 
     // useEffects =============================== 
@@ -116,14 +200,14 @@ const HodRequestsDetails = () => {
 
                                             </div>
                                             <div>
-                                                <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.currentStatus === 'Present' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'}`}>
+                                                <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.currentStatus.toLowerCase() === 'present' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'}`}>
                                                     {req.currentStatus}
                                                 </span>
                                                 <p className='text-sm text-gray-400 font-light mt-2'>Current Status</p>
                                             </div>
                                             <div>
-                                                <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.editStatus === 'Present' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : req.editStatus === 'On Duty' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'}`}>
-                                                    {req.editStatus}
+                                                <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.requestedStatus.toLowerCase() === 'present' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : req.requestedStatus === 'On Duty' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'}`}>
+                                                    {req.requestedStatus}
                                                 </span>
                                                 <p className='text-sm text-gray-400 font-light mt-2'>Edit Status</p>
                                             </div>
@@ -132,14 +216,14 @@ const HodRequestsDetails = () => {
                                                 <p className='text-sm text-gray-400 font-light mt-2'>Hour</p>
                                             </div>
                                             <div className="text-gray-800 font-medium text-md whitespace-nowrap mt-2">
-                                                <span>{req.date}</span>
+                                                <span>{formatDate(req.date)}</span>
                                                 <p className='text-sm text-gray-400 font-light mt-2'>Date</p>
                                             </div>
                                             <div className='flex gap-2 items-center'>
-                                                <button onClick={() => handleApprove(req.id)} className={`${req.clickedStatus == "approved" ? "bg-emerald-700" : "border border-emerald-400"}  px-2 py-1 rounded-md cursor-pointer transition-colors hover:text-white`}>
+                                                <button onClick={() => handleApprove(req.requestId)} className={`${req.clickedStatus == "approved" ? "bg-emerald-700" : "border border-emerald-400"}  px-2 py-1 rounded-md cursor-pointer transition-colors hover:text-white`}>
                                                     <Check className={`${req.clickedStatus == "approved" ? "text-white" : "text-emerald-400"} `} />
                                                 </button>
-                                                <button onClick={() => handleReject(req.id)} className={`${req.clickedStatus == "rejected" ? "bg-rose-700" : "border border-rose-400"} px-2 py-1 rounded-md cursor-pointer transition-colors hover:text-white`}>
+                                                <button onClick={() => handleReject(req.requestId)} className={`${req.clickedStatus == "rejected" ? "bg-rose-700" : "border border-rose-400"} px-2 py-1 rounded-md cursor-pointer transition-colors hover:text-white`}>
                                                     <X className={`${req.clickedStatus == "rejected" ? "text-white" : "text-rose-400"} `} />
                                                 </button>
                                             </div>
@@ -151,7 +235,27 @@ const HodRequestsDetails = () => {
                         </div>
                     )}
 
-                    <button onClick={handleSubmit} className='bg-[#08384f] text-white px-4 py-2 rounded cursor-pointer absolute bottom-4 right-4'>Submit</button>
+                    <button 
+                        onClick={handleSubmit} 
+                        disabled={submitting} 
+                        className={`text-white px-4 py-2 rounded cursor-pointer absolute bottom-4 right-4 ${
+                            submitting ? 'bg-gray-500 opacity-50 cursor-not-allowed' : 'bg-[#08384f] hover:bg-[#05263a]'
+                        }`}
+                    >
+                        {submitting ? 'Submitting...' : 'Submit'}
+                    </button>
+
+                    {submitError && (
+                        <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded mb-4 absolute bottom-16 right-4">
+                            <p>{submitError}</p>
+                        </div>
+                    )}
+
+                    {submitSuccess && (
+                        <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded mb-4 absolute bottom-16 right-4">
+                            <p>Requests submitted successfully!</p>
+                        </div>
+                    )}
                 </div>
             </section>
         </>
