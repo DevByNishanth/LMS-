@@ -28,6 +28,8 @@ import StudentClassroom from "./pages/Student_Classroom";
 import InvitationPage from "./pages/InvitationPage";
 import { ToastContainer } from "react-toastify";
 import CalendarPage from "./pages/CalendarPage";
+import HodRequestsPage from "./pages/HodRequestsPage";
+import HodRequestsDetails from "./pages/HodRequestsDetails";
 
 const App = () => {
   return (
@@ -157,7 +159,24 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/dashboard/calendar" element={<CalendarPage/>}/>
+
+        <Route
+          path="/dashboard/hodRequests"
+          element={
+            <ProtectedRoute>
+              <HodRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/hodRequests/requests/:id"
+          element={
+            <ProtectedRoute>
+              <HodRequestsDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/dashboard/calendar" element={<CalendarPage />} />
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
         <Route
           path="/dashboard/classroom/class/:classId/:sectionId"

@@ -20,7 +20,7 @@
     "dayjs": "^1.11.19",
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.552.0",
-    "motion": "^12.23.24",
+    "motion": "^12.35.2",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router-dom": "^7.9.5",

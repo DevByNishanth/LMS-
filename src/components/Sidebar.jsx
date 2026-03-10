@@ -12,6 +12,8 @@ import {
   Table,
   LogOut,
   Presentation,
+  MessageSquareMore
+
 } from "lucide-react";
 import logo from "../assets/clgLogo.svg";
 import { Link, useLocation } from "react-router-dom";
@@ -90,6 +92,12 @@ const Sidebar = () => {
       label: "Timetable Management",
       icon: Table,
       link: "/dashboard/timetableManagement",
+      roles: ["hod"],
+    },
+    {
+      label: "Requests",
+      icon: MessageSquareMore,
+      link: "/dashboard/hodRequests",
       roles: ["hod"],
     },
   ];
