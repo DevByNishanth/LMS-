@@ -118,8 +118,8 @@ const HodRequestsPage = () => {
                                             <td className="px-6 py-4 text-sm text-gray-600">{row?.hourLabel}</td>
                                             <td className="px-6 py-4 text-sm text-gray-600"> {formatDate(row.date)}</td>
                                             <td className="px-6 py-4 text-sm text-gray-600">
-                                                <button className="bg-red-50  text-red-400 border border-red-400 py-1 text-xs px-4 rounded-lg">
-                                                    View
+                                                <button className=" py-1 text-xs px-4 rounded-lg">
+                                                    {row.status}
                                                 </button>
                                             </td>
                                             <td className="px-6 py-4 text-center">
