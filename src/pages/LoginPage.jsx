@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import loginBg from "../assets/loginBg.svg";
@@ -21,7 +21,7 @@ const LoginPage = () => {
   //   }
   // }, []);
 
-  // old submit function 
+  // old submit function
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   setLoading(true);
@@ -46,7 +46,7 @@ const LoginPage = () => {
   //   }
   // };
 
-  // new submit function 
+  // new submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -63,18 +63,16 @@ const LoginPage = () => {
       // smart redirect
       const redirectTo = location.state?.redirectTo || "/dashboard";
       navigate(redirectTo, { replace: true });
-
     } catch (error) {
       console.error("Login error:", error);
       alert(
         error.response?.data?.message ||
-        "Invalid credentials. Please try again."
+          "Invalid credentials. Please try again.",
       );
     } finally {
       setLoading(false);
     }
   };
-
 
   return (
     <section className="w-full h-[100vh] p-4 md:flex justify-between">
@@ -162,8 +160,9 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full ${loading ? "bg-[#0b55a4b4]" : "bg-[#08384F]  bg"
-                  } hover:bg-[#011b27] text-white font-semibold py-2 rounded-lg transition duration-300 cursor-pointer`}
+                className={`w-full ${
+                  loading ? "bg-[#0b55a4b4]" : "bg-[#08384F]  bg"
+                } hover:bg-[#011b27] text-white font-semibold py-2 rounded-lg transition duration-300 cursor-pointer`}
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
