@@ -30,6 +30,7 @@ import { ToastContainer } from "react-toastify";
 import CalendarPage from "./pages/CalendarPage";
 import HodRequestsPage from "./pages/HodRequestsPage";
 import HodRequestsDetails from "./pages/HodRequestsDetails";
+import HodRequestHistory from "./pages/HodRequestHistory";
 
 const App = () => {
   return (
@@ -173,6 +174,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <HodRequestsDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/hodRequests/history"
+          element={
+            <ProtectedRoute>
+              <HodRequestHistory />
             </ProtectedRoute>
           }
         />
