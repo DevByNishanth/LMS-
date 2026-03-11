@@ -26,10 +26,10 @@ const HodRequestHistory = () => {
                 setError(null);
 
                 const token = localStorage.getItem("LmsToken");
-                
+
                 // Get data from state passed from HodRequestsPage
                 const stateData = location.state;
-                
+
                 if (!stateData) {
                     setError('No request data provided');
                     setLoading(false);
@@ -41,10 +41,10 @@ const HodRequestHistory = () => {
                 const subjectId = stateData?._id?.subjectId || stateData?.subjectId || '';
                 const sectionId = stateData?._id?.sectionId || stateData?.sectionId || '';
                 const date = stateData?.date || '';
-                const hour = stateData?.hourLabel || stateData?.hour || '';
+                const hour = (stateData?.hourLabel || stateData?.hour || '').replace(/\s+/g, '').replace(/\s*\(.*\)/, '');
 
                 let url = `${apiUrl}api/attendance/request-history`;
-                
+
                 // Build query string with required parameters
                 const params = [];
                 if (facultyId) params.push(`facultyId=${facultyId}`);
@@ -115,29 +115,28 @@ const HodRequestHistory = () => {
                             <table className="w-full border-collapse">
                                 <thead className='sticky top-0'>
                                     <tr className="bg-gray-200 border-b-2 border-gray-300">
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Faculty</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Subject</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Student</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Previous status</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Requested status</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Final status</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Hour</th>
                                         <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Date</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Status</th>
-                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900">Details</th>
+                                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900"></th>
                                     </tr>
                                 </thead>
                                 <tbody>
                                     {data.map((row, index) => (
                                         <tr key={row._id || index} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{row?.facultyName}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{row?.subjectName}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{row?.hourLabel}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">{formatDate(row?.date)}</td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">
-                                                <button className="py-1 text-xs px-4 rounded-lg bg-green-100 text-green-700">
-                                                    {row?.status}
+                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{row?.studentName}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{row?.currentStatus}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">{row?.requestedStatus}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-900 font-medium">
+                                                <button className={`py-1 text-xs px-4 rounded-lg ${row?.finalStatus.toLowerCase() === 'approved' ? 'bg-green-100 text-green-700' : 'bg-red-100 text-red-700'}`}>
+                                                    {row?.finalStatus}
                                                 </button>
                                             </td>
-                                            <td className="px-6 py-4 text-sm text-gray-600">
-                                                {row?.remarks || 'N/A'}
-                                            </td>
+                                            <td className="px-6 py-4 text-sm text-gray-600">{row?.hour}</td>
+                                            <td className="px-6 py-4 text-sm text-gray-600">{formatDate(row?.date)}</td>
                                         </tr>
                                     ))}
                                 </tbody>
