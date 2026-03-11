@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import axios from 'axios'
 import Sidebar from '../components/Sidebar'
-import { Link } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import arrow from '../assets/arrow.svg'
 
 const HodRequestsPage = () => {
     // Auth =========================================== 
     const apiUrl = import.meta.env.VITE_API_URL;
+    const navigate = useNavigate();
 
     // states ===========================================
     const [data, setData] = useState([]);
@@ -17,6 +18,15 @@ const HodRequestsPage = () => {
         const options = { year: 'numeric', month: 'long', day: 'numeric' };
         return new Date(dateString).toLocaleDateString(undefined, options);
     }
+
+    // Navigation handler for row actions
+    const handleRowAction = (row) => {
+        if (row.status.toLowerCase() === "completed") {
+            navigate('/dashboard/hodRequests/history', { state: { ...row } });
+        } else {
+            navigate(`/dashboard/hodRequests/requests/${row?._id?.subjectId}`, { state: { ...row } });
+        }
+    };
 
 
     // Dummy data for testing
@@ -123,11 +133,14 @@ const HodRequestsPage = () => {
                                                 </button>
                                             </td>
                                             <td className="px-6 py-4 text-center">
-                                                <Link to={`/dashboard/hodRequests/requests/${row?._id?.subjectId}`} state={{ ...row }} className=" font-medium text-sm">
-                                                    <div className="icon-container bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full mx-auto ">
+                                                <button 
+                                                    onClick={() => handleRowAction(row)}
+                                                    className="font-medium text-sm"
+                                                >
+                                                    <div className="icon-container bg-gray-200 w-8 h-8 flex items-center justify-center rounded-full mx-auto cursor-pointer hover:bg-gray-300 transition-colors">
                                                         <img src={arrow} className="w-5 h-5" />
                                                     </div>
-                                                </Link>
+                                                </button>
                                             </td>
                                         </tr>
                                     ))}
