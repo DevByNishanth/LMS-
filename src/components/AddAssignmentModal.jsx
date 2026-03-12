@@ -26,8 +26,9 @@ export default function AddAssignmentModal({
   const [formData, setFormData] = useState({
     title: "",
     instruction: "",
+    questions: "",
     dueDate: "",
-    points: "",
+    marks: "",
   });
 
   const [resources, setResources] = useState([]);
@@ -36,11 +37,18 @@ export default function AddAssignmentModal({
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+    
+    if (name === "marks") {
+      const numValue = parseInt(value);
+      if (numValue > 100) return;
+      if (numValue < 0) return;
+    }
+
     setFormData((prev) => ({
       ...prev,
       [name]: value,
     }));
-    // Clear error when user types
+    
     if (errors[name]) {
       setErrors((prev) => ({ ...prev, [name]: "" }));
     }
@@ -61,6 +69,8 @@ export default function AddAssignmentModal({
     if (!formData.instruction.trim())
       newErrors.instruction = "Instruction is required";
     if (!formData.dueDate) newErrors.dueDate = "Due Date is required";
+    if (!formData.marks) newErrors.marks = "Marks are required";
+    
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
@@ -75,10 +85,10 @@ export default function AddAssignmentModal({
     data.append("sectionId", sectionId);
     data.append("title", formData.title);
     data.append("instruction", formData.instruction);
+    data.append("questions", formData.questions);
     data.append("dueDate", formData.dueDate);
-    data.append("marks", formData.points);
+    data.append("marks", formData.marks);
 
-    // Separate resources
     const linkResource = resources.find((r) => r.type === "link");
     const youtubeResource = resources.find((r) => r.type === "youtube link");
 
@@ -90,7 +100,6 @@ export default function AddAssignmentModal({
       data.append("youtubeLink", youtubeResource.value);
     }
 
-    // Append files
     resources.forEach((r) => {
       if (r.type === "upload") {
         data.append("attachments", r.value);
@@ -105,7 +114,6 @@ export default function AddAssignmentModal({
           Authorization: `Bearer ${token}`,
         },
       });
-      // Success
       setIsAssignmentModalOpen(false);
       if (onClose) onClose();
     } catch (error) {
@@ -119,7 +127,6 @@ export default function AddAssignmentModal({
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
       <div className="bg-white absolute top-0 right-0 w-[90%] md:w-[40%] h-full">
-        {/* Header */}
         <div className="flex items-center justify-between px-5 py-3 border-b border-gray-200 sticky top-0 bg-white">
           <h2 className="text-lg font-medium">Assignment</h2>
           <button
@@ -130,12 +137,10 @@ export default function AddAssignmentModal({
           </button>
         </div>
 
-        {/* Body */}
         <form
           onSubmit={handleSubmit}
           className="px-5 py-4 space-y-4 max-h-[calc(100vh-120px)] overflow-y-auto"
         >
-          {/* Title */}
           <div>
             <label className="text-md text-gray-600 font-medium mb-2">
               Title
@@ -151,24 +156,25 @@ export default function AddAssignmentModal({
               <p className="text-red-500 text-xs mt-1">{errors.title}</p>
             )}
           </div>
-          {/* marks / points  */}
+
           <div>
             <label className="text-md text-gray-600 font-medium mb-2">
-              Points
+              Marks (Max 100)
             </label>
             <input
               type="number"
-              name="points"
-              value={formData.points}
+              name="marks"
+              min="0"
+              max="100"
+              value={formData.marks}
               onChange={handleChange}
-              className={`w-full border ${errors.title ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
+              className={`w-full border ${errors.marks ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />
-            {errors.title && (
-              <p className="text-red-500 text-xs mt-1">{errors.title}</p>
+            {errors.marks && (
+              <p className="text-red-500 text-xs mt-1">{errors.marks}</p>
             )}
           </div>
 
-          {/* Instruction */}
           <div>
             <label className="text-md text-gray-600 font-medium mb-2">
               Instruction
@@ -177,7 +183,7 @@ export default function AddAssignmentModal({
               name="instruction"
               value={formData.instruction}
               onChange={handleChange}
-              rows={5}
+              rows={3}
               className={`w-full border ${errors.instruction ? "border-red-500" : "border-gray-400"} rounded px-3 py-2 mt-1 resize-none focus:outline-none focus:ring-1 focus:ring-[#000000]`}
             />
             {errors.instruction && (
@@ -185,7 +191,20 @@ export default function AddAssignmentModal({
             )}
           </div>
 
-          {/* Attach */}
+          <div>
+            <label className="text-md text-gray-600 font-medium mb-2">
+              Questions
+            </label>
+            <textarea
+              name="questions"
+              value={formData.questions}
+              onChange={handleChange}
+              rows={5}
+              className="w-full border border-gray-400 rounded px-3 py-2 mt-1 resize-none focus:outline-none focus:ring-1 focus:ring-[#000000]"
+              placeholder="Enter your questions here..."
+            />
+          </div>
+
           <div>
             <p className="text-md text-gray-600 font-medium mb-4">Attach Any</p>
             <div className="flex gap-6 text-xs text-gray-600">
@@ -221,14 +240,13 @@ export default function AddAssignmentModal({
                 className="flex flex-col items-center gap-1 cursor-pointer hover:text-black hover:font-medium"
               >
                 <div className="icon-container bg-[#FAFAFA] border border-gray-400 rounded-full w-10 h-10 flex items-center justify-center">
-                  <Upload className="w-4 h-4" />
+                  <Upload className="w-4 h-4 " />
                 </div>
                 Upload
               </div>
             </div>
           </div>
 
-          {/* Resources Preview */}
           {resources.length > 0 && (
             <div className="space-y-2">
               <p className="text-sm font-medium text-gray-600">
@@ -266,7 +284,6 @@ export default function AddAssignmentModal({
             </div>
           )}
 
-          {/* Due Date */}
           <div>
             <label className="text-sm text-gray-600 mb-2">Due Date</label>
             <input
@@ -280,11 +297,9 @@ export default function AddAssignmentModal({
               <p className="text-red-500 text-xs mt-1">{errors.dueDate}</p>
             )}
           </div>
-
-          {/* Assign To */}
         </form>
-        {/* Footer Buttons */}
-        <div className="flex justify-end gap-3 py-5 px-6 absolute bottom-0 w-full ">
+
+        <div className="flex justify-end gap-3 py-5 px-6 absolute bottom-0 w-full bg-white border-t border-gray-100">
           <button
             type="button"
             onClick={() => setIsAssignmentModalOpen(false)}
@@ -295,15 +310,13 @@ export default function AddAssignmentModal({
           <button
             onClick={handleSubmit}
             type="submit"
-            className="px-4 py-2 cursor-pointer rounded bg-[#08384F]  text-white hover:opacity-90 disabled:opacity-50"
+            className="px-4 py-2 cursor-pointer rounded bg-[#08384F] text-white hover:opacity-90 disabled:opacity-50"
             disabled={loading}
           >
             {loading ? "Saving..." : "Save"}
           </button>
         </div>
       </div>
-
-      {/* modal  */}
 
       {selectedAttachmentOption && (
         <AssignmentResourceModal

@@ -1,4 +1,4 @@
-import { Upload, X } from "lucide-react";
+import { Upload, X, AlertCircle } from "lucide-react";
 import React, { useState } from "react";
 
 const AssignmentResourceModal = ({
@@ -7,8 +7,8 @@ const AssignmentResourceModal = ({
   openingFrom,
   setOpeningFrom,
   onSubmit,
-  allowedExtensions = [], // Default to empty (allow all)
-  maxFileSize = null, // Default to null (no limit)
+  allowedExtensions = [],
+  maxFileSize = 5 * 1024 * 1024,
 }) => {
   const [inputValue, setInputValue] = useState("");
   const [selectedFile, setSelectedFile] = useState(null);
@@ -21,7 +21,6 @@ const AssignmentResourceModal = ({
         onSubmit({ type: selectedAttachmentOption, value: inputValue });
       }
     }
-    // Reset and close
     setInputValue("");
     setSelectedFile(null);
     setSelectedAttachmentOption(null);
@@ -31,31 +30,26 @@ const AssignmentResourceModal = ({
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
 
-      // Validate File Size
       if (maxFileSize && file.size > maxFileSize) {
-        alert(`File size exceeds ${maxFileSize / (1024 * 1024)}MB`);
+        alert(`File size exceeds 5MB. Please upload a smaller file.`);
         e.target.value = null;
         return;
       }
 
-      // Validate File Extension/Type
       if (allowedExtensions && allowedExtensions.length > 0) {
         const fileName = file.name.toLowerCase();
         const isValidExtension = allowedExtensions.some((ext) =>
-          fileName.endsWith(ext.toLowerCase())
+          fileName.endsWith(ext.toLowerCase()),
         );
 
         if (!isValidExtension) {
-          alert(`Invalid file type. Allowed types: ${allowedExtensions.join(", ")}`);
+          alert(
+            `Invalid file type. Allowed types: ${allowedExtensions.join(", ")}`,
+          );
           e.target.value = null;
           return;
         }
       }
-
-      // Explicit SVG check if not covered by allowedExtensions (though if allowedExtensions is used, it should be covered)
-      // But if allowedExtensions is empty, we might want to block SVG if specific global rule? 
-      // The user request "No svg allowed" was specific to the context.
-      // Better to rely on allowedExtensions passed from parent.
 
       setSelectedFile(file);
     }
@@ -71,9 +65,8 @@ const AssignmentResourceModal = ({
         className={`tint-container fixed inset-0 bg-black/50 ${openingFrom !== "AssignmentModal" ? "z-120" : "z-50"} `}
       ></div>
       <section
-        className={`assignment-resource-modal absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 bg-white w-[70%] md:w-[25%] h-[240px] rounded-lg ${openingFrom !== "AssignmentModal" ? "z-120" : "z-50"} `}
+        className={`assignment-resource-modal absolute top-[50%] left-[50%] transform -translate-x-1/2 -translate-y-1/2 bg-white w-[70%] md:w-[25%] h-[260px] rounded-lg ${openingFrom !== "AssignmentModal" ? "z-120" : "z-50"} `}
       >
-        {/* header  */}
         <div className="header border-b border-gray-300">
           {selectedAttachmentOption == "link" && (
             <h1 className="text-lg font-medium p-4">Add link</h1>
@@ -92,50 +85,52 @@ const AssignmentResourceModal = ({
           </div>
         </div>
 
-        {/* body section  */}
         {selectedAttachmentOption == "upload" ? (
-          <>
-            <div className="file-input-container mx-4 mt-4 ">
-              {selectedFile ? (
-                <div className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-gray-50">
-                  <div className="flex items-center gap-2 overflow-hidden">
-                    <div className="bg-blue-100 p-2 rounded text-blue-600">
-                      {/* Generic File Icon */}
-                      <Upload className="w-5 h-5" />
-                    </div>
-                    <div className="flex flex-col truncate">
-                      <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
-                        {selectedFile.name}
-                      </span>
-                      <span className="text-xs text-gray-500">
-                        {(selectedFile.size / 1024).toFixed(1)} KB
-                      </span>
-                    </div>
+          <div className="file-input-container mx-4 mt-4">
+            {selectedFile ? (
+              <div className="flex items-center justify-between p-3 border border-gray-300 rounded-lg bg-gray-50">
+                <div className="flex items-center gap-2 overflow-hidden">
+                  <div className="bg-blue-100 p-2 rounded text-blue-600">
+                    <Upload className="w-5 h-5" />
                   </div>
-                  <button
-                    onClick={handleRemoveFile}
-                    className="p-1 text-gray-500 hover:bg-gray-200 rounded-full transition"
-                  >
-                    <X className="w-4 h-4" />
-                  </button>
+                  <div className="flex flex-col truncate">
+                    <span className="text-sm font-medium text-gray-700 truncate max-w-[150px]">
+                      {selectedFile.name}
+                    </span>
+                    <span className="text-xs text-gray-500">
+                      {(selectedFile.size / 1024).toFixed(1)} KB
+                    </span>
+                  </div>
                 </div>
-              ) : (
-                <div className="rounded-lg  w-full h-[50px] relative">
+                <button
+                  onClick={handleRemoveFile}
+                  className="p-1 text-gray-500 hover:bg-gray-200 rounded-full transition"
+                >
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                <div className="rounded-lg w-full h-[80px] relative">
                   <input
                     type="file"
                     className="opacity-0 absolute top-0 right-0 bottom-0 left-0 cursor-pointer z-10"
                     onChange={handleFileChange}
                   />
-                  <div className="image-contaienr text-center border-2 border-dashed py-4 border-gray-400  ">
+                  <div className="image-contaienr text-center border-2 border-dashed py-4 border-gray-400">
                     <Upload className="w-6 h-6 text-gray-600 mx-auto" />
-                    <h1 className="mt-2 text-sm text-gray-800 cursor-pointer hover:text-black ">
+                    <h1 className="mt-1 text-sm text-gray-800 cursor-pointer hover:text-black">
                       Upload files here
                     </h1>
                   </div>
                 </div>
-              )}
-            </div>
-          </>
+                <div className="flex items-center gap-1 text-[11px] text-gray-500 justify-center">
+                  <AlertCircle className="w-3 h-3" />
+                  <span>Maximum file size: 5MB</span>
+                </div>
+              </div>
+            )}
+          </div>
         ) : (
           <div className="main-container mx-4 mt-4">
             <input
@@ -145,24 +140,23 @@ const AssignmentResourceModal = ({
                   ? "Enter YouTube link"
                   : "Enter the link"
               }
-              className="px-4 py-4 rounded border w-full border-gray-400"
+              className="px-4 py-4 rounded border w-full border-gray-400 text-sm focus:outline-none focus:ring-1 focus:ring-[#08384F]"
               value={inputValue}
               onChange={(e) => setInputValue(e.target.value)}
             />
           </div>
         )}
 
-        {/* footer  */}
-        <div className="footer-btn absolute bottom-0 w-full flex justify-end gap-2 p-4 ">
+        <div className="footer-btn absolute bottom-0 w-full flex justify-end gap-2 p-4">
           <button
             onClick={() => setSelectedAttachmentOption(null)}
-            className="px-4 py-2 rounded cursor-pointer bg-[#D9D9D9] text-black hover:opacity-90"
+            className="px-4 py-2 rounded cursor-pointer bg-[#D9D9D9] text-sm text-black hover:opacity-90"
           >
             Cancel
           </button>
           <button
             onClick={handleUpload}
-            className="px-4 py-2 cursor-pointer rounded bg-[#08384F]  bgtext-white hover:opacity-90"
+            className="px-4 py-2 cursor-pointer rounded bg-[#08384F] text-sm text-white hover:opacity-90"
           >
             {selectedAttachmentOption === "upload" ? "Upload" : "Add Link"}
           </button>

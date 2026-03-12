@@ -1,215 +1,189 @@
 import classRoombanner1 from "../assets/classRoombanner1.svg";
-import profileImg from "../assets/profileImg.svg";
 import copyIcon from "../assets/copyIcon.svg";
-import { Edit, File, Pencil, Plus, Trash, Send, X } from "lucide-react";
 import postBadge from "../assets/postBadge.svg";
-import { useEffect, useRef, useState } from "react";
-import AddAnnouncementModal from "./AddAnnouncementModal";
 import commentIcon from "../assets/commentIcon.svg";
-import axios from "axios";
+import fileIcon from "../assets/file-icon.svg";
+import { Pencil, Plus, Trash, Send, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
-import fileIcon from "../assets/file-icon.svg";
+import axios from "axios";
+import AddAnnouncementModal from "./AddAnnouncementModal";
 
 const ClassRoomStreamComponent = () => {
-  // Auth
   const token = localStorage.getItem("LmsToken");
-
   const apiUrl = import.meta.env.VITE_API_URL;
-
-  //   params
   const { classId, sectionId } = useParams();
 
-  // states
-  const [isAnnouncementModal, setIsAnnouncementModal] = useState(false);
-  const [copiedText, setCopiedText] = useState(false);
   const [streamData, setStreamData] = useState({});
   const [feedData, setFeedData] = useState([]);
+  const [quizFeed, setQuizFeed] = useState([]);
+  const [assignmentFeed, setAssignmentFeed] = useState([]);
+
+  const [copiedText, setCopiedText] = useState(false);
+  const [isAnnouncementModal, setIsAnnouncementModal] = useState(false);
   const [actionDropdown, setActionDropdown] = useState(null);
   const [selectedAnnouncement, setSelectedAnnouncement] = useState(null);
   const [activeCommentBox, setActiveCommentBox] = useState(null);
   const [commentText, setCommentText] = useState("");
-
-  // ref
-  const actionDropdownRef = useRef(null);
-
-  // useEffect calls
-
   const [firstLetter, setFirstLetter] = useState("");
 
-  useEffect(() => {
-    const token = localStorage.getItem("LmsToken");
+  const actionDropdownRef = useRef(null);
 
+  useEffect(() => {
     if (token) {
       try {
         const decoded = jwtDecode(token);
         const name =
           decoded?.name || decoded?.username || decoded?.user?.name || "";
-
-        console.log("name : ", name);
-        if (name) {
-          setFirstLetter(name);
-        }
+        setFirstLetter(name);
       } catch (error) {
         console.error("Invalid token");
       }
     }
-  }, []);
+  }, [token]);
+
+  const getStreamDetails = async () => {
+    try {
+      const res = await axios.get(
+        `${apiUrl}api/staff/stream/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      setStreamData(res.data);
+      setFeedData(res.data.stream || []);
+    } catch (err) {
+      console.error("Stream fetch error:", err);
+    }
+  };
+
+  const getQuizFeed = async () => {
+    try {
+      const res = await axios.get(`${apiUrl}api/quiz/${classId}/${sectionId}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const quizPosts = (res.data.data || []).map((quiz) => ({
+        ...quiz,
+        type: "quiz",
+        message: `Posted a Quiz : ${quiz.title}`,
+      }));
+      setQuizFeed(quizPosts);
+    } catch (err) {
+      console.error("Quiz fetch error:", err);
+    }
+  };
+
+  const getAssignments = async () => {
+    try {
+      const res = await axios.get(
+        `${apiUrl}api/assignment/subject/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      const assignmentPosts = (res.data.data || []).map((asn) => ({
+        ...asn,
+        type: "assignment",
+        message: `Posted a Assignment work : ${asn.title || "Sample"}`,
+      }));
+      setAssignmentFeed(assignmentPosts);
+    } catch (err) {
+      console.error("Assignment fetch error:", err);
+    }
+  };
 
   useEffect(() => {
     getStreamDetails();
-  }, []);
+    getQuizFeed();
+    getAssignments();
+  }, [classId, sectionId]);
 
-  const handleEdit = (item) => {
-    setSelectedAnnouncement(item);
-    setIsAnnouncementModal(true);
-    setActionDropdown(null);
-  };
+  const combinedFeed = [...feedData, ...quizFeed, ...assignmentFeed].sort(
+    (a, b) => new Date(b.createdAt) - new Date(a.createdAt),
+  );
 
-  const handleDelete = (item) => {
-    // Logic for delete will go here
-    setActionDropdown(null);
-    console.log("Deleting item", item);
-  };
-
-  const handleToggleComments = (id) => {
-    if (activeCommentBox === id) {
-      setActiveCommentBox(null);
-    } else {
-      setActiveCommentBox(id);
+  const handleCopyText = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setCopiedText(true);
+      setTimeout(() => setCopiedText(false), 1000);
+    } catch (err) {
+      console.error("Copy error", err);
     }
   };
 
   const handlePostComment = async (postId) => {
-    console.log("postId : ", postId);
     if (!commentText.trim()) return;
-
     try {
-      const response = await axios.post(
+      await axios.post(
         `${apiUrl}api/staff/stream/${postId}/comment`,
         { streamId: postId, comment: commentText },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
+        { headers: { Authorization: `Bearer ${token}` } },
       );
-      if (response.status === 200 || response.status === 201) {
-        setCommentText("");
-        getStreamDetails();
-      }
+      setCommentText("");
+      getStreamDetails();
     } catch (error) {
       console.error("Error posting comment:", error);
     }
   };
 
   useEffect(() => {
-    function handleClickOutside(e) {
+    const handleClickOutside = (e) => {
       if (
         actionDropdownRef.current &&
         !actionDropdownRef.current.contains(e.target)
       ) {
-        setActionDropdown(false);
+        setActionDropdown(null);
       }
-    }
-    document.addEventListener("mousedown", handleClickOutside);
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
     };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
-
-  // functions
-  async function handleCopyText(textToCopy) {
-    try {
-      await navigator.clipboard.writeText(textToCopy);
-      setCopiedText(true);
-      setTimeout(() => {
-        setCopiedText(false);
-      }, 1000);
-    } catch (err) {
-      console.error("Error occured while copying subject code : ", err);
-      setCopiedText(false);
-    }
-  }
-
-  //   fetch stream details
-  async function getStreamDetails() {
-    try {
-      const res = await axios.get(
-        `${apiUrl}api/staff/stream/${classId}/${sectionId}`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        },
-      );
-      setStreamData(res.data);
-      setFeedData(res.data.stream);
-    } catch (err) {
-      console.error(
-        "Error occured while fetching Classroom stream details : ",
-        err.message,
-      );
-    }
-  }
 
   return (
     <>
-      <section className="w-full h-full ">
+      <section className="w-full h-full">
         <div className="w-full h-full rounded-t-xl border border-gray-200 bg-white">
-          <div className="top-banner-section h-[30%] relative">
-            <div className="img-container w-full relative h-full">
+          <div className="h-[30%] relative">
+            <div className="w-full relative h-full">
               <img
                 src={classRoombanner1}
                 className="transform rounded-t-xl scale-x-[-1] h-full w-full object-cover"
               />
               <div className="absolute rounded-t-xl inset-0 bg-black/10"></div>
             </div>
-            <div className="content-container absolute top-4 left-6 ">
-              <h1 className="font-medium text-xl text-[#00000]">
+            <div className="absolute top-4 left-6">
+              <h1 className="font-medium text-xl text-black">
                 {streamData?.subjectName}
               </h1>
-              <h1 className="font- mt-2 text-lg text-[#00000]">
+              <h1 className="mt-2 text-lg text-black">
                 {streamData?.sectionName}
               </h1>
             </div>
-
-            <div className="profile-container absolute bottom-2 left-6">
+            <div className="absolute bottom-2 left-6">
               <h1 className="font-medium text-md text-[#333333] flex items-center gap-3">
-                {/* <span>
-                  <img src={profileImg} className="w-8 h-8" />
-                </span>{" "} */}
-
-                <p className="bg-[#ffffff] w-7 h-7 rounded-full text-[#08384f] flex items-center justify-center">
-                  {firstLetter.slice(0, 1)}
+                <p className="bg-white w-7 h-7 rounded-full text-[#08384f] flex items-center justify-center">
+                  {firstLetter.slice(0, 1).toUpperCase()}
                 </p>
                 {firstLetter}
               </h1>
             </div>
           </div>
 
-          {/* icon section  */}
-
-          <div className="post-container w-full max-h-[64%] overflow-y-auto px-4 mt-4">
-            {/* header  */}
-            <div className="header flex items-center justify-between sticky top-0 z-20 bg-white">
+          <div className="w-full max-h-[64%] overflow-y-auto px-4 mt-4">
+            <div className="flex items-center justify-between sticky top-0 z-20 bg-white py-2">
               <h1 className="flex items-center gap-2 font-medium">
-                Class Code :{" "}
-                <span className="flex items-center text-[#0B56A4] gap-2 relative ">
-                  {streamData?.classroomCode}{" "}
+                Class Code :
+                <span className="flex items-center text-[#0B56A4] gap-2 relative">
+                  {streamData?.classroomCode}
                   <img
-                    onClick={() => {
-                      handleCopyText(streamData?.classroomCode);
-                    }}
+                    onClick={() => handleCopyText(streamData?.classroomCode)}
                     src={copyIcon}
                     className="w-6 h-6 cursor-pointer"
                   />
-                  {/* tooltip  */}
                   {copiedText && (
-                    <button
-                      className={`text-white bg-gray-800 text-[10px] px-2 py-1 rounded absolute top-full -right-14 transition-all duration-1000 ease-out ${copiedText ? "opacity-100 translate-y-1 scale-100" : "opacity-0 translate-y-3 scale-95 pointer-events-none"}`}
-                    >
+                    <button className="text-white bg-gray-800 text-[10px] px-2 py-1 rounded absolute top-full -right-14">
                       Code copied
                     </button>
                   )}
@@ -217,73 +191,36 @@ const ClassRoomStreamComponent = () => {
               </h1>
               <button
                 onClick={() => setIsAnnouncementModal(true)}
-                className="flex items-center gap-2 bg-[#08384F]  bg text-white px-4 py-2 rounded-md hover:bg-[#0B56A4]/80 cursor-pointer"
+                className="flex items-center gap-2 bg-[#08384F] text-white px-4 py-2 rounded-md"
               >
                 <Plus /> Add Announcement
               </button>
             </div>
 
-            {/* classwork section  */}
-            <div className={`mt-2`}>
-              <div className="flex items-center justify-between bg-[#F9F9F9] border border-gray-200 rounded-lg px-2 py-3  max-w-full">
-                {/* Left side */}
-                <div className="flex items-center gap-3">
-                  {/* Icon */}
-                  <div className="w-8 h-8 flex items-center justify-center rounded-full bg-[#0B56A4]">
-                    <img src={postBadge} className="w-4 h-4" />
-                  </div>
-
-                  {/* Text */}
-                  <div>
-                    <p className="text-md font-medium text-black">
-                      Posted a Assignment work : Sample
-                    </p>
-                  </div>
-                </div>
-
-                {/* Right side */}
-                <div className="flex items-center gap-4">
-                  <p className="text-sm text-gray-500 flex items-center gap-2">
-                    Posted on 30/1/2026 at <span className="">11:42AM</span>
-                  </p>
-
-                  {/* More icon */}
-                  <div className="cursor-pointer text-gray-500 hover:text-gray-700">
-                    <svg className="w-5 h-5" fill="black" viewBox="0 0 24 24">
-                      <path d="M12 7a2 2 0 110-4 2 2 0 010 4zm0 7a2 2 0 110-4 2 2 0 010 4zm0 7a2 2 0 110-4 2 2 0 010 4z" />
-                    </svg>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* feed section  */}
-            <div className="announcement-container mt-2 w-full space-y-2">
-              {feedData.length === 0 ? (
-                <div className="text-center py-4">
-                  <h1 className="text-gray-500">No data found!</h1>
+            <div className="mt-4 space-y-4 pb-6">
+              {combinedFeed.length === 0 ? (
+                <div className="text-center py-4 text-gray-500">
+                  No data found!
                 </div>
               ) : (
-                feedData.map((item, index) => (
+                combinedFeed.map((item) => (
                   <div
-                    key={item._id || index}
+                    key={item._id}
                     className="w-full bg-white border border-gray-200 rounded-md p-4"
                   >
-                    {/* Header */}
+                    {/* Item Header */}
                     <div className="flex justify-between items-start">
                       <div className="flex gap-2">
-                        {/* Avatar */}
-                        <div>
-                          <p className="bg-[#08384F]  text-white w-10 h-10 flex items-center justify-center rounded-full">
-                            S
-                          </p>
-                        </div>
-
-                        {/* Name & date */}
+                        <p className="bg-[#08384F] text-white w-10 h-10 flex items-center justify-center rounded-full">
+                          {item.type === "quiz" || item.type === "assignment"
+                            ? "A"
+                            : firstLetter[0] || "S"}
+                        </p>
                         <div>
                           <p className="text-sm font-semibold text-gray-900">
-                            {/* Assuming item.postedBy or similar exists, falling back to static for now or generic */}
-                            {firstLetter}
+                            {item.type === "quiz" || item.type === "assignment"
+                              ? "System"
+                              : firstLetter}
                           </p>
                           <p className="text-xs text-gray-500">
                             Posted on{" "}
@@ -294,204 +231,153 @@ const ClassRoomStreamComponent = () => {
                             {new Date(item.createdAt).toLocaleTimeString([], {
                               hour: "2-digit",
                               minute: "2-digit",
-                              hour12: true,
                             })}
                           </p>
                         </div>
                       </div>
-
-                      {/* Three dots Action dropdpwn*/}
-                      <div className="text-gray-400 cursor-pointer select-none relative">
-                        <svg
-                          onClick={() =>
-                            setActionDropdown(
-                              actionDropdown === item._id ? null : item._id,
-                            )
-                          }
-                          xmlns="http://www.w3.org/2000/svg"
-                          width="16"
-                          height="16"
-                          fill="black"
-                          className="bi bi-three-dots-vertical"
-                          viewBox="0 0 16 16"
-                        >
-                          <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
-                        </svg>
-
-                        {/* dropdown  */}
-                        {actionDropdown === item._id && (
-                          <div
-                            ref={actionDropdownRef}
-                            className="absolute right-0 mt-2 w-48 bg-white border border-gray-200 rounded-md shadow-lg z-10"
+                      {item.type !== "quiz" && item.type !== "assignment" && (
+                        <div className="relative">
+                          <button
+                            onClick={() =>
+                              setActionDropdown(
+                                actionDropdown === item._id ? null : item._id,
+                              )
+                            }
                           >
-                            <div className="">
-                              <button
-                                onClick={() => handleEdit(item)}
-                                className="w-full text-black cursor-pointer text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2"
-                              >
-                                <Pencil className="w-4 h-4 text-green-800" />{" "}
+                            <svg
+                              width="16"
+                              height="16"
+                              fill="black"
+                              viewBox="0 0 16 16"
+                            >
+                              <path d="M9.5 13a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0m0-5a1.5 1.5 0 1 1-3 0 1.5 1.5 0 0 1 3 0" />
+                            </svg>
+                          </button>
+                          {actionDropdown === item._id && (
+                            <div
+                              ref={actionDropdownRef}
+                              className="absolute right-0 mt-2 w-32 bg-white border rounded shadow-lg z-50"
+                            >
+                              <button className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm">
+                                <Pencil size={14} className="text-green-700" />{" "}
                                 Edit
                               </button>
-                              <button
-                                onClick={() => handleDelete(item)}
-                                className="w-full text-black cursor-pointer text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2"
-                              >
-                                <Trash className="w-4 h-4 text-red-800" />{" "}
-                                Delete
+                              <button className="w-full text-left px-4 py-2 hover:bg-gray-50 flex items-center gap-2 text-sm text-red-600">
+                                <Trash size={14} /> Delete
                               </button>
                             </div>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-
-                    {/* Content */}
-                    <div className="mt-3">
-                      <p className="text-sm text-gray-700 leading-relaxed">
-                        {item.message}
-                      </p>
-                      {/* Attachments (Link/Youtube) */}
-                      {(item.link || item.youtubeLink) && (
-                        <div className="mt-2 flex flex-col gap-1 text-blue-600 text-sm">
-                          {item.link && (
-                            <a
-                              href={item.link}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:underline"
-                            >
-                              {item.link}
-                            </a>
-                          )}
-                          {item.youtubeLink && (
-                            <a
-                              href={item.youtubeLink}
-                              target="_blank"
-                              rel="noopener noreferrer"
-                              className="hover:underline"
-                            >
-                              {item.youtubeLink}
-                            </a>
                           )}
                         </div>
                       )}
-                      {/* attachments container  */}
-                      <div className="file-container mt-4 ">
-                        {item.attachments && (
-                          <>
-                            <div className="file-container ">
-                              {item.attachments.map((file, index) => {
-                                return (
-                                  <a
-                                    key={index}
-                                    target="_blank"
-                                    href={file}
-                                    rel="noopener noreferrer"
-                                    className="flex items-center gap-2 border border-gray-300 rounded-md py-2 px-4 bg-gray-50 cursor-pointer"
-                                  >
-                                    {/* <File className="w-4 h-4 text-black-400" /> */}
-                                    <img src={fileIcon} alt="" />
-                                    <span>{file}</span>
-                                  </a>
-                                );
-                              })}
-                            </div>
-                          </>
-                        )}
-                      </div>
                     </div>
 
-                    {/* Footer */}
-                    <div className="mt-4 pt-3 border-t border-gray-200">
-                      <div
-                        onClick={() => handleToggleComments(item._id)}
-                        className="flex items-center gap-2 text-sm text-gray-600 cursor-pointer w-full "
-                      >
-                        <span>
-                          <img src={commentIcon} className="w-5 h-5" />
-                        </span>
-                        <div className="w-full flex items-center justify-between">
-                          <span className="text-black font-medium  ">
-                            {item.comments?.length > 0
-                              ? `${item.comments.length} Comments`
-                              : "Comments"}
-                          </span>
-                          {activeCommentBox === item._id && (
-                            <div className="">
-                              <X className="w-4 h-4 text-black" />
+                    {/* Content Logic */}
+                    <div className="mt-3">
+                      {item.type === "quiz" || item.type === "assignment" ? (
+                        <div
+                          className={`flex justify-between items-center bg-[#F9F9F9] border-l-4 ${item.type === "quiz" ? "border-blue-600" : "border-green-600"} p-3 rounded-lg`}
+                        >
+                          <div className="flex gap-3 items-center">
+                            <div
+                              className={`w-8 h-8 flex items-center justify-center rounded-full ${item.type === "quiz" ? "bg-blue-600" : "bg-green-600"}`}
+                            >
+                              <img src={postBadge} className="w-4 h-4" />
+                            </div>
+                            <p className="text-sm font-medium">
+                              {item.message}
+                            </p>
+                          </div>
+                        </div>
+                      ) : (
+                        <>
+                          <p className="text-sm text-gray-700">
+                            {item.message}
+                          </p>
+                          {(item.link || item.youtubeLink) && (
+                            <div className="mt-2 space-y-1">
+                              {item.link && (
+                                <a
+                                  href={item.link}
+                                  target="_blank"
+                                  className="block text-blue-600 text-xs truncate"
+                                >
+                                  {item.link}
+                                </a>
+                              )}
+                              {item.youtubeLink && (
+                                <a
+                                  href={item.youtubeLink}
+                                  target="_blank"
+                                  className="block text-red-600 text-xs truncate"
+                                >
+                                  {item.youtubeLink}
+                                </a>
+                              )}
                             </div>
                           )}
+                          {item.attachments?.map((file, i) => (
+                            <a
+                              key={i}
+                              href={file}
+                              target="_blank"
+                              className="mt-2 flex items-center gap-2 border p-2 rounded bg-gray-50 text-xs truncate"
+                            >
+                              <img src={fileIcon} className="w-4" /> {file}
+                            </a>
+                          ))}
+                        </>
+                      )}
+                    </div>
+
+                    {/* Footer / Comments */}
+                    <div className="mt-4 pt-3 border-t border-gray-100">
+                      <div
+                        onClick={() =>
+                          setActiveCommentBox(
+                            activeCommentBox === item._id ? null : item._id,
+                          )
+                        }
+                        className="flex items-center justify-between cursor-pointer"
+                      >
+                        <div className="flex items-center gap-2 text-sm font-medium text-gray-600">
+                          <img src={commentIcon} className="w-4" />
+                          {item.comments?.length > 0
+                            ? `${item.comments.length} Comments`
+                            : "Comments"}
                         </div>
+                        {activeCommentBox === item._id && <X size={14} />}
                       </div>
 
-                      {/* Comments Section */}
                       {activeCommentBox === item._id && (
-                        <div className="mt-4 animate-in fade-in slide-in-from-top-2 duration-300">
-                          {/* Comments List */}
-                          <div className="space-y-4 mb-4 max-h-60 overflow-y-auto">
-                            {item.comments && item.comments.length > 0 ? (
-                              item.comments.map((comment, idx) => (
-                                <div
-                                  key={comment._id || idx}
-                                  className="flex gap-3"
-                                >
-                                  {console.log("comment data : ", comment)}
-                                  <div className="w-8 h-8 rounded-full bg-orange-500 flex items-center justify-center text-white text-xs flex-shrink-0">
-                                    {comment.name
-                                      ? comment.name[0]?.toUpperCase()
-                                      : "U"}
-                                  </div>
-                                  <div className="bg-gray-100 rounded-lg p-3 flex-1">
-                                    <div className="flex justify-between items-center mb-1">
-                                      <span className="text-xs font-semibold text-gray-900">
-                                        {comment.name || "User"}
-                                      </span>
-                                      <span className="text-[10px] text-gray-500">
-                                        {new Date(
-                                          comment.createdAt,
-                                        ).toLocaleTimeString([], {
-                                          hour: "2-digit",
-                                          minute: "2-digit",
-                                        })}
-                                      </span>
-                                    </div>
-                                    <p className="text-sm text-gray-700">
-                                      {comment.comment}
-                                    </p>
-                                  </div>
+                        <div className="mt-3 space-y-3">
+                          <div className="max-h-40 overflow-y-auto space-y-2">
+                            {item.comments?.map((c, i) => (
+                              <div key={i} className="flex gap-2">
+                                <div className="w-6 h-6 rounded-full bg-orange-400 text-white text-[10px] flex items-center justify-center flex-shrink-0">
+                                  {c.name?.[0] || "U"}
                                 </div>
-                              ))
-                            ) : (
-                              <p className="text-sm text-gray-500 text-center italic">
-                                No comments yet. Be the first to comment!
-                              </p>
-                            )}
+                                <div className="bg-gray-100 p-2 rounded-lg flex-1">
+                                  <p className="text-[10px] font-bold">
+                                    {c.name}
+                                  </p>
+                                  <p className="text-xs">{c.comment}</p>
+                                </div>
+                              </div>
+                            ))}
                           </div>
-
-                          {/* Add Comment Input */}
-                          <div className="flex items-center gap-2">
-                            <div className="w-8 h-8 rounded-full bg-[#08384F]  bgflex items-center justify-center text-white text-xs flex-shrink-0">
-                              {firstLetter || "U"}
-                            </div>
-                            <div className="flex-1 relative">
-                              <input
-                                type="text"
-                                value={commentText}
-                                onChange={(e) => setCommentText(e.target.value)}
-                                placeholder="Add a class comment..."
-                                className="w-full border border-gray-300 rounded-full py-2 pl-4 pr-10 text-sm focus:outline-none focus:border-[#0B56A4]"
-                                onKeyDown={(e) => {
-                                  if (e.key === "Enter")
-                                    handlePostComment(item._id);
-                                }}
-                              />
-                              <button
-                                onClick={() => handlePostComment(item._id)}
-                                className="absolute right-2 top-1/2 -translate-y-1/2 text-[#0B56A4] hover:bg-blue-50 p-1 rounded-full"
-                              >
-                                <Send className="w-4 h-4" />
-                              </button>
-                            </div>
+                          <div className="flex gap-2">
+                            <input
+                              value={commentText}
+                              onChange={(e) => setCommentText(e.target.value)}
+                              placeholder="Add a comment..."
+                              className="flex-1 border rounded-full px-3 py-1 text-sm focus:outline-none focus:border-blue-500"
+                            />
+                            <button
+                              onClick={() => handlePostComment(item._id)}
+                              className="text-blue-900"
+                            >
+                              <Send size={18} />
+                            </button>
                           </div>
                         </div>
                       )}
@@ -504,7 +390,6 @@ const ClassRoomStreamComponent = () => {
         </div>
       </section>
 
-      {/* modal section  */}
       {isAnnouncementModal && (
         <AddAnnouncementModal
           setIsAnnouncementModal={(val) => {
