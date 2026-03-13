@@ -184,7 +184,7 @@ export default function SubjectSubTopicsTable({
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <h2 className="font-medium text-lg mb-2 text-[#08384F]">
+      <h2 className="font-medium te;xt-lg mb-2 text-[#08384F]">
         Theory Planner
       </h2>
       <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10 py-2 border-b border-gray-100">
