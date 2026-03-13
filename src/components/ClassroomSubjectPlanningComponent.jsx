@@ -7,6 +7,7 @@ import CoPoMapping from "./CoPoMapping";
 import ReferenceTab from "./ReferenceTab";
 import SubjectSubTopicsTable from "./SubjectSubTopicsTable";
 import DownloadPdf from "./DownloadPdf";
+import LabPlannerTab from "./LabPlannerTab";
 
 const ClassroomSubjectPlanningComponent = () => {
   const { classId, sectionId } = useParams();
@@ -210,9 +211,9 @@ const ClassroomSubjectPlanningComponent = () => {
           />
         )}
         {activeTab === 4 && (
-          <div className="flex items-center justify-center h-full text-gray-400 font-medium py-10">
-            Lab Planner - Coming Soon
-          </div>
+          <LabPlannerTab
+            
+          />
         )}
         {activeTab == 5 && <DownloadPdf />}
       </div>
