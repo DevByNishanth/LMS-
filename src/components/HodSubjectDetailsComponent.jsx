@@ -5,87 +5,19 @@ import SubjectRow from "./SubjectRow";
 import noData from "../assets/noData.svg";
 import { jwtDecode } from "jwt-decode";
 
-const tableHeader = ["Subject", "Section", "Staff", "Action"];
 const regulations = ["2026", "2029", "2032", "2035"];
 const semester = [1, 2, 3, 4, 5, 6, 7, 8];
-const subjects = [
-  { subject: "CS6801- Electronic and communication" },
-  { subject: "CS6802- Electronic and communication" },
-];
-
-const data = [
-  {
-    subject: "Electronic and Communication",
-    sections: [
-      {
-        sectionName: "Section A",
-        staff: { name: "Surya Chandran" },
-      },
-      {
-        sectionName: "Section B",
-        staff: null,
-      },
-      {
-        sectionName: "Section C",
-        staff: { name: "Surya Chandran" },
-      },
-    ],
-  },
-  {
-    subject: "Electronic and Communication",
-    sections: [
-      {
-        sectionName: "Section A",
-        staff: { name: "Surya Chandran" },
-      },
-      {
-        sectionName: "Section B",
-        staff: null,
-      },
-      {
-        sectionName: "Section C",
-        staff: { name: "Surya Chandran" },
-      },
-    ],
-  },
-  {
-    subject: "Electronic and Communication",
-    sections: [
-      {
-        sectionName: "Section A",
-        staff: { name: "Surya Chandran" },
-      },
-      {
-        sectionName: "Section B",
-        staff: null,
-      },
-      {
-        sectionName: "Section C",
-        staff: { name: "Surya Chandran" },
-      },
-    ],
-  },
-];
 
 const HodSubjectDetailsComponent = () => {
-  // Auth ----------------------------->
-  const apiUrl = import.meta.env.VITE_API_URL; // from .env file
+  const apiUrl = import.meta.env.VITE_API_URL;
   const token = localStorage.getItem("LmsToken");
-  // states
+  
   const [selectedType, setSelectedType] = useState("theory");
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const [selectedSubjectIndex, setSelectedSubjectIndex] = useState(null);
-  const [selectedId, setSelectedId] = useState(null);
-  const [selectedSection, setSelectedSection] = useState("");
-  const [selectedStaff, setSelectedStaff] = useState("");
-  const [selectedRegulation, setSelectedRegulation] = useState(2026);
+  const [selectedRegulation, setSelectedRegulation] = useState("2026");
   const [selectedSemester, setSelectedSemester] = useState(1);
-  // const [selectedDept, setSelectedDept] = useState("CSE"); // default
   const [facultyDetails, setFacultyDetails] = useState([]);
   const [subjectData, setSubjectData] = useState([]);
   const [dept, setDept] = useState("");
-
-  // useEffect call's --------------------------------------------->
 
   useEffect(() => {
     const token = localStorage.getItem("LmsToken");
@@ -113,8 +45,7 @@ const HodSubjectDetailsComponent = () => {
         );
 
         const data = await response.json();
-
-        setSubjectData(data.subjects); // update table data
+        setSubjectData(data.subjects);
         setFacultyDetails(data.faculty);
       } catch (error) {
         console.error("Error fetching allocation:", error);
@@ -124,15 +55,12 @@ const HodSubjectDetailsComponent = () => {
     fetchData();
   }, [selectedType, selectedSemester, selectedRegulation, dept]);
 
-  //   functions ------------------------------------------->
-
   return (
     <>
       <section className="mt-4 ">
-        {/* header section ---------------  */}
         <div className="header flex items-center justify-end gap-3">
           <select
-            className="border border-gray-300 rounded px-4 py-2 w-[200px]"
+            className="border border-gray-300 rounded px-4 py-2 w-[200px] outline-none"
             value={selectedRegulation}
             onChange={(e) => setSelectedRegulation(e.target.value)}
           >
@@ -145,7 +73,7 @@ const HodSubjectDetailsComponent = () => {
           </select>
 
           <select
-            className="border border-gray-300 rounded px-4 py-2 w-[200px]"
+            className="border border-gray-300 rounded px-4 py-2 w-[200px] outline-none"
             value={selectedSemester}
             onChange={(e) => setSelectedSemester(e.target.value)}
           >
@@ -157,73 +85,65 @@ const HodSubjectDetailsComponent = () => {
             ))}
           </select>
         </div>
-        {/* bg-[#08384F]  bg  */}
-        {/* body section -------------------  */}
+
         <div className="main-container grid grid-cols-12 gap-2 mt-4">
-          <div className="first-tab-container min-h-[calc(100vh-170px)]   overflow-auto border border-gray-300 rounded-lg col-span-3 px-4 py-6">
+          <div className="first-tab-container min-h-[calc(100vh-170px)] overflow-auto border border-gray-300 rounded-lg col-span-3 px-4 py-6">
             <button
               onClick={() => setSelectedType("theory")}
-              className={`w-full   flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${selectedType.toLowerCase() == "theory"
-                ? "bg-[#08384F]  bg  text-white"
-                : "border border-gray-300"
-                }`}
+              className={`w-full flex gap-2 items-center justify-between px-4 py-2 rounded-lg transition-colors ${
+                selectedType.toLowerCase() === "theory"
+                  ? "bg-[#08384F] text-white"
+                  : "border border-gray-300 text-gray-600 hover:bg-gray-50"
+              }`}
             >
-              Theory <ChevronRight />
+              Theory <ChevronRight size={18} />
             </button>
             <button
               onClick={() => setSelectedType("lab")}
-              className={`w-full mt-2 flex gap-2 items-center justify-between px-4 py-2 rounded-lg ${selectedType.toLowerCase() == "lab"
-                ? "bg-[#08384F]  bg  text-white"
-                : "border border-gray-300"
-                }`}
+              className={`w-full mt-2 flex gap-2 items-center justify-between px-4 py-2 rounded-lg transition-colors ${
+                selectedType.toLowerCase() === "lab"
+                  ? "bg-[#08384F] text-white"
+                  : "border border-gray-300 text-gray-600 hover:bg-gray-50"
+              }`}
             >
-              Lab <ChevronRight />
+              Lab <ChevronRight size={18} />
             </button>
           </div>
-          {/* table section --------------------------------------  */}
-          <div className="second-tab-container rounded-lg col-span-9 max-h-[calc(100vh-170px)] overflow-auto">
+
+          <div className="second-tab-container rounded-lg col-span-9 max-h-[calc(100vh-170px)] overflow-auto border border-gray-200">
             <table className="w-full border-collapse">
-              <thead className="sticky top-0 ">
+              <thead className="sticky top-0 z-10">
                 <tr className="bg-[#083B5C] text-white">
-                  <th className="py-3 px-4 text-left">Subject</th>
-                  <th className="py-3 px-4 text-left">Section</th>
-                  <th className="py-3 px-4 text-left">Staff</th>
+                  <th className="py-3 px-4 text-left font-medium">Subject Code & Name</th>
+                  <th className="py-3 px-4 text-left font-medium">Section</th>
+                  <th className="py-3 px-4 text-left font-medium">Staff</th>
                 </tr>
               </thead>
 
               <tbody>
-                {/* {subjectData.map((item, index) => (
-                  <SubjectRow key={index} item={item} />
-                ))} */}
                 {subjectData.length !== 0 ? (
-                  subjectData.map((item, index) => {
-                    return (
-                      <SubjectRow
-                        key={index}
-                        item={item}
-                        setFacultyDetails={setFacultyDetails}
-                        setSubjectData={setSubjectData}
-                        facultyDetails={facultyDetails}
-                        selectedDept={dept}
-                        selectedType={selectedType}
-                        selectedSemester={selectedSemester}
-                        selectedRegulation={selectedRegulation}
-                        setSelectedDept={setDept}
-                        setSelectedType={setSelectedType}
-                        setSelectedSemester={setSelectedSemester}
-                        setSelectedRegulation={setSelectedRegulation}
-                      />
-                    );
-                  })
+                  subjectData.map((item, index) => (
+                    <SubjectRow
+                      key={index}
+                      item={item}
+                      setFacultyDetails={setFacultyDetails}
+                      setSubjectData={setSubjectData}
+                      facultyDetails={facultyDetails}
+                      selectedDept={dept}
+                      selectedType={selectedType}
+                      selectedSemester={selectedSemester}
+                      selectedRegulation={selectedRegulation}
+                    />
+                  ))
                 ) : (
-                  <>
-                    <div className=" translate-x-[85%] mt-8 w-fit">
-                      <img src={noData} className="w-[300px] " />
-                      <h1 className="text-gray-600 m-auto w-fit mt-4">
-                        No data found!
-                      </h1>
-                    </div>
-                  </>
+                  <tr>
+                    <td colSpan="3" className="py-10">
+                      <div className="flex flex-col items-center justify-center">
+                        <img src={noData} className="w-[250px]" alt="No data" />
+                        <h1 className="text-gray-500 mt-4 font-medium">No data found!</h1>
+                      </div>
+                    </td>
+                  </tr>
                 )}
               </tbody>
             </table>
