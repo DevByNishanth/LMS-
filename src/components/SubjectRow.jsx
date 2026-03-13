@@ -4,6 +4,7 @@ import {
   Pencil,
   Search,
   Trash2Icon,
+  X
 } from "lucide-react";
 import axios from "axios";
 import StaffDeleteModal from "./StaffDeleteModal";

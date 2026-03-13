@@ -3,7 +3,7 @@ import axios from 'axios'
 import Sidebar from '../components/Sidebar'
 import { Check, X } from 'lucide-react';
 import AnimatedList from '../components/AnimatedList';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 const HodRequestsDetails = () => {
     // Auth 
@@ -23,6 +23,7 @@ const HodRequestsDetails = () => {
     const paramsData = location.state
 
     console.log(paramsData, "paramsData HodRequestsDetails")
+    const navigate = useNavigate()
 
     // functions 
     const fetchRequestDetails = async () => {
@@ -134,6 +135,9 @@ const HodRequestsDetails = () => {
             setSubmitSuccess(true);
             console.log('Successfully submitted requests:', response.data);
 
+
+            navigate('/dashboard/hodRequests')
+
             // Optional: Show success message and reset state after delay
             setTimeout(() => {
                 setSubmitSuccess(false);
@@ -201,13 +205,20 @@ const HodRequestsDetails = () => {
 
                                             </div>
                                             <div>
-                                                <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.currentStatus.toLowerCase() === 'present' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'}`}>
+                                                <span
+                                                    className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.currentStatus.toLowerCase() === 'pr  esent'
+                                                            ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20'
+                                                            : req.currentStatus.toLowerCase() === 'on-duty'
+                                                                ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10'
+                                                                : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'
+                                                        }`}
+                                                >
                                                     {req.currentStatus}
                                                 </span>
                                                 <p className='text-sm text-gray-400 font-light mt-2'>Current Status</p>
                                             </div>
                                             <div>
-                                                <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.requestedStatus.toLowerCase() === 'present' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : req.requestedStatus === 'On Duty' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'}`}>
+                                                <span className={`inline-flex px-2.5 py-1 text-xs font-semibold rounded-md ${req.requestedStatus.toLowerCase() === 'present' ? 'bg-green-50 text-green-700 ring-1 ring-inset ring-green-600/20' : req.requestedStatus.toLowerCase() === 'on-duty' ? 'bg-blue-50 text-blue-700 ring-1 ring-inset ring-blue-700/10' : 'bg-red-50 text-red-700 ring-1 ring-inset ring-red-600/20'}`}>
                                                     {req.requestedStatus}
                                                 </span>
                                                 <p className='text-sm text-gray-400 font-light mt-2'>Edit Status</p>

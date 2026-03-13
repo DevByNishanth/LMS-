@@ -128,7 +128,7 @@ const HodRequestsPage = () => {
                                             <td className="px-6 py-4 text-sm text-gray-600">{row?.hourLabel}</td>
                                             <td className="px-6 py-4 text-sm text-gray-600"> {formatDate(row.date)}</td>
                                             <td className="px-6 py-4 text-sm text-gray-600">
-                                                <button className=" py-1 text-xs px-4 rounded-lg">
+                                                <button className={`py-1 text-xs px-4 rounded-lg ${row.status.toLowerCase() == "pending" ? "border border-red-200 text-red-500 bg-red-50" : "border border-green-200 text-green-500 bg-green-50"} `}>
                                                     {row.status}
                                                 </button>
                                             </td>
