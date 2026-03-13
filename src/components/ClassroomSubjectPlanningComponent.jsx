@@ -50,7 +50,6 @@ const ClassroomSubjectPlanningComponent = () => {
     if (!planningData)
       return { individualProgress: [0, 0, 0, 0, 0], overallProgress: 0 };
 
-    // 1. Course Details Progress
     const details = planningData.courseDetails || {};
     const rawObjectives = details.courseObjectives;
     const objectivesArray = Array.isArray(rawObjectives)
@@ -72,7 +71,6 @@ const ClassroomSubjectPlanningComponent = () => {
       (detailsFilled / Math.max(detailsValues.length, 1)) * 100,
     );
 
-    // 2. CO-PO Mapping Progress (Uses 'credit' and checks justification)
     const mapping = planningData.coPoMapping || {};
     const mappingKeys = [
       "PO1",
@@ -86,6 +84,7 @@ const ClassroomSubjectPlanningComponent = () => {
       "PO9",
       "PO10",
       "PO11",
+      "PO12",
       "PSO1",
       "PSO2",
       "PSO3",
@@ -102,7 +101,6 @@ const ClassroomSubjectPlanningComponent = () => {
       (mapCount / (mappingKeys.length * cos.length)) * 100,
     );
 
-    // 3. References Progress (Checks categories and MOOC objects)
     const refs = planningData.references || {};
     const refCategories = [
       (refs.textBooks || []).some((v) => v?.trim()),
@@ -117,12 +115,10 @@ const ClassroomSubjectPlanningComponent = () => {
     const categoriesFilled = refCategories.filter(Boolean).length;
     const refPercent = Math.round((categoriesFilled / 6) * 100);
 
-    // 4. Theory Planner Progress (Checks UNIT keys and nested topics array)
     const tp = planningData.theoryPlanner || {};
     const theoryUnitsToCheck = ["UNIT1", "UNIT2", "UNIT3", "UNIT4", "UNIT5"];
     const unitsFilled = theoryUnitsToCheck.filter((u) => {
       const unitEntry = tp[u];
-      // Handles both direct array of topics or object with topics key
       const topics = Array.isArray(unitEntry) ? unitEntry : unitEntry?.topics;
       return Array.isArray(topics) && topics.length > 0;
     }).length;
@@ -133,9 +129,8 @@ const ClassroomSubjectPlanningComponent = () => {
       mappingPercent,
       refPercent,
       theoryPercent,
-      0, // Lab Planner
+      0,
     ];
-
     const overallProgress = Math.round(
       individualProgress.reduce((a, b) => a + b, 0) / 5,
     );
@@ -160,12 +155,13 @@ const ClassroomSubjectPlanningComponent = () => {
             "References",
             "Theory Planner",
             "Lab Planner",
-            "Get Course Plan"
+            "Get Course Plan",
           ]}
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           tabProgress={tabStats.individualProgress}
           overallProgress={tabStats.overallProgress}
+          courseType={planningData?.courseDetails?.courseType}
         />
       </div>
       <div className="form-container border overflow-auto w-[75%] border-gray-300 rounded-md py-4 px-4 bg-white hide-scrollbar">
@@ -204,6 +200,7 @@ const ClassroomSubjectPlanningComponent = () => {
         {activeTab === 3 && (
           <SubjectSubTopicsTable
             data={planningData?.theoryPlanner}
+            references={planningData?.references}
             refreshData={fetchAllData}
             updateLivePlanningData={(val) =>
               updateLivePlanningData("theoryPlanner", val)

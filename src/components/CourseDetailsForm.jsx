@@ -33,8 +33,13 @@ const CourseDetailsForm = ({
     if (data) {
       let objectives = [""];
       if (Array.isArray(data.courseObjectives)) {
-        objectives = data.courseObjectives.length ? data.courseObjectives : [""];
-      } else if (typeof data.courseObjectives === "string" && data.courseObjectives.trim()) {
+        objectives = data.courseObjectives.length
+          ? data.courseObjectives
+          : [""];
+      } else if (
+        typeof data.courseObjectives === "string" &&
+        data.courseObjectives.trim()
+      ) {
         objectives = data.courseObjectives.split("\n");
       }
 
@@ -75,7 +80,6 @@ const CourseDetailsForm = ({
 
   const removeObjective = (index) => {
     const updated = formData.courseObjectives.filter((_, i) => i !== index);
-    // Ensure there is always at least one input field
     handleLiveUpdate({
       ...formData,
       courseObjectives: updated.length ? updated : [""],
@@ -104,7 +108,7 @@ const CourseDetailsForm = ({
       const res = await axios.patch(
         `${apiUrl}api/course-plan/courseDetails`,
         payload,
-        { headers: { Authorization: `Bearer ${token}` } }
+        { headers: { Authorization: `Bearer ${token}` } },
       );
       if (res.data.success) {
         await refreshData();
@@ -137,7 +141,9 @@ const CourseDetailsForm = ({
               >
                 <option value="">Select type</option>
                 {["T", "TP", "TPJ", "P", "PJ", "I"].map((t) => (
-                  <option key={t}>{t}</option>
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
                 ))}
               </select>
             </div>
@@ -181,8 +187,6 @@ const CourseDetailsForm = ({
                   className="w-full border border-gray-300 rounded px-3 py-2 text-sm"
                   placeholder={`Objective ${index + 1}`}
                 />
-
-                {/* Remove Button */}
                 <button
                   type="button"
                   onClick={() => removeObjective(index)}
@@ -190,17 +194,16 @@ const CourseDetailsForm = ({
                 >
                   <X size={18} />
                 </button>
-
-                {/* Add Button Logic: Show only for the last item and if input is not empty */}
-                {index === formData.courseObjectives.length - 1 && obj.trim() !== "" && (
-                  <button
-                    type="button"
-                    onClick={addObjective}
-                    className="bg-[#08384f] text-white rounded p-2"
-                  >
-                    <Plus size={18} />
-                  </button>
-                )}
+                {index === formData.courseObjectives.length - 1 &&
+                  obj.trim() !== "" && (
+                    <button
+                      type="button"
+                      onClick={addObjective}
+                      className="bg-[#08384f] text-white rounded p-2"
+                    >
+                      <Plus size={18} />
+                    </button>
+                  )}
               </div>
             ))}
           </div>
