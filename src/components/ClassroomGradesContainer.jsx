@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import ClassroomGradesTable from "./ClassroomGradesTable";
-
+import ClassroomGradesAssignmentTable from "./ClassrromGradesAssignmentTable";
+import ClassroomGradesInternalTable from "./ClassrromGradesInternalTable";
 const ClassroomGradesContainer = () => {
   const [activeTab, setActiveTab] = useState("classwork");
 
@@ -64,16 +65,16 @@ const ClassroomGradesContainer = () => {
       </div>
 
       {activeTab === "classwork" ? (
-        <ClassroomGradesTable
+        <ClassroomGradesAssignmentTable
           students={classworkStudents}
           setStudents={setClassworkStudents}
           assignments={classworkAssignments}
         />
       ) : (
-        <ClassroomGradesTable
+        <ClassroomGradesInternalTable
           students={ciaStudents}
           setStudents={setCiaStudents}
-          assignments={ciaAssignments}
+          internals={ciaAssignments}
         />
       )}
 

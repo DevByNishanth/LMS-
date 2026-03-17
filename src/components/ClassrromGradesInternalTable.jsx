@@ -5,7 +5,7 @@ import { useNavigate } from "react-router-dom";
 const ROW_HEIGHT = 60;
 const totalMark = 100;
 
-const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
+const ClassroomGradesInternalTable = ({ students, setStudents, internals }) => {
   const tableBodyRef = useRef(null);
   const menuRef = useRef(null);
   const navigate = useNavigate();
@@ -64,7 +64,7 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
   };
 
   /* column totals */
-  const totals = assignments.map((_, colIndex) =>
+  const totals = internals.map((_, colIndex) =>
     students.reduce((sum, student) => {
       const value = parseFloat(student.marks[colIndex]);
       return sum + (isNaN(value) ? 0 : value);
@@ -104,22 +104,13 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
                   Student Name
                 </th>
 
-                {assignments.map((a, colIndex) => (
+                {internals.map((a, colIndex) => (
                   <th
                     key={colIndex}
                     className="px-4 py-4 text-center min-w-[180px] border-b border-r border-gray-300 relative"
                   >
                     <div className="flex items-center justify-center gap-2">
                       {a}
-
-                      <MoreVertical
-                        size={18}
-                        className="cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          setMenuCol(menuCol === colIndex ? null : colIndex);
-                        }}
-                      />
                     </div>
 
                     {/* Header Menu */}
@@ -271,7 +262,7 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
               {Array.from({ length: emptyRows }).map((_, i) => (
                 <tr key={i}>
                   <td className="border-r border-gray-300 sticky left-0 bg-[#F7F7F7]" />
-                  {assignments.map((_, j) => (
+                  {internals.map((_, j) => (
                     <td key={j} className="border-r border-gray-300 h-[60px]" />
                   ))}
                 </tr>
@@ -375,4 +366,4 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
   );
 };
 
-export default ClassroomGradesTable;
+export default ClassroomGradesInternalTable;
