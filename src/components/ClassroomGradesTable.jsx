@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { MoreVertical, Download } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const ROW_HEIGHT = 60;
 const totalMark = 100;
@@ -7,11 +8,13 @@ const totalMark = 100;
 const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
   const tableBodyRef = useRef(null);
   const menuRef = useRef(null);
+  const navigate = useNavigate();
 
   const [editing, setEditing] = useState({ row: null, col: null });
   const [emptyRows, setEmptyRows] = useState(0);
 
   const [menuCol, setMenuCol] = useState(null);
+  const [cellMenu, setCellMenu] = useState(null);
 
   const [gradeAllCol, setGradeAllCol] = useState(null);
   const [gradeValue, setGradeValue] = useState("");
@@ -19,17 +22,15 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
   const [overrideGrades, setOverrideGrades] = useState(false);
   const [autoReturn, setAutoReturn] = useState(false);
 
-  /* Close menu on outside click */
+  /* close menus on outside click */
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (menuRef.current && !menuRef.current.contains(e.target)) {
-        setMenuCol(null);
-      }
+    const handleClickOutside = () => {
+      setMenuCol(null);
+      setCellMenu(null);
     };
 
-    document.addEventListener("mousedown", handleClickOutside);
-    return () =>
-      document.removeEventListener("mousedown", handleClickOutside);
+    document.addEventListener("click", handleClickOutside);
+    return () => document.removeEventListener("click", handleClickOutside);
   }, []);
 
   const handleChange = (value, row, col) => {
@@ -38,7 +39,7 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
     setStudents(updated);
   };
 
-  /* Grade all logic */
+  /* Grade All Logic */
   const applyGradeAll = () => {
     const updated = students.map((student) => {
       const newMarks = [...student.marks];
@@ -62,7 +63,7 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
     setAutoReturn(false);
   };
 
-  /* Column totals */
+  /* column totals */
   const totals = assignments.map((_, colIndex) =>
     students.reduce((sum, student) => {
       const value = parseFloat(student.marks[colIndex]);
@@ -70,7 +71,7 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
     }, 0)
   );
 
-  /* Dynamic empty rows */
+  /* dynamic empty rows */
   useEffect(() => {
     const calculateRows = () => {
       if (!tableBodyRef.current) return;
@@ -108,30 +109,38 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
                     key={colIndex}
                     className="px-4 py-4 text-center min-w-[180px] border-b border-r border-gray-300 relative"
                   >
-
                     <div className="flex items-center justify-center gap-2">
-
                       {a}
 
                       <MoreVertical
                         size={18}
                         className="cursor-pointer"
-                        onClick={() =>
-                          setMenuCol(menuCol === colIndex ? null : colIndex)
-                        }
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setMenuCol(menuCol === colIndex ? null : colIndex);
+                        }}
                       />
-
                     </div>
 
-                    {/* Menu */}
+                    {/* Header Menu */}
                     {menuCol === colIndex && (
                       <div
                         ref={menuRef}
                         className="absolute right-3 top-12 bg-white text-gray-700 shadow-xl rounded-md w-44 z-50 border"
                       >
+                        <div
+                            className="px-4 py-3 hover:bg-gray-100 cursor-pointer"
+                            onClick={() => {
+                              const assignmentId = colIndex;
 
-                        <div className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
-                          Edit
+                              navigate(
+                                `/dashboard/classroom/edit-assignment/${assignmentId}`
+                              );
+
+                              setMenuCol(null);
+                            }}
+                          >
+                            Edit
                         </div>
 
                         <div className="px-4 py-3 hover:bg-gray-100 cursor-pointer">
@@ -147,10 +156,8 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
                         >
                           Grade all
                         </div>
-
                       </div>
                     )}
-
                   </th>
                 ))}
 
@@ -174,42 +181,85 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
                   {student.marks.map((mark, colIndex) => (
                     <td
                       key={colIndex}
-                      className="border-b border-r border-gray-300 py-4 text-center cursor-pointer"
-                      onClick={() =>
-                        setEditing({ row: rowIndex, col: colIndex })
-                      }
+                      className="border-b border-r border-gray-300 py-4 text-center relative group"
                     >
 
-                      {editing.row === rowIndex &&
-                      editing.col === colIndex ? (
+                      <div
+                        onClick={() =>
+                          setEditing({ row: rowIndex, col: colIndex })
+                        }
+                        className="cursor-pointer"
+                      >
 
-                        <input
-                          autoFocus
-                          type="number"
-                          max={totalMark}
-                          value={mark}
-                          onChange={(e) =>
-                            handleChange(e.target.value, rowIndex, colIndex)
-                          }
-                          onBlur={() =>
-                            setEditing({ row: null, col: null })
-                          }
-                          className="w-16 text-center outline-none border-b border-gray-400"
-                        />
+                        {editing.row === rowIndex &&
+                        editing.col === colIndex ? (
 
-                      ) : mark ? (
+                          <input
+                            autoFocus
+                            type="number"
+                            max={totalMark}
+                            value={mark}
+                            onChange={(e) =>
+                              handleChange(e.target.value, rowIndex, colIndex)
+                            }
+                            onBlur={() =>
+                              setEditing({ row: null, col: null })
+                            }
+                            className="w-16 text-center outline-none border-b border-gray-400"
+                          />
 
-                        <span className="text-blue-600">{mark}</span>
+                        ) : mark ? (
+                          <span className="text-blue-600">{mark}</span>
+                        ) : (
+                          <span className="text-gray-400 font-mono">___</span>
+                        )}
 
-                      ) : (
+                        <span className="ml-1 text-gray-600">
+                          / {totalMark}
+                        </span>
 
-                        <span className="text-gray-400 font-mono">___</span>
+                      </div>
 
+                      {/* Hover dots */}
+                      <MoreVertical
+                        size={16}
+                        className="absolute right-2 top-3 opacity-0 group-hover:opacity-100 cursor-pointer"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setCellMenu({ row: rowIndex, col: colIndex });
+                        }}
+                      />
+
+                      {/* Cell popup */}
+                      {cellMenu &&
+                        cellMenu.row === rowIndex &&
+                        cellMenu.col === colIndex && (
+
+                          <div className="absolute right-2 top-8 bg-white shadow-lg border rounded w-52 z-50">
+
+                            <div
+                              className="px-4 py-3 hover:bg-gray-100 cursor-pointer flex justify-between"
+                              onClick={() => {
+
+                                const courseId = "848202935062";
+                                const assignmentId = colIndex;
+                                const userId = rowIndex;
+
+                                navigate(
+                                  `/dashboard/classroom/submission/${courseId}/${assignmentId}/${userId}`
+                                );
+
+                                setCellMenu(null);
+                              }}
+                            >
+                              View submission
+                              <span className="text-gray-400 text-sm">
+                                Ctrl+Alt+V
+                              </span>
+                            </div>
+
+                          </div>
                       )}
-
-                      <span className="ml-1 text-gray-600">
-                        / {totalMark}
-                      </span>
 
                     </td>
                   ))}
@@ -242,7 +292,7 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
                     key={i}
                     className="border-t border-r border-gray-300 text-center py-4"
                   >
-                    <div className="flex justify-center gap-2 ">
+                    <div className="flex justify-center gap-2">
                       {value}
                       <Download size={16} />
                     </div>
@@ -276,7 +326,6 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
               <span className="ml-2 text-gray-500">/100</span>
             </div>
 
-            {/* Checkboxes */}
             <div className="space-y-4 mb-8">
 
               <label className="flex items-center gap-3 cursor-pointer">
@@ -284,7 +333,6 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
                   type="checkbox"
                   checked={overrideGrades}
                   onChange={() => setOverrideGrades(!overrideGrades)}
-                  className="w-4 h-4"
                 />
                 <span>Override existing grades</span>
               </label>
@@ -294,7 +342,6 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
                   type="checkbox"
                   checked={autoReturn}
                   onChange={() => setAutoReturn(!autoReturn)}
-                  className="w-4 h-4"
                 />
                 <span>Automatically return after grading</span>
               </label>
@@ -323,6 +370,7 @@ const ClassroomGradesTable = ({ students, setStudents, assignments }) => {
 
         </div>
       )}
+
     </>
   );
 };

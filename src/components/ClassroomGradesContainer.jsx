@@ -25,6 +25,9 @@ const ClassroomGradesContainer = () => {
     { name: "Surya Chandran", marks: ["", "", "", "", "", ""] },
     { name: "Surya Chandran", marks: ["10", "10", "10", "10", "10", "10"] },
     { name: "Surya Chandran", marks: ["40", "", "", "", "", ""] },
+     { name: "Surya Chandran", marks: ["", "", "", "", "", ""] },
+    { name: "Surya Chandran", marks: ["10", "10", "10", "10", "10", "10"] },
+    { name: "Surya Chandran", marks: ["40", "", "", "", "", ""] }
   ]);
 
   const [ciaStudents, setCiaStudents] = useState([

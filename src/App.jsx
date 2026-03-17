@@ -31,7 +31,8 @@ import CalendarPage from "./pages/CalendarPage";
 import HodRequestsPage from "./pages/HodRequestsPage";
 import HodRequestsDetails from "./pages/HodRequestsDetails";
 import HodRequestHistory from "./pages/HodRequestHistory";
-
+import ClassroomSubmissionPage from "./components/ClassroomSubmissionPage";
+import ClassroomEditAssignment from "./components/ClassroomEditAssignment";
 const App = () => {
   return (
     <>
@@ -190,6 +191,14 @@ const App = () => {
         <Route
           path="/dashboard/classroom/class/:classId/:sectionId"
           element={<Classpage />}
+        />
+        <Route 
+          path="/dashboard/classroom/submission/:courseId/:assignmentId/:userId"
+          element={<ClassroomSubmissionPage />}
+        />
+        <Route
+          path="/dashboard/classroom/edit-assignment/:assignmentId"
+          element={<ClassroomEditAssignment />}
         />
         <Route path="/classroom/invite" element={<InvitationPage />} />
 
