@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import ClassroomGradesTable from "./ClassroomGradesTable";
 import ClassroomGradesAssignmentTable from "./ClassrromGradesAssignmentTable";
 import ClassroomGradesInternalTable from "./ClassrromGradesInternalTable";
 const ClassroomGradesContainer = () => {
@@ -23,19 +22,19 @@ const ClassroomGradesContainer = () => {
   ];
 
   const [classworkStudents, setClassworkStudents] = useState([
-    { name: "Surya Chandran", marks: ["", "", "", "", "", ""] },
-    { name: "Surya Chandran", marks: ["10", "10", "10", "10", "10", "10"] },
-    { name: "Surya Chandran", marks: ["40", "", "", "", "", ""] },
-     { name: "Surya Chandran", marks: ["", "", "", "", "", ""] },
-    { name: "Surya Chandran", marks: ["10", "10", "10", "10", "10", "10"] },
-    { name: "Surya Chandran", marks: ["40", "", "", "", "", ""] }
-  ]);
+  { firstName: "Kishor", lastName: "raguram", email: "kishorraguram1@gmail.com", marks: ["", "", "", "", "", ""] },
+  { firstName: "Kishor", lastName: "Raguram", email: "kishorraguram@gmail.com", marks: ["10", "85", "10", "90", "10", "10"] },
+  { firstName: "Surya", lastName: "Chandran", email: "surya.c@example.com", marks: ["40", "", "75", "", "", ""] },
+  { firstName: "Arjun", lastName: "Das", email: "arjun.das@example.com", marks: ["", "95", "", "60", "", ""] },
+  { firstName: "Manoj", lastName: "Kumar", email: "manoj.k@example.com", marks: ["10", "10", "10", "10", "10", "10"] },
+  { firstName: "Priya", lastName: "Dharshini", email: "priya.d@example.com", marks: ["40", "", "", "100", "", ""] }
+]);
 
   const [ciaStudents, setCiaStudents] = useState([
-    { name: "Surya Chandran", marks: ["", "", "", "", ""] },
-    { name: "Surya Chandran", marks: ["10", "10", "10", "10", "10"] },
-    { name: "Surya Chandran", marks: ["", "", "", "", ""] },
-    { name: "Surya Chandran", marks: ["10", "10", "10", "10", "10"] },
+    { firstName: "Surya",lastName:"Chandran", rollNo: "22CS001", registerNo: "722822104001", marks: ["70", "70", "70", "70", "70"] },
+    { firstName: "Adhavan",lastName:"P", rollNo: "22CS002", registerNo: "722822104002", marks: ["10", "10", "10", "10", "10"] },
+    { firstName: "Aarthi",lastName:"M", rollNo: "22CS003", registerNo: "722822104003", marks: ["92", "92", "92", "92", "92"] },
+    { firstName: "Charubala",lastName:"B", rollNo: "22CS033", registerNo: "722822104033", marks: ["85", "85", "85", "85", "85"] },
   ]);
 
   return (
