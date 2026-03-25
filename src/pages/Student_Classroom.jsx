@@ -94,7 +94,7 @@ const StudentClassroom = () => {
           filteredClasses.map((cls, index) => {
             return (
               <Link
-                to={`/student/classroom/${cls._id}`}
+                to={`/dashboard/StudentClassroom/class/${cls._id}`}
                 key={cls._id}
                 className="rounded-lg cursor-pointer rounded-t-xl bg-white border border-gray-200 hover:shadow-lg transition h-fit"
               >

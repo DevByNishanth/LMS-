@@ -25,6 +25,8 @@ import StudentLayout from "./components/Student_Layout";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentClassroomDetails from "./components/Student_ClassroomDetails";
 import StudentClassroom from "./pages/Student_Classroom";
+import DashboardStudentClassroom from "./pages/DashboardStudentClassroom";
+import DashboardStudentClassroomDetails from "./pages/DashboardStudentClassroomDetails";
 import InvitationPage from "./pages/InvitationPage";
 import { ToastContainer } from "react-toastify";
 import CalendarPage from "./pages/CalendarPage";
@@ -187,6 +189,22 @@ const App = () => {
         />
         <Route path="/dashboard/calendar" element={<CalendarPage />} />
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
+        <Route
+          path="/dashboard/StudentClassroom"
+          element={
+            <ProtectedRoute>
+              <DashboardStudentClassroom />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/StudentClassroom/class/:id"
+          element={
+            <ProtectedRoute>
+              <DashboardStudentClassroomDetails />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard/classroom/class/:classId/:sectionId"
           element={<Classpage />}

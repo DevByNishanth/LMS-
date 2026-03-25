@@ -208,6 +208,7 @@ const ClassRoomStreamComponent = () => {
                     key={item._id}
                     className="w-full bg-white border border-gray-200 rounded-md p-4"
                   >
+                    {console.log("item : ", item)}
                     {/* Item Header */}
                     <div className="flex justify-between items-start">
                       <div className="flex gap-2">

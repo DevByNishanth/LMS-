@@ -62,6 +62,8 @@ const ClassRoomClassworkComponent = () => {
     }
   };
 
+  console.log("assignments : ", assignments)
+
   const fetchQuestions = async () => {
     try {
       const token = localStorage.getItem("LmsToken");
