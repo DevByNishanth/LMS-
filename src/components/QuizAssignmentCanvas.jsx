@@ -120,9 +120,10 @@ const QuizAssignmentCanvas = ({ setIsAssignmentModalOpen, onClose }) => {
   };
 
   const handleSubmit = async (e) => {
+    
     e.preventDefault();
+    console.log("run")
     if (!validate()) return;
-
     setLoading(true);
     try {
       const token = localStorage.getItem("LmsToken");
