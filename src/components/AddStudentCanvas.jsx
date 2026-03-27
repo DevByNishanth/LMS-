@@ -98,21 +98,19 @@ const AddStudentCanvas = ({
           <div className="px-6 mt-4">
             <div className="flex bg-gray-100 p-1 rounded-xl w-full">
               <button
-                className={`py-2.5 rounded-lg text-sm w-1/2 font-semibold transition-all ${
-                  activeTab === "single"
-                    ? "bg-white text-[#0B56A4] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`py-2.5 rounded-lg text-sm w-1/2 font-semibold transition-all ${activeTab === "single"
+                  ? "bg-white text-[#0B56A4] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
                 onClick={() => setActiveTab("single")}
               >
                 Single Entry
               </button>
               <button
-                className={`py-2.5 rounded-lg text-sm w-1/2 font-semibold transition-all ${
-                  activeTab === "multiple"
-                    ? "bg-white text-[#0B56A4] shadow-sm"
-                    : "text-gray-500 hover:text-gray-700"
-                }`}
+                className={`py-2.5 rounded-lg text-sm w-1/2 font-semibold transition-all ${activeTab === "multiple"
+                  ? "bg-white text-[#0B56A4] shadow-sm"
+                  : "text-gray-500 hover:text-gray-700"
+                  }`}
                 onClick={() => setActiveTab("multiple")}
               >
                 Multiple Upload
@@ -213,6 +211,9 @@ const AddStudentCanvas = ({
                     <option value="CSE">CSE</option>
                     <option value="ECE">ECE</option>
                     <option value="EEE">EEE</option>
+                    <option value="IT">IT</option>
+                    <option value="AIDS">AIDS</option>
+                    <option value="AIML">AIML</option>
                     <option value="MECH">MECH</option>
                     <option value="CIVIL">CIVIL</option>
                   </select>

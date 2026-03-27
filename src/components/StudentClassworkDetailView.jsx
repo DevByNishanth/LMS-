@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import {
-  Paperclip,
   User,
   Users,
   Send,
@@ -14,16 +13,21 @@ import {
   CheckCircle,
   X,
   Eye,
+  CheckSquare,
+  Square,
+  Edit3,
 } from "lucide-react";
 import assignmentIcon from "../assets/assignmentWorkIcon.svg";
 import StudentSubmissionModal from "./StudentSubmissionModal";
 import StudentSubmissionViewModal from "./StudentSubmissionViewModal";
+import StudentQuestionSubmissionModal from "./StudentQuestionSubmissionModal";
 
 const StudentClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
   const [commentText, setCommentText] = useState("");
   const [firstLetter, setFirstLetter] = useState("");
   const [item, setItem] = useState(selectedAssignment);
   const [isSubmissionModalOpen, setIsSubmissionModalOpen] = useState(false);
+  const [isQuestionSubmissionModalOpen, setIsQuestionSubmissionModalOpen] = useState(false);
   const [isSubmissionViewModalOpen, setIsSubmissionViewModalOpen] = useState(false);
 
   useEffect(() => {
@@ -233,10 +237,10 @@ const StudentClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => 
             )}
             {item.itemType === "question" && (
               <button
-                onClick={() => setIsSubmissionModalOpen(true)}
+                onClick={() => setIsQuestionSubmissionModalOpen(true)}
                 className="flex items-center gap-2 bg-[#08384F] text-white text-sm px-4 py-2 rounded-lg hover:bg-[#0B56A4]/90"
               >
-                <CheckCircle size={16} />
+                <Edit3 size={16} />
                 Submit Answer
               </button>
             )}
@@ -327,6 +331,19 @@ const StudentClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => 
         onClose={() => setIsSubmissionViewModalOpen(false)}
         submissionData={null} // Will be populated from backend
         assignmentTitle={selectedAssignment?.title}
+      />
+
+      {/* Question Submission Modal */}
+      <StudentQuestionSubmissionModal
+        isOpen={isQuestionSubmissionModalOpen}
+        onClose={() => setIsQuestionSubmissionModalOpen(false)}
+        questionData={item}
+        onSubmit={(submissionData) => {
+          // Handle question submission
+          console.log("Question submitted:", submissionData);
+          // Mock success feedback
+          alert("Answer submitted successfully!");
+        }}
       />
     </>
   );
