@@ -15,7 +15,6 @@ import {
   MessageSquareMore
 
 } from "lucide-react";
-import logo from "../assets/clgLogo.svg";
 import { Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
@@ -38,7 +37,7 @@ const Sidebar = () => {
       label: "Dashboard",
       icon: LayoutDashboard,
       link: "/dashboard",
-      roles: ["admin", "hod", "faculty"],
+      roles: ["admin", "hod", "faculty", "student"],
     },
     {
       label: "Semester Registration",
@@ -75,6 +74,12 @@ const Sidebar = () => {
       icon: Presentation,
       link: "/dashboard/classroom",
       roles: ["faculty"],
+    },
+    {
+      label: "Student Classroom",
+      icon: Presentation,
+      link: "/dashboard/StudentClassroom",
+      roles: ["student"],
     },
     {
       label: "Calendar",
