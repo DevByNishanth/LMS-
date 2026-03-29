@@ -8,6 +8,7 @@ import ReferenceTab from "./ReferenceTab";
 import SubjectSubTopicsTable from "./SubjectSubTopicsTable";
 import DownloadPdf from "./DownloadPdf";
 import LabPlannerTab from "./LabPlannerTab";
+import SubjectPlanner from "./SubjectPlanner";
 
 const ClassroomSubjectPlanningComponent = () => {
   const { classId, sectionId } = useParams();
@@ -39,6 +40,23 @@ const ClassroomSubjectPlanningComponent = () => {
   useEffect(() => {
     fetchAllData();
   }, [fetchAllData]);
+
+  const getNextTab = useCallback((current, direction) => {
+    const type = planningData?.courseDetails?.courseType || "";
+    const hasTheory = ["T", "TP", "TPJ"].some(t => type.includes(t)) || type === "I";
+    const hasLab = ["P", "PJ", "TPJ", "TP"].some(p => type.includes(p)) || type === "I";
+
+    let next = current + direction;
+
+    // Skip Theory Planner (Index 3) if not a Theory type
+    if (next === 3 && !hasTheory) next += direction;
+
+    // Skip Lab Planner (Index 4) if not a Lab/Practical type
+    if (next === 4 && !hasLab) next += direction;
+
+    // Bound checks
+    return Math.max(0, Math.min(next, 6));
+  }, [planningData]);
 
   const updateLivePlanningData = useCallback((key, updatedValue) => {
     setPlanningData((prev) => ({
@@ -156,6 +174,7 @@ const ClassroomSubjectPlanningComponent = () => {
             "References",
             "Theory Planner",
             "Lab Planner",
+            "Subject Planner",
             "Get Course Plan",
           ]}
           activeTab={activeTab}
@@ -173,7 +192,7 @@ const ClassroomSubjectPlanningComponent = () => {
             updateLivePlanningData={(val) =>
               updateLivePlanningData("courseDetails", val)
             }
-            onNext={() => setActiveTab(1)}
+            onNext={() => setActiveTab(getNextTab(0, 1))}
           />
         )}
         {activeTab === 1 && (
@@ -183,19 +202,15 @@ const ClassroomSubjectPlanningComponent = () => {
             updateLivePlanningData={(val) =>
               updateLivePlanningData("coPoMapping", val)
             }
-            onNext={() => setActiveTab(2)}
-            onPrev={() => setActiveTab(0)}
+            onNext={() => setActiveTab(getNextTab(1, 1))}
+            onPrev={() => setActiveTab(getNextTab(1, -1))}
           />
         )}
         {activeTab === 2 && (
           <ReferenceTab
-            data={planningData?.references}
             refreshData={fetchAllData}
-            updateLivePlanningData={(val) =>
-              updateLivePlanningData("references", val)
-            }
-            onNext={() => setActiveTab(3)}
-            onPrev={() => setActiveTab(1)}
+            onNext={() => setActiveTab(getNextTab(2, 1))}
+            onPrev={() => setActiveTab(getNextTab(2, -1))}
           />
         )}
         {activeTab === 3 && (
@@ -206,16 +221,30 @@ const ClassroomSubjectPlanningComponent = () => {
             updateLivePlanningData={(val) =>
               updateLivePlanningData("theoryPlanner", val)
             }
-            onNext={() => setActiveTab(4)}
-            onPrev={() => setActiveTab(2)}
+            onNext={() => setActiveTab(getNextTab(3, 1))}
+            onPrev={() => setActiveTab(getNextTab(3, -1))}
           />
         )}
         {activeTab === 4 && (
           <LabPlannerTab
-            
+              data={planningData?.labPlanner}
+              refreshData={fetchAllData}
+              updateLivePlanningData={(val) =>
+                updateLivePlanningData("labPlanner", val)
+              }
+              onNext={() => setActiveTab(getNextTab(4, 1))}
+              onPrev={() => setActiveTab(getNextTab(4, -1))}
           />
         )}
-        {activeTab == 5 && <DownloadPdf />}
+        {
+          activeTab===5 && (
+            <SubjectPlanner
+              onNext={() => setActiveTab(getNextTab(5, 1))}
+              onPrev={() => setActiveTab(getNextTab(5, -1))}
+            />
+          )
+        }
+        {activeTab == 6 && <DownloadPdf />}
       </div>
     </div>
   );
