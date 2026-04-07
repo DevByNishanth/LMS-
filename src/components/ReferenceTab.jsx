@@ -113,6 +113,7 @@ const ReferenceTab = ({
         { headers: { Authorization: `Bearer ${token}` } },
       );
       if (res.data.success) {
+        console.log("References saved successfully");
         await refreshData();
         onNext();
       }

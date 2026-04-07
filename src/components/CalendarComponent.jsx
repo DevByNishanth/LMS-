@@ -105,7 +105,6 @@ const CalendarComponent = () => {
           <h2 className="text-xl font-bold text-gray-800">
             {currentMonth.format("MMMM YYYY")}
           </h2>
-
           <button
             onClick={() =>
               setCurrentMonth(currentMonth.add(1, "month"))
