@@ -1,4 +1,6 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { useParams } from "react-router-dom";
+import axios from "axios";
 import {
   BookOpenIcon,
   ClipboardCheck,
@@ -14,52 +16,81 @@ import StudentClassworkDetailView from "./StudentClassworkDetailView";
 import StudentQuizDetailView from "./StudentQuizDetailView";
 
 const StudentClassroomClasswork = () => {
-  // Static data matching the teacher's component structure
-  const assignments = [
-    {
-      _id: "1",
-      title: "Chapter 1 Assignment",
-      instruction: "Complete exercises 1-5 from Chapter 1. Focus on understanding the fundamental concepts of data structures.",
-      marks: 10,
-      createdAt: "2024-03-20T10:00:00Z",
-      attachments: ["https://example.com/assignment1.pdf"],
-      link: "https://docs.google.com/document/assignment1",
-      youtubeLink: "https://youtube.com/watch?v=assignment1",
-      itemType: "assignment",
-      dueDate: "2024-03-25T23:59:59Z"
-    },
-    {
-      _id: "2",
-      title: "Chapter 2 Assignment",
-      instruction: "Complete all questions from Chapter 2. Pay special attention to the implementation details.",
-      marks: 15,
-      createdAt: "2024-03-22T14:30:00Z",
-      attachments: ["https://example.com/assignment2.pdf", "https://example.com/assignment2-extra.pdf"],
-      itemType: "assignment",
-      dueDate: "2024-03-27T23:59:59Z"
-    }
-  ];
+  const { classId, sectionId } = useParams();
+  const token = localStorage.getItem("LmsToken");
+  const apiUrl = import.meta.env.VITE_API_URL;
 
-  const questions = [
-    {
-      _id: "3",
-      title: "Lab Exercise 1",
-      instruction: "Practical lab work on data structures. Implement the given algorithms.",
-      questionType: "lab",
-      createdAt: "2024-03-15T09:00:00Z",
-      itemType: "question",
-      dueDate: "2024-03-28T23:59:59Z"
-    },
-    {
-      _id: "4",
-      title: "Discussion Question",
-      instruction: "Discuss the differences between stack and queue data structures.",
-      questionType: "discussion",
-      createdAt: "2024-03-18T11:00:00Z",
-      itemType: "question",
-      dueDate: "2024-03-22T23:59:59Z"
+  const [assignments, setAssignments] = useState([]);
+  const [questions, setQuestions] = useState([]);
+  const [materials, setMaterials] = useState([]);
+
+  const getAssignments = async () => {
+    try {
+      const res = await axios.get(
+        `${apiUrl}api/student/assignments/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const fetchedAssignments = (res.data.data || []).map((a) => ({
+        ...a,
+        itemType: "assignment",
+        createdAt: a.createdAt || new Date().toISOString(),
+      }));
+      setAssignments(fetchedAssignments);
+    } catch (err) {
+      console.error("Assignments fetch error:", err);
     }
-  ];
+  };
+
+  const getQuestions = async () => {
+    try {
+      const res = await axios.get(
+        `${apiUrl}api/student/questions/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const fetchedQuestions = (res.data.data || []).map((q) => ({
+        ...q,
+        itemType: "question",
+        createdAt: q.createdAt || new Date().toISOString(),
+      }));
+      setQuestions(fetchedQuestions);
+    } catch (err) {
+      console.error("Questions fetch error:", err);
+    }
+  };
+
+  useEffect(() => {
+    if (classId && sectionId) {
+      getAssignments();
+      getQuestions();
+      getMaterials();
+    }
+  }, [classId, sectionId]);
+
+  const getMaterials = async () => {
+    try {
+      const res = await axios.get(
+        `${apiUrl}api/student/materials/${classId}/${sectionId}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+      const fetchedMaterials = (res.data.data || []).map((m) => ({
+        ...m,
+        itemType: "material",
+        createdAt: m.createdAt || new Date().toISOString(),
+      }));
+      setMaterials(fetchedMaterials);
+    } catch (err) {
+      console.error("Materials fetch error:", err);
+    }
+  };
+  // Removed static assignments array
+
+  // Removed static questions array
 
   const quizzes = [
     {
@@ -107,24 +138,7 @@ const StudentClassroomClasswork = () => {
     }
   ];
 
-  const materials = [
-    {
-      _id: "7",
-      title: "Course Material - Unit 1",
-      instruction: "Reference material for Unit 1 topics. Read this before attempting assignments.",
-      createdAt: "2024-03-10T12:00:00Z",
-      attachments: ["https://example.com/unit1-material.pdf"],
-      itemType: "material"
-    },
-    {
-      _id: "8",
-      title: "Lecture Slides - Week 2",
-      instruction: "Slides from the second week of lectures.",
-      createdAt: "2024-03-12T15:00:00Z",
-      attachments: ["https://example.com/week2-slides.pdf"],
-      itemType: "material"
-    }
-  ];
+  // Removed static materials array
 
   // State management
   const [filterDropdown, setFilterDropdown] = useState(false);

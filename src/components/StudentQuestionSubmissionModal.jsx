@@ -39,8 +39,8 @@ const StudentQuestionSubmissionModal = ({
       return;
     }
 
-    if (questionData.questionType === "Multiple Choice" && selectedOptions.length === 0) {
-      alert("Please select at least one option.");
+    if ((questionData.questionType === "Multiple Choice" || questionData.questionType === "Single Choice") && selectedOptions.length === 0) {
+      alert("Please select an option before submitting.");
       return;
     }
 
@@ -68,7 +68,7 @@ const StudentQuestionSubmissionModal = ({
 
   return (
     <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
-      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[80vh] overflow-hidden">
+      <div className="bg-white rounded-xl shadow-xl max-w-2xl w-full max-h-[calc(100vh-100px)] overflow-auto">
         {/* Header */}
         <div className="flex justify-between items-center p-6 border-b border-gray-200">
           <div className="flex items-center gap-3">
@@ -124,8 +124,8 @@ const StudentQuestionSubmissionModal = ({
             </div>
           )}
 
-          {/* Multiple Choice Options */}
-          {questionData.questionType === "Multiple Choice" && questionData.options && (
+          {/* Multiple Choice / Single Choice Options */}
+          {(questionData.questionType === "Multiple Choice" || questionData.questionType === "Single Choice") && questionData.options && (
             <div className="space-y-3">
               <label className="block text-sm font-medium text-gray-700">
                 Select your answer(s)
@@ -148,11 +148,11 @@ const StudentQuestionSubmissionModal = ({
                     />
                     <div className="flex items-center gap-3">
                       {selectedOptions.includes(index) ? (
-                        <CheckSquare size={20} className="text-[#0B56A4] flex-shrink-0" />
+                        <CheckSquare size={20} className="text-[#0B56A4] shrink-0" />
                       ) : (
-                        <Square size={20} className="text-gray-400 flex-shrink-0" />
+                        <Square size={20} className="text-gray-400 shrink-0" />
                       )}
-                      <span className="text-gray-700">{option}</span>
+                      <span className="text-gray-700">{option.text || option}</span>
                     </div>
                   </label>
                 ))}

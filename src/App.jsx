@@ -199,7 +199,7 @@ const App = () => {
           }
         />
         <Route
-          path="/dashboard/StudentClassroom/class/:id"
+          path="/dashboard/StudentClassroom/class/:classId/:sectionId"
           element={
             <ProtectedRoute>
               <DashboardStudentClassroomDetails />

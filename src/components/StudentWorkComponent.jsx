@@ -103,13 +103,13 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                 {/* Tabs */}
                 <div className="flex items-center gap-6 justify-between  mt-2 mb-2">
                     <div className="btn-container  flex gap-2 bg-gray-100 rounded-full  py-2 px-2">
-                        <button onClick={() => setSelectedTab("all")} className={` ${selectedTab == "all" ? "bg-[#08384F]  bgtext-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
+                        <button onClick={() => setSelectedTab("all")} className={` ${selectedTab == "all" ? "bg-[#08384F]  text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
                             All Students ({selectedAssignment?.stats?.totalStudents})
                         </button>
-                        <button onClick={() => setSelectedTab("submittedStudents")} className={` ${selectedTab == "submittedStudents" ? "bg-[#08384F]  bgtext-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
+                        <button onClick={() => setSelectedTab("submittedStudents")} className={` ${selectedTab == "submittedStudents" ? "bg-[#08384F]  text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
                             Submitted Students ({selectedAssignment?.stats?.submitted})
                         </button>
-                        <button onClick={() => setSelectedTab("pendingStudents")} className={` ${selectedTab == "pendingStudents" ? "bg-[#08384F]  bgtext-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
+                        <button onClick={() => setSelectedTab("pendingStudents")} className={` ${selectedTab == "pendingStudents" ? "bg-[#08384F]  text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
                             Pending Students ({selectedAssignment?.stats?.pending})
                         </button>
                     </div>

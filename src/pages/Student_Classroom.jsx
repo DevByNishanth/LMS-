@@ -19,26 +19,7 @@ const StudentClassroom = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
 
   const [searchQuery, setSearchQuery] = useState("");
-  const [classes, setClasses] = useState([
-    {
-      _id: "1",
-      className: "III_CSE_A",
-      subjectName: "Crypto and Encryption",
-      staffName: "Surya Chandran",
-    },
-    {
-      _id: "2",
-      className: "III_CSE_B",
-      subjectName: "Data Science and Security",
-      staffName: "Rajesh Kumar",
-    },
-    {
-      _id: "3",
-      className: "IV_CSE_A",
-      subjectName: "Digital Signal Processing",
-      staffName: "Anitha Sharma",
-    },
-  ]);
+  const [classes, setClasses] = useState([]);
 
   useEffect(() => {
     fetchClasses();
@@ -63,8 +44,8 @@ const StudentClassroom = () => {
   // Filter logic: Checks if search query matches Subject Name or Class Name
   const filteredClasses = classes.filter(
     (cls) =>
-      cls.subjectName.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      cls.className.toLowerCase().includes(searchQuery.toLowerCase()),
+      (cls.subject || "").toLowerCase().includes(searchQuery.toLowerCase()) ||
+      (cls.section || "").toLowerCase().includes(searchQuery.toLowerCase()),
   );
 
   return (
@@ -94,8 +75,9 @@ const StudentClassroom = () => {
           filteredClasses.map((cls, index) => {
             return (
               <Link
-                to={`/dashboard/StudentClassroom/class/${cls._id}`}
-                key={cls._id}
+                to={`/dashboard/StudentClassroom/class/${cls.subjectId}/${cls.sectionId}`}
+                state={cls}
+                key={`${cls.subjectId}-${cls.sectionId}`}
                 className="rounded-lg cursor-pointer rounded-t-xl bg-white border border-gray-200 hover:shadow-lg transition h-fit"
               >
                 <div className="relative">
@@ -108,9 +90,9 @@ const StudentClassroom = () => {
                     <div className="absolute top-0 rounded-t-xl right-0 bottom-0 left-0 bg-black/20"></div>
                   </div>
                   <div className="text-container text-white absolute top-[20%] left-[4%]">
-                    <p className="text-sm font-medium">{cls.className}</p>
+                    <p className="text-sm font-medium">{cls.section}</p>
                     <h2 className="text-2xl font-semibold mt-1">
-                      {cls.subjectName}
+                      {cls.subject}
                     </h2>
                   </div>
                 </div>
