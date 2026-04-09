@@ -277,7 +277,7 @@ const ClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => {
                 </span>
               </div>
 
-              {/* Comments List */}
+              {/* Comments List */} 
               <div className="space-y-4 mb-4 max-h-60 overflow-y-auto">
                 {item.comments && item.comments.length > 0 ? (
                   item.comments.map((comment, idx) => (

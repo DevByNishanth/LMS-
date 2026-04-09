@@ -11,8 +11,10 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import axios from "axios";
 
-const StudentSubmissionModal = ({ isOpen, onClose, assignmentType, assignmentTitle }) => {
+const StudentSubmissionModal = ({ isOpen, onClose, assignmentType, assignmentTitle, assignmentId }) => {
+  console.log("assignment id : ", assignmentId)
   const [files, setFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState({});
@@ -68,7 +70,7 @@ const StudentSubmissionModal = ({ isOpen, onClose, assignmentType, assignmentTit
 
   const getFileIcon = (fileType) => {
     if (fileType === 'application/pdf') return <FileText className="w-6 h-6 text-red-500" />;
-    if (fileType === 'application/msword' || fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document') 
+    if (fileType === 'application/msword' || fileType === 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
       return <FileText className="w-6 h-6 text-blue-500" />;
     if (fileType.startsWith('image/')) return <FileImage className="w-6 h-6 text-emerald-800" />;
     if (fileType.includes('spreadsheet')) return <FileSpreadsheet className="w-6 h-6 text-green-500" />;
@@ -92,30 +94,36 @@ const StudentSubmissionModal = ({ isOpen, onClose, assignmentType, assignmentTit
     }
 
     setIsUploading(true);
-    setUploadProgress({});
 
-    // Simulate upload progress
-    const totalFiles = files.length;
-    let completedFiles = 0;
+    const token = localStorage.getItem("LmsToken");
+    const apiUrl = import.meta.env.VITE_API_URL;
 
-    for (let i = 0; i < files.length; i++) {
-      const file = files[i];
-      setUploadProgress(prev => ({ ...prev, [file.id]: 0 }));
+    const formData = new FormData();
+    files.forEach(f => {
+      formData.append('attachments', f.file);
+    });
 
-      // Simulate upload progress
-      for (let progress = 0; progress <= 100; progress += 10) {
-        await new Promise(resolve => setTimeout(resolve, 100));
-        setUploadProgress(prev => ({ ...prev, [file.id]: progress }));
-      }
+    try {
+      await axios.post(
+        `${apiUrl}api/submit-assignment/${assignmentId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+            Authorization: `Bearer ${token}`
+          }
+        }
+      );
 
-      completedFiles++;
-      if (completedFiles === totalFiles) {
-        setIsUploading(false);
-        alert('Assignment submitted successfully!');
-        onClose();
-        setFiles([]);
-        setUploadProgress({});
-      }
+      alert('Assignment submitted successfully!');
+      onClose();
+      setFiles([]);
+      setUploadProgress({});
+    } catch (error) {
+      console.error("Submission error:", error);
+      alert(error.response?.data?.message || 'Failed to submit assignment');
+    } finally {
+      setIsUploading(false);
     }
   };
 

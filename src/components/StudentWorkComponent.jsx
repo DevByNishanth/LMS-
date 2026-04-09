@@ -1,11 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Eye, Search, FileText, Link as LinkIcon, Video as VideoIcon, ExternalLink } from 'lucide-react';
+import { useParams } from 'react-router-dom';
+import axios from 'axios';
 import assignmentIcon from '../assets/assignmentWorkIcon.svg';
 import fileIcon from '../assets/file-icon.svg';
 
 const StudentWorkComponent = ({ selectedAssignment }) => {
     // states 
     const [selectedTab, setSelectedTab] = useState('all');
+    const [studentsData, setStudentsData] = useState([]);
+    const [searchQuery, setSearchQuery] = useState("");
+
+    const { classId, sectionId } = useParams();
+    const token = localStorage.getItem("LmsToken");
+    const apiUrl = import.meta.env.VITE_API_URL;
+
+    useEffect(() => {
+        const fetchStudentWork = async () => {
+            try {
+                if (!selectedAssignment?._id) return;
+                const response = await axios.get(
+                    `${apiUrl}api/assignment-submissions/${selectedAssignment._id}`,
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`
+                        }
+                    }
+                );
+                const data = response.data?.data || response.data || [];
+                setStudentsData(Array.isArray(data) ? data : []);
+            } catch (error) {
+                console.error("Error fetching student work:", error);
+            }
+        };
+
+        fetchStudentWork();
+    }, [selectedAssignment?._id, apiUrl, token]);
+
+    const filteredStudents = studentsData.filter(student => {
+        const hasSubmitted = student.status === 'submitted' || (student.attachments && student.attachments.length > 0);
+        
+        if (selectedTab === 'submittedStudents' && !hasSubmitted) return false;
+        if (selectedTab === 'pendingStudents' && hasSubmitted) return false;
+        
+        if (searchQuery && !student.name?.toLowerCase().includes(searchQuery.toLowerCase())) {
+            return false;
+        }
+        
+        return true;
+    });
+
+    const totalStudents = studentsData.length || selectedAssignment?.stats?.totalStudents || 0;
+    const submittedCount = studentsData.filter(student => student.status === 'submitted' || (student.attachments && student.attachments.length > 0)).length || selectedAssignment?.stats?.submitted || 0;
+    const pendingCount = studentsData.filter(student => !(student.status === 'submitted' || (student.attachments && student.attachments.length > 0))).length || selectedAssignment?.stats?.pending || 0;
+
     return (
         <>
             <div className="rounded-lg border border-gray-200 p-4 min-h-[calc(100vh-180px)] max-h-[calc(100vh-160px)] overflow-auto">
@@ -104,13 +152,13 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                 <div className="flex items-center gap-6 justify-between  mt-2 mb-2">
                     <div className="btn-container  flex gap-2 bg-gray-100 rounded-full  py-2 px-2">
                         <button onClick={() => setSelectedTab("all")} className={` ${selectedTab == "all" ? "bg-[#08384F]  text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
-                            All Students ({selectedAssignment?.stats?.totalStudents})
+                            All Students ({totalStudents})
                         </button>
                         <button onClick={() => setSelectedTab("submittedStudents")} className={` ${selectedTab == "submittedStudents" ? "bg-[#08384F]  text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
-                            Submitted Students ({selectedAssignment?.stats?.submitted})
+                            Submitted Students ({submittedCount})
                         </button>
                         <button onClick={() => setSelectedTab("pendingStudents")} className={` ${selectedTab == "pendingStudents" ? "bg-[#08384F]  text-white" : ""} px-4 py-2 cursor-pointer rounded-full text-sm text-gray-700`}>
-                            Pending Students ({selectedAssignment?.stats?.pending})
+                            Pending Students ({pendingCount})
                         </button>
                     </div>
                     {/* search box  */}
@@ -118,6 +166,8 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                         <input
                             type="text"
                             placeholder="Search Name"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
                             className="pl-3 w-[80%]  py-2 text-sm focus:outline-none"
                         />
                         <span className="absolute right-3 top-1/2 translate-y-[-50%] text-gray-400"><Search className="w-4 h-4" /></span>
@@ -141,44 +191,55 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                         </thead>
 
                         <tbody className="">
-                            {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20].map((_, i) => (
-                                <tr
-                                    key={i}
-                                    className={`${i % 2 === 0 ? "bg-gray-100" : "bg-white"
-                                        }`}
-                                >
-                                    <td className="p-3">
-                                        <input type="checkbox" className="accent-[#0B56A4] scale-120" />
-                                    </td>
+                            {filteredStudents.length > 0 ? (
+                                filteredStudents.map((student, i) => {
+                                    const hasSubmitted = student.status === 'submitted' || (student.attachments && student.attachments.length > 0);
+                                    return (
+                                        <tr
+                                            key={student._id || i}
+                                            className={`${i % 2 === 0 ? "bg-gray-100" : "bg-white"}`}
+                                        >
+                                            <td className="p-3">
+                                                <input type="checkbox" className="accent-[#0B56A4] scale-120" />
+                                            </td>
 
-                                    <td className="p-3 flex items-center gap-2">
-                                        <img
-                                            src="https://i.pravatar.cc/30"
-                                            alt="avatar"
-                                            className="w-6 h-6 rounded-full"
-                                        />
-                                        <span>Surya Chandran</span>
-                                    </td>
+                                            <td className="p-3 flex items-center gap-2">
+                                                <img
+                                                    src={student.profileUrl || student.avatar || "https://i.pravatar.cc/30"}
+                                                    alt="avatar"
+                                                    className="w-6 h-6 rounded-full object-cover"
+                                                />
+                                                <span>{student.name || student.studentName || "Unknown Student"}</span>
+                                            </td>
 
-                                    <td className="p-3">
-                                        {i % 2 === 0 ? (
-                                            <span className="flex items-center gap-1 text-black">
-                                                <img src={fileIcon} alt="fileIcon" className="w-7 h-7" /> File.txt
-                                            </span>
-                                        ) : (
-                                            <span className="text-gray-500">Nill</span>
-                                        )}
-                                    </td>
+                                            <td className="p-3">
+                                                {hasSubmitted ? (
+                                                    <span className="flex items-center gap-1 text-black">
+                                                        <img src={fileIcon} alt="fileIcon" className="w-7 h-7" /> 
+                                                        {student.attachments && student.attachments[0] ? 
+                                                            (student.attachments[0].split('/').pop().split('-').slice(2).join('-') || "File.txt")
+                                                            : "File.txt"}
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-gray-500">Nill</span>
+                                                )}
+                                            </td>
 
-                                    <td className="p-3 text-gray-700">__ / 100</td>
+                                            <td className="p-3 text-gray-700">{student.grade || "__"} / 100</td>
 
-                                    <td className="p-3">
-                                        <button className="bg-[#08384F]  bgw-8 h-8 rounded-full flex items-center justify-center">
-                                            <Eye className="w-5 h-5 text-white" />
-                                        </button>
-                                    </td>
+                                            <td className="p-3">
+                                                <button className="bg-[#08384F] w-8 h-8 rounded-full flex items-center justify-center p-1.5 hover:bg-[#0B56A4] transition-colors">
+                                                    <Eye className="w-4 h-4 text-white" />
+                                                </button>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
+                            ) : (
+                                <tr>
+                                    <td colSpan="5" className="text-center p-4 text-gray-500">No students found</td>
                                 </tr>
-                            ))}
+                            )}
                         </tbody>
                     </table>
                 </div>
