@@ -75,9 +75,9 @@ const Classpage = () => {
                   subjectId={classId}
                 />
               )}
-              {activeTab==="grades" && (
+              {activeTab === "grades" && (
                 <ClassroomGradesContainer
-                   activeTab={activeTab}
+                  activeTab={activeTab}
                 />
               )}
               {activeTab === "attendance" && (

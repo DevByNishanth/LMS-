@@ -305,7 +305,7 @@ const generatePDF = (colIndex) => {
 
   return (
     <>
-      <div className="border rounded-lg overflow-hidden h-[500px] flex flex-col">
+      <div className="border rounded-lg overflow-auto max-h-[calc(100vh-290px)] flex flex-col">
 
         <div ref={tableBodyRef} className="overflow-auto flex-1">
           <table className="w-full text-sm border-separate border-spacing-0">

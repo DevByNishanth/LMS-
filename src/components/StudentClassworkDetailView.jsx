@@ -323,6 +323,7 @@ const StudentClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => 
         onClose={() => setIsSubmissionModalOpen(false)}
         assignmentType={item.itemType}
         assignmentTitle={selectedAssignment?.title}
+        assignmentId={selectedAssignment?._id}
       />
 
       {/* Submission View Modal */}

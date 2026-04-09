@@ -35,11 +35,13 @@ import HodRequestsDetails from "./pages/HodRequestsDetails";
 import HodRequestHistory from "./pages/HodRequestHistory";
 import ClassroomSubmissionPage from "./components/ClassroomSubmissionPage";
 import ClassroomEditAssignment from "./components/ClassroomEditAssignment";
+import {DashboardRoute} from "./components/DashboardRoute";
 const App = () => {
   return (
     <>
       <ToastContainer />
       <Routes>
+        {/* <Route path="/dashboard" element={<DashboardRoute />} /> */}
         <Route path="/" element={<LoginPage />} />
         <Route
           path="/dashboard"

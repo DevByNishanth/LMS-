@@ -46,7 +46,7 @@ const ClassroomGradesContainer = () => {
         <button
           onClick={() => setActiveTab("classwork")}
           className={`flex-1 py-2 rounded-full font-medium ${
-            activeTab === "classwork" ? "bg-[#1E5DA8] text-white" : ""
+            activeTab === "classwork" ? "bg-[#08394f] text-white" : ""
           }`}
         >
           Classwork
@@ -55,7 +55,7 @@ const ClassroomGradesContainer = () => {
         <button
           onClick={() => setActiveTab("cia")}
           className={`flex-1 py-2 rounded-full font-medium ${
-            activeTab === "cia" ? "bg-[#1E5DA8] text-white" : ""
+            activeTab === "cia" ? "bg-[#08394f] text-white" : ""
           }`}
         >
           CIA & Others
