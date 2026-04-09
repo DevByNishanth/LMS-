@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Eye, Search, FileText, Link as LinkIcon, Video as VideoIcon, ExternalLink } from 'lucide-react';
 import { useParams } from 'react-router-dom';
 import axios from 'axios';
@@ -10,43 +10,77 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
     const [selectedTab, setSelectedTab] = useState('all');
     const [studentsData, setStudentsData] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [editingGrades, setEditingGrades] = useState({});
+    const debounceTimeouts = useRef({});
 
     const { classId, sectionId } = useParams();
     const token = localStorage.getItem("LmsToken");
     const apiUrl = import.meta.env.VITE_API_URL;
 
+    const fetchStudentWork = useCallback(async () => {
+        try {
+            if (!selectedAssignment?._id || !sectionId) return;
+            const response = await axios.get(
+                `${apiUrl}api/assignment-status/${selectedAssignment._id}/${sectionId}`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`
+                    }
+                }
+            );
+            const data = response.data?.data || response.data || [];
+            setStudentsData(Array.isArray(data) ? data : []);
+        } catch (error) {
+            console.error("Error fetching student work:", error);
+        }
+    }, [selectedAssignment?._id, sectionId, apiUrl, token]);
+
     useEffect(() => {
-        const fetchStudentWork = async () => {
+        fetchStudentWork();
+    }, [fetchStudentWork]);
+
+    const handleGradeChange = (studentId, value) => {
+        setEditingGrades(prev => ({ ...prev, [studentId]: value }));
+
+        if (debounceTimeouts.current[studentId]) {
+            clearTimeout(debounceTimeouts.current[studentId]);
+        }
+
+        debounceTimeouts.current[studentId] = setTimeout(async () => {
             try {
-                if (!selectedAssignment?._id) return;
-                const response = await axios.get(
-                    `${apiUrl}api/assignment-submissions/${selectedAssignment._id}`,
+                await axios.post(
+                    `${apiUrl}api/assignment-marks/${selectedAssignment?._id}/${studentId}`,
+                    { marks: Number(value) },
                     {
                         headers: {
                             Authorization: `Bearer ${token}`
                         }
                     }
                 );
-                const data = response.data?.data || response.data || [];
-                setStudentsData(Array.isArray(data) ? data : []);
+                
+                fetchStudentWork();
+                
+                setEditingGrades(prev => {
+                    const newState = { ...prev };
+                    delete newState[studentId];
+                    return newState;
+                });
             } catch (error) {
-                console.error("Error fetching student work:", error);
+                console.error("Error updating grade:", error);
             }
-        };
-
-        fetchStudentWork();
-    }, [selectedAssignment?._id, apiUrl, token]);
+        }, 5000);
+    };
 
     const filteredStudents = studentsData.filter(student => {
         const hasSubmitted = student.status === 'submitted' || (student.attachments && student.attachments.length > 0);
-        
+
         if (selectedTab === 'submittedStudents' && !hasSubmitted) return false;
         if (selectedTab === 'pendingStudents' && hasSubmitted) return false;
-        
+
         if (searchQuery && !student.name?.toLowerCase().includes(searchQuery.toLowerCase())) {
             return false;
         }
-        
+
         return true;
     });
 
@@ -204,28 +238,43 @@ const StudentWorkComponent = ({ selectedAssignment }) => {
                                             </td>
 
                                             <td className="p-3 flex items-center gap-2">
-                                                <img
-                                                    src={student.profileUrl || student.avatar || "https://i.pravatar.cc/30"}
-                                                    alt="avatar"
-                                                    className="w-6 h-6 rounded-full object-cover"
-                                                />
+                                                <div className='w-8 h-8 bg-[#08394f] text-white flex items-center justify-center rounded-full'>
+                                                    <p>{student.name.charAt(0)}</p>
+                                                </div>
                                                 <span>{student.name || student.studentName || "Unknown Student"}</span>
                                             </td>
 
                                             <td className="p-3">
                                                 {hasSubmitted ? (
-                                                    <span className="flex items-center gap-1 text-black">
-                                                        <img src={fileIcon} alt="fileIcon" className="w-7 h-7" /> 
-                                                        {student.attachments && student.attachments[0] ? 
-                                                            (student.attachments[0].split('/').pop().split('-').slice(2).join('-') || "File.txt")
-                                                            : "File.txt"}
-                                                    </span>
+                                                    <a 
+                                                        href={student.attachments && student.attachments[0] ? student.attachments[0] : "#"} 
+                                                        target="_blank" 
+                                                        rel="noopener noreferrer"
+                                                        className="flex items-center gap-1 text-black hover:text-blue-600 transition-colors"
+                                                    >
+                                                        <img src={fileIcon} alt="fileIcon" className="w-7 h-7" />
+                                                        <span className="truncate max-w-[200px]">
+                                                            {student.attachments && student.attachments[0] ?
+                                                                (student.attachments[0].split('/').pop().split('-').slice(2).join('-') || "File.txt")
+                                                                : "File.txt"}
+                                                        </span>
+                                                    </a>
                                                 ) : (
                                                     <span className="text-gray-500">Nill</span>
                                                 )}
                                             </td>
 
-                                            <td className="p-3 text-gray-700">{student.grade || "__"} / 100</td>
+                                            <td className="p-3 text-gray-700">
+                                                <input 
+                                                    type="number"
+                                                    value={editingGrades[student.studentId || student._id] !== undefined ? editingGrades[student.studentId || student._id] : (student.marksObtained ?? student.grade ?? "")}
+                                                    onChange={(e) => handleGradeChange(student.studentId || student._id, e.target.value)}
+                                                    className="w-16 px-2 py-1 text-center outline-none"
+                                                    min="0"
+                                                    max={student.totalMarks || 100}
+                                                    placeholder="__"
+                                                /> / {student.totalMarks || 100}
+                                            </td>
 
                                             <td className="p-3">
                                                 <button className="bg-[#08384F] w-8 h-8 rounded-full flex items-center justify-center p-1.5 hover:bg-[#0B56A4] transition-colors">
