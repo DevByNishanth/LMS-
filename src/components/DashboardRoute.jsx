@@ -1,10 +1,10 @@
 // import React, { Children } from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
 import { jwtDecode } from 'jwt-decode';
-import AdminDashboard from '../pages/adminDashboard';
 import StudentDashboardPage from '../pages/StudentDashboardPage';
 import HodDashboard from '../pages/HodDashboard';
 import FacultyDashboard from '../pages/FacultyDashboard';
+import AdminDashboard from '../pages/AdminDashboard';
 
 
 const DashboardRoute = ({ children }) => {
