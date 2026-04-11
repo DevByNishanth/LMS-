@@ -17,6 +17,8 @@ const StudentQuestionSubmissionModal = ({
   const [answerText, setAnswerText] = useState("");
   const [selectedOptions, setSelectedOptions] = useState([]);
 
+console.log("question data : ", questionData)
+
   // Handle option selection for multiple choice
   const handleOptionToggle = (optionIndex) => {
     if (questionData.questionType === "Multiple Choice") {
@@ -152,7 +154,9 @@ const StudentQuestionSubmissionModal = ({
                       ) : (
                         <Square size={20} className="text-gray-400 shrink-0" />
                       )}
-                      <span className="text-gray-700">{option.text || option}</span>
+                      <span className="text-gray-700">
+                        {typeof option === 'object' ? option.text : option}
+                      </span>
                     </div>
                   </label>
                 ))}

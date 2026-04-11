@@ -113,7 +113,7 @@ export default function QuestionAssignmentCanvas({
 
     const backendQuestionType =
       formData.questionType === "Short Answer"
-        ? "Single Choice"
+        ? "Short Answer"
         : "Multiple Choice";
     data.append("questionType", backendQuestionType);
 
