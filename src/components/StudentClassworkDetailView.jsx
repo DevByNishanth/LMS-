@@ -330,7 +330,7 @@ const StudentClassworkDetailView = ({ selectedAssignment, setIsDetailview }) => 
       <StudentSubmissionViewModal
         isOpen={isSubmissionViewModalOpen}
         onClose={() => setIsSubmissionViewModalOpen(false)}
-        submissionData={null} // Will be populated from backend
+        assignmentId={selectedAssignment?._id}
         assignmentTitle={selectedAssignment?.title}
       />
 

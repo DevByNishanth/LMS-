@@ -57,17 +57,32 @@ const LoginPage = () => {
         password,
       });
 
-      // store token FIRST
+      // ✅ store token
       localStorage.setItem("LmsToken", response.data.token);
 
-      // smart redirect
-      const redirectTo = location.state?.redirectTo || "/dashboard";
+      // ✅ get role properly
+      const role = response.data?.user?.role?.toLowerCase();
+console.log("role : ", response)
+      let redirectTo = "/dashboard"; // default
+
+      if (role === "faculty") {
+        redirectTo = location.state?.redirectTo || "/dashboard/classroom";
+      } else if (role === "student") {
+        redirectTo = location.state?.redirectTo || "/dashboard/StudentClassroom";
+      } else if (role === "admin") {
+        redirectTo = location.state?.redirectTo || "/dashboard";
+      } else if (role === "hod") {
+        redirectTo = location.state?.redirectTo || "/dashboard";
+      }
+
+      // ✅ navigate after deciding
       navigate(redirectTo, { replace: true });
+
     } catch (error) {
       console.error("Login error:", error);
       alert(
         error.response?.data?.message ||
-          "Invalid credentials. Please try again.",
+        "Invalid credentials. Please try again."
       );
     } finally {
       setLoading(false);
@@ -160,9 +175,8 @@ const LoginPage = () => {
               <button
                 type="submit"
                 disabled={loading}
-                className={`w-full ${
-                  loading ? "bg-[#0b55a4b4]" : "bg-[#08384F]  bg"
-                } hover:bg-[#011b27] text-white font-semibold py-2 rounded-lg transition duration-300 cursor-pointer`}
+                className={`w-full ${loading ? "bg-[#0b55a4b4]" : "bg-[#08384F]  bg"
+                  } hover:bg-[#011b27] text-white font-semibold py-2 rounded-lg transition duration-300 cursor-pointer`}
               >
                 {loading ? "Logging in..." : "Login"}
               </button>
