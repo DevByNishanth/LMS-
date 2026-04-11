@@ -37,7 +37,7 @@ const Sidebar = () => {
       label: "Dashboard",
       icon: LayoutDashboard,
       link: "/dashboard",
-      roles: ["admin", "hod", "faculty", "student"],
+      roles: ["admin", "hod"],
     },
     {
       label: "Semester Registration",

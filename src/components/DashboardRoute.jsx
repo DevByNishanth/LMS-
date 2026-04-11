@@ -1,10 +1,13 @@
-import React from 'react';
+// import React, { Children } from 'react';
 import { useLocation, Navigate } from 'react-router-dom';
-import jwt_decode from "jwt-decode";
+import { jwtDecode } from 'jwt-decode';
 import AdminDashboard from '../pages/adminDashboard';
+import StudentDashboardPage from '../pages/StudentDashboardPage';
+import HodDashboard from '../pages/HodDashboard';
+import FacultyDashboard from '../pages/FacultyDashboard';
 
 
-const DashboardRoute = () => {
+const DashboardRoute = ({ children }) => {
     const token = localStorage.getItem("LmsToken");
     const location = useLocation();
 
@@ -13,18 +16,20 @@ const DashboardRoute = () => {
         return <Navigate to="/" replace state={{ redirectTo: location.pathname }} />
     }
 
-    const decoded = jwt_decode(token);
+    const decoded = jwtDecode(token);
 
     // ✅ Role-based rendering
     if (decoded.role === "admin") {
         return <AdminDashboard />;
+    } else if (decoded.role.toLowerCase() === "hod") {
+        return <HodDashboard />;
+    } else if (decoded.role === "student") {
+        return <StudentDashboardPage />;
+    } else if (decoded.role === "faculty") {
+        return <FacultyDashboard />;
+    } else {
+        return <Navigate to="/" replace />;
     }
-    // } else if (decoded.role === "faculty") {
-    //     return <FacultyDashboardPage />;
-    // } else {
-    //     // Optional: fallback for unknown roles
-    //     return <Navigate to="/" replace />;
-    // }
 }
 
 export default DashboardRoute;
