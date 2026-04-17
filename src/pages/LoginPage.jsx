@@ -62,13 +62,13 @@ const LoginPage = () => {
 
       // ✅ get role properly
       const role = response.data?.user?.role?.toLowerCase();
-console.log("role : ", response)
+      console.log("role : ", response)
       let redirectTo = "/dashboard"; // default
 
       if (role === "faculty") {
-        redirectTo = location.state?.redirectTo || "/dashboard/classroom";
+        redirectTo = location.state?.redirectTo || "/dashboard";
       } else if (role === "student") {
-        redirectTo = location.state?.redirectTo || "/dashboard/StudentClassroom";
+        redirectTo = location.state?.redirectTo || "/dashboard";
       } else if (role === "admin") {
         redirectTo = location.state?.redirectTo || "/dashboard";
       } else if (role === "hod") {

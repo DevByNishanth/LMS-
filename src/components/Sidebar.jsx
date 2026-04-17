@@ -12,7 +12,8 @@ import {
   Table,
   LogOut,
   Presentation,
-  MessageSquareMore
+  MessageSquareMore,
+  Percent
 
 } from "lucide-react";
 import { Link, useLocation } from "react-router-dom";
@@ -37,7 +38,7 @@ const Sidebar = () => {
       label: "Dashboard",
       icon: LayoutDashboard,
       link: "/dashboard",
-      roles: ["admin", "hod"],
+      roles: ["admin", "hod", "student", "faculty"],
     },
     {
       label: "Semester Registration",
@@ -104,6 +105,12 @@ const Sidebar = () => {
       icon: MessageSquareMore,
       link: "/dashboard/hodRequests",
       roles: ["hod"],
+    },
+    {
+      label: "Attendance",
+      icon: Percent,
+      link: "/dashboard/studentAttendance",
+      roles: ["student"],
     },
   ];
 
