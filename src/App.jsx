@@ -36,18 +36,18 @@ import HodRequestHistory from "./pages/HodRequestHistory";
 import ClassroomSubmissionPage from "./components/ClassroomSubmissionPage";
 import ClassroomEditAssignment from "./components/ClassroomEditAssignment";
 import DashboardRoute from "./components/DashboardRoute";
+import StudentAttendancePageCalendar from "./pages/StudentAttendancePageCalendar";
 const App = () => {
   return (
     <>
       <ToastContainer />
       <Routes>
-        <Route path="/dashboard" element={<DashboardRoute />} />
         <Route path="/" element={<LoginPage />} />
         <Route
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <DashboardRoute />
             </ProtectedRoute>
           }
         />
@@ -212,7 +212,7 @@ const App = () => {
           path="/dashboard/classroom/class/:classId/:sectionId"
           element={<Classpage />}
         />
-        <Route 
+        <Route
           path="/dashboard/classroom/submission/:courseId/:assignmentId/:userId"
           element={<ClassroomSubmissionPage />}
         />
@@ -231,8 +231,10 @@ const App = () => {
             <Route index element={<StudentClassroom />} />
             <Route path=":id" element={<StudentClassroomDetails />} />
           </Route>
-        </Route>
 
+
+        </Route>
+        <Route path="/dashboard/studentAttendance" element={<StudentAttendancePageCalendar />} />
       </Routes>
     </>
   );
