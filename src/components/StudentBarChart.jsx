@@ -25,21 +25,21 @@ const data = [
 
 const StudentBarChart = () => {
     return (
-        <div className="bg-white py-2 px-6 rounded-xl h-[380px]">
-            <h2 className="font-medium mb-4 ">
-                Total Number of student in each department
+        <div className="bg-white py-6 mx-6 px-6 rounded-lg h-[380px] border border-gray-200 shadow-lg">
+            <h2 className="font-medium mb-4 text-sm">
+                Students In Each department
             </h2>
 
             <ResponsiveContainer>
                 <BarChart data={data}>
-                    <CartesianGrid strokeDasharray="3 3" />
+                    <CartesianGrid strokeDasharray="1 1" />
                     <XAxis dataKey="name" />
                     <YAxis />
                     <Tooltip />
 
                     <Bar
                         dataKey="students"
-                        fill="#1C7ED6"
+                        fill="#08384F"
                         radius={[10, 10, 0, 0]}
                     />
                 </BarChart>
