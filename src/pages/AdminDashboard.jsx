@@ -5,6 +5,8 @@ import DepartmentPieChart from '../components/DepartmentPieChart'
 import StudentBarChart from '../components/StudentBarChart'
 import FacultyBarList from '../components/FacultyBarList'
 import { Bell } from 'lucide-react'
+import AdminRecentlyAddedFaculty from '../components/AdminRecentlyAddedFaculty'
+import ChartAreaLinear from '../components/ChartAreaLinear'
 
 const AdminDashboard = () => {
   return (
@@ -16,7 +18,7 @@ const AdminDashboard = () => {
         </div>
         <div className="container-2 w-[80%] h-full ">
           {/* header */}
-          <header className="border-b border-gray-200 flex items-center justify-between bg-white p-6 sticky top-0 z-10">
+          <header className="border-b border-gray-200 flex items-center justify-between bg-white px-6 py-3 sticky top-0 z-10">
             <h1 className='text-xl font-medium text-gray-800'>Dashboard</h1>
 
             <div className="icons-container flex gap-2 items-center">
@@ -31,26 +33,29 @@ const AdminDashboard = () => {
 
           </header>
 
-          <div className="p-6 grid grid-cols-4 gap-6 auto-rows-min">
+          <div className="p-6 grid grid-cols-4 gap-2  auto-rows-min">
 
             {/* Top stat cards */}
             <AdminStatcard />
 
             {/* Right side (tall) */}
-            <div className="row-span-2 h-full">
-              <DepartmentPieChart />
+            <div className="row-span-2 h-[440px] overflow-y-auto hide-scrollbar">
+              <AdminRecentlyAddedFaculty />
             </div>
 
             {/* Graph area */}
-            <div className="col-span-3  overflow-y-auto hide-scrollbar border border-gray-300 shadow rounded-lg   ">
-              <FacultyBarList />
+            <div className='mt-8 area-graph col-span-3 h-[300px] border w-full bg-white rounded-xl shadow-sm  border-gray-200'>
+              <div className="header px-4 py-2 flex items-center">
+                <h1 className='text-sm font-medium'>Faculty in each department</h1>
+              </div>
+              <ChartAreaLinear />
             </div>
 
-          </div>
 
-          <div className="border border-gray-300 mx-6 h-[420px] shadow  rounded-lg">
-            <StudentBarChart />
           </div>
+          <StudentBarChart />
+
+
         </div>
       </section>
     </>
