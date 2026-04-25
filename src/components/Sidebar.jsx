@@ -89,6 +89,12 @@ const Sidebar = () => {
       roles: ["faculty"],
     },
     {
+      label: "Student Attendance",
+      icon: Percent,
+      link: "/dashboard/studentAttendance",
+      roles: ["faculty"],
+    },
+    {
       label: "Section Management",
       icon: Layers,
       link: "/dashboard/sectionManagement",
