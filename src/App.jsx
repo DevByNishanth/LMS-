@@ -37,6 +37,7 @@ import ClassroomSubmissionPage from "./components/ClassroomSubmissionPage";
 import ClassroomEditAssignment from "./components/ClassroomEditAssignment";
 import DashboardRoute from "./components/DashboardRoute";
 import StudentAttendancePageCalendar from "./pages/StudentAttendancePageCalendar";
+import StudentAttendanceReportPage from "./pages/StudentAttendanceReportPage";
 const App = () => {
   return (
     <>
@@ -56,6 +57,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <FacultyManagementPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/studentAttendance"
+          element={
+            <ProtectedRoute>
+              <StudentAttendanceReportPage />
             </ProtectedRoute>
           }
         />
