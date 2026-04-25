@@ -15,7 +15,7 @@ const HeaderComponent = ({ title, second, secondColor }) => {
 
         const name =
           decoded?.name || decoded?.username || decoded?.user?.name || "";
-
+        console.log(decoded.name);
         if (name) {
           setFirstLetter(name.charAt(0).toUpperCase());
         }

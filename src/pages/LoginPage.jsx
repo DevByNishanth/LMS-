@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import axios from "axios";
 import { Eye, EyeOff } from "lucide-react";
 import loginBg from "../assets/loginBg.svg";
@@ -21,7 +21,7 @@ const LoginPage = () => {
   //   }
   // }, []);
 
-  // old submit function 
+  // old submit function
   // const handleSubmit = async (e) => {
   //   e.preventDefault();
   //   setLoading(true);
@@ -46,7 +46,7 @@ const LoginPage = () => {
   //   }
   // };
 
-  // new submit function 
+  // new submit function
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -57,11 +57,25 @@ const LoginPage = () => {
         password,
       });
 
-      // store token FIRST
+      // ✅ store token
       localStorage.setItem("LmsToken", response.data.token);
 
-      // smart redirect
-      const redirectTo = location.state?.redirectTo || "/dashboard";
+      // ✅ get role properly
+      const role = response.data?.user?.role?.toLowerCase();
+      console.log("role : ", response)
+      let redirectTo = "/dashboard"; // default
+
+      if (role === "faculty") {
+        redirectTo = location.state?.redirectTo || "/dashboard";
+      } else if (role === "student") {
+        redirectTo = location.state?.redirectTo || "/dashboard";
+      } else if (role === "admin") {
+        redirectTo = location.state?.redirectTo || "/dashboard";
+      } else if (role === "hod") {
+        redirectTo = location.state?.redirectTo || "/dashboard";
+      }
+
+      // ✅ navigate after deciding
       navigate(redirectTo, { replace: true });
 
     } catch (error) {
@@ -74,7 +88,6 @@ const LoginPage = () => {
       setLoading(false);
     }
   };
-
 
   return (
     <section className="w-full h-[100vh] p-4 md:flex justify-between">

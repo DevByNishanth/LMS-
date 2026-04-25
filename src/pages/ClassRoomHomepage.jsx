@@ -2,7 +2,7 @@ import { Search } from "lucide-react";
 import folderIcon from "../assets/folderIcon.svg";
 import archiveIcon from "../assets/archiveIcon.svg";
 import { Link } from "react-router-dom";
-import noDatafoundImg from "../assets/noDatafoundImg.svg";
+import noDatafoundImg from "../assets/noDataFoundImg.svg";
 import { useEffect, useState } from "react";
 import AddClassModal from "../components/AddClassModal";
 import axios from "axios";

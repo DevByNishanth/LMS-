@@ -25,10 +25,19 @@ import StudentLayout from "./components/Student_Layout";
 import StudentDashboard from "./pages/StudentDashboard";
 import StudentClassroomDetails from "./components/Student_ClassroomDetails";
 import StudentClassroom from "./pages/Student_Classroom";
+import DashboardStudentClassroom from "./pages/DashboardStudentClassroom";
+import DashboardStudentClassroomDetails from "./pages/DashboardStudentClassroomDetails";
 import InvitationPage from "./pages/InvitationPage";
 import { ToastContainer } from "react-toastify";
 import CalendarPage from "./pages/CalendarPage";
-
+import HodRequestsPage from "./pages/HodRequestsPage";
+import HodRequestsDetails from "./pages/HodRequestsDetails";
+import HodRequestHistory from "./pages/HodRequestHistory";
+import ClassroomSubmissionPage from "./components/ClassroomSubmissionPage";
+import ClassroomEditAssignment from "./components/ClassroomEditAssignment";
+import DashboardRoute from "./components/DashboardRoute";
+import StudentAttendancePageCalendar from "./pages/StudentAttendancePageCalendar";
+import StudentAttendanceReportPage from "./pages/StudentAttendanceReportPage";
 const App = () => {
   return (
     <>
@@ -39,7 +48,7 @@ const App = () => {
           path="/dashboard"
           element={
             <ProtectedRoute>
-              <DashboardPage />
+              <DashboardRoute />
             </ProtectedRoute>
           }
         />
@@ -48,6 +57,14 @@ const App = () => {
           element={
             <ProtectedRoute>
               <FacultyManagementPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/studentAttendance"
+          element={
+            <ProtectedRoute>
+              <StudentAttendanceReportPage />
             </ProtectedRoute>
           }
         />
@@ -157,11 +174,60 @@ const App = () => {
             </ProtectedRoute>
           }
         />
-        <Route path="/dashboard/calendar" element={<CalendarPage/>}/>
+
+        <Route
+          path="/dashboard/hodRequests"
+          element={
+            <ProtectedRoute>
+              <HodRequestsPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/hodRequests/requests/:id"
+          element={
+            <ProtectedRoute>
+              <HodRequestsDetails />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/hodRequests/history"
+          element={
+            <ProtectedRoute>
+              <HodRequestHistory />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="/dashboard/calendar" element={<CalendarPage />} />
         <Route path="/dashboard/classroom" element={<ClassRoomPage />} />
+        <Route
+          path="/dashboard/StudentClassroom"
+          element={
+            <ProtectedRoute>
+              <DashboardStudentClassroom />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/dashboard/StudentClassroom/class/:classId/:sectionId"
+          element={
+            <ProtectedRoute>
+              <DashboardStudentClassroomDetails />
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/dashboard/classroom/class/:classId/:sectionId"
           element={<Classpage />}
+        />
+        <Route
+          path="/dashboard/classroom/submission/:courseId/:assignmentId/:userId"
+          element={<ClassroomSubmissionPage />}
+        />
+        <Route
+          path="/dashboard/classroom/edit-assignment/:assignmentId"
+          element={<ClassroomEditAssignment />}
         />
         <Route path="/classroom/invite" element={<InvitationPage />} />
 
@@ -174,8 +240,10 @@ const App = () => {
             <Route index element={<StudentClassroom />} />
             <Route path=":id" element={<StudentClassroomDetails />} />
           </Route>
-        </Route>
 
+
+        </Route>
+        <Route path="/dashboard/studentAttendance" element={<StudentAttendancePageCalendar />} />
       </Routes>
     </>
   );

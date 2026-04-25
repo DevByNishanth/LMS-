@@ -12,7 +12,7 @@ const StudentManagement = () => {
 
   return (
     <>
-      <section className="w-full h-screen flex overflow-hidden">
+      <section className="w-full h-screen flex overflow-hidden ">
         <div className="w-[20%] h-full">
           <Sidebar />
         </div>
@@ -34,7 +34,7 @@ const StudentManagement = () => {
             </select>
           </HeaderComponent>
 
-          <div className="flex-1 overflow-y-auto pb-6">
+          <div className="flex-1 overflow-y-auto pb-6 ">
             <div className="mx-6 grid grid-cols-12 gap-4 mt-6">
               <StudentmanagementStatCard />
 

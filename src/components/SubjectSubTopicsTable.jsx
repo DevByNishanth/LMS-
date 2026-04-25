@@ -4,14 +4,12 @@ import {
   X,
   Edit2,
   Trash2,
-  ArrowLeft,
-  ArrowRight,
   BookOpen,
   Check,
   AlertTriangle,
 } from "lucide-react";
 import axios from "axios";
-import { useSearchParams, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 const UNITS = [
   { label: "Unit 1", key: "UNIT1" },
@@ -24,15 +22,13 @@ const UNITS = [
 
 export default function SubjectSubTopicsTable({
   data,
+  references,
   refreshData,
   onNext,
   onPrev,
   updateLivePlanningData,
 }) {
   const { classId, sectionId } = useParams();
-  const [searchParams] = useSearchParams();
-  const query_data = JSON.parse(searchParams.get("data") || "{}");
-  const subjectId = query_data.subjectId || classId;
   const token = localStorage.getItem("LmsToken");
   const apiUrl = import.meta.env.VITE_API_URL;
 
@@ -40,10 +36,8 @@ export default function SubjectSubTopicsTable({
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [editTopicIndex, setEditTopicIndex] = useState(null);
-
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [deleteIndex, setDeleteIndex] = useState(null);
-
   const [loading, setLoading] = useState(false);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [unitTitle, setUnitTitle] = useState("");
@@ -56,6 +50,24 @@ export default function SubjectSubTopicsTable({
     teachingAid: "",
     referenceBook: "",
   });
+
+  // Generate Reference Options (T1, T2, R1, R2...)
+  const referenceOptions = useMemo(() => {
+    const options = [];
+    if (references?.textBooks) {
+      references.textBooks.forEach((book, idx) => {
+        if (book?.trim())
+          options.push({ label: `T${idx + 1}: ${book}`, value: `T${idx + 1}` });
+      });
+    }
+    if (references?.referenceBooks) {
+      references.referenceBooks.forEach((book, idx) => {
+        if (book?.trim())
+          options.push({ label: `R${idx + 1}: ${book}`, value: `R${idx + 1}` });
+      });
+    }
+    return options;
+  }, [references]);
 
   useEffect(() => {
     setUnitTitle(data?.[selectedUnit]?.title || "");
@@ -98,7 +110,7 @@ export default function SubjectSubTopicsTable({
   const handlePatchUpdate = async (updatedData) => {
     setLoading(true);
     try {
-      const payload = { subjectId, sectionId, data: updatedData };
+      const payload = { subjectId: classId, sectionId, data: updatedData };
       const response = await axios.patch(
         `${apiUrl}api/course-plan/theoryPlanner`,
         payload,
@@ -116,7 +128,6 @@ export default function SubjectSubTopicsTable({
       }
     } catch (error) {
       console.error("Save Error:", error);
-      alert("Failed to update planner");
     } finally {
       setLoading(false);
     }
@@ -137,18 +148,13 @@ export default function SubjectSubTopicsTable({
       alert("Please fill required fields.");
       return;
     }
-
     const updatedData = { ...data };
     if (!updatedData[selectedUnit])
       updatedData[selectedUnit] = { title: "", topics: [] };
-
     const unitTopics = [...(updatedData[selectedUnit].topics || [])];
-    if (isEditing && editTopicIndex !== null) {
+    if (isEditing && editTopicIndex !== null)
       unitTopics[editTopicIndex] = { ...formData };
-    } else {
-      unitTopics.push({ ...formData });
-    }
-
+    else unitTopics.push({ ...formData });
     updatedData[selectedUnit].topics = unitTopics;
     const success = await handlePatchUpdate(updatedData);
     if (success) setIsModalOpen(false);
@@ -159,7 +165,7 @@ export default function SubjectSubTopicsTable({
     try {
       const payload = {
         sectionId,
-        subjectId,
+        subjectId: classId,
         unit: selectedUnit,
         topicIndex: deleteIndex,
       };
@@ -178,10 +184,9 @@ export default function SubjectSubTopicsTable({
 
   return (
     <div className="h-full flex flex-col bg-white">
-      <h2 className="font-medium text-lg mb-2 text-[#08384F]">
+      <h2 className="font-medium te;xt-lg mb-2 text-[#08384F]">
         Theory Planner
       </h2>
-
       <div className="flex items-center justify-between mb-4 sticky top-0 bg-white z-10 py-2 border-b border-gray-100">
         <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar">
           {UNITS.map((unit) => (
@@ -296,7 +301,7 @@ export default function SubjectSubTopicsTable({
                   <td className="px-5 py-4 text-gray-600">
                     {item.teachingAid}
                   </td>
-                  <td className="px-5 py-4 text-gray-600 italic">
+                  <td className="px-5 py-4 text-gray-600 font-bold">
                     {item.referenceBook}
                   </td>
                   <td className="px-5 py-4 sticky right-0 bg-white shadow-[-4px_0_10px_rgba(0,0,0,0.05)]">
@@ -326,7 +331,7 @@ export default function SubjectSubTopicsTable({
                   colSpan={8}
                   className="py-20 text-center text-gray-400 italic font-medium"
                 >
-                  No topics added for {selectedUnit} yet.
+                  No topics added yet.
                 </td>
               </tr>
             )}
@@ -349,7 +354,6 @@ export default function SubjectSubTopicsTable({
         </button>
       </div>
 
-      {/* Add/Edit Modal */}
       {isModalOpen && (
         <div className="fixed inset-0 bg-black/40 backdrop-blur-sm z-[100] flex items-center justify-center">
           <div className="bg-white rounded-2xl shadow-2xl w-[90%] md:w-[650px] overflow-hidden text-black animate-in fade-in zoom-in duration-200">
@@ -428,12 +432,19 @@ export default function SubjectSubTopicsTable({
                 <label className="text-[10px] uppercase font-bold text-gray-400 block mb-1">
                   Reference Book
                 </label>
-                <input
+                <select
                   name="referenceBook"
                   value={formData.referenceBook}
                   onChange={handleInputChange}
                   className="w-full border rounded-lg px-4 py-2.5 text-sm outline-none"
-                />
+                >
+                  <option value="">Select Reference</option>
+                  {referenceOptions.map((opt) => (
+                    <option key={opt.value} value={opt.value}>
+                      {opt.label}
+                    </option>
+                  ))}
+                </select>
               </div>
             </div>
             <div className="p-6 bg-gray-50 flex justify-end gap-3 border-t">
@@ -455,11 +466,10 @@ export default function SubjectSubTopicsTable({
         </div>
       )}
 
-      {/* Custom Delete Confirmation Modal */}
       {isDeleteModalOpen && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-[110] flex items-center justify-center p-4">
           <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden animate-in fade-in zoom-in duration-200">
-            <div className="flex justify-between items-center p-4 border-b  text-black">
+            <div className="flex justify-between items-center p-4 border-b text-black">
               <div className="flex items-center gap-2 font-bold">
                 <AlertTriangle size={20} />
                 <h2>Confirm Delete</h2>
@@ -476,27 +486,21 @@ export default function SubjectSubTopicsTable({
                 <Trash2 size={32} />
               </div>
               <p className="text-gray-600">
-                Are you sure you want to delete this topic from{" "}
-                <span className="font-bold text-gray-800">{selectedUnit}</span>?
-              </p>
-              <p className="text-xs text-gray-400 mt-2 italic">
-                This action is irreversible.
+                Are you sure you want to delete this topic?
               </p>
             </div>
             <div className="p-4 bg-gray-50 flex gap-3">
               <button
                 onClick={() => setIsDeleteModalOpen(false)}
-                disabled={loading}
-                className="flex-1 px-4 py-2 border cursor-pointer border-gray-400 rounded-lg text-sm font-medium text-gray-800 hover:bg-white"
+                className="flex-1 px-4 py-2 border border-gray-400 rounded-lg text-sm font-medium text-gray-800"
               >
                 Cancel
               </button>
               <button
                 onClick={confirmDelete}
-                disabled={loading}
-                className="flex-1 px-4 py-2 bg-[#08384f] text-white rounded-lg text-sm font-medium cursor-pointer shadow-lg hover:bg-[#08384f] transition-all flex items-center justify-center gap-2"
+                className="flex-1 px-4 py-2 bg-[#08384f] text-white rounded-lg text-sm font-medium shadow-lg hover:bg-[#08384f] transition-all"
               >
-                {loading ? "Deleting..." : "Yes, Delete"}
+                Yes, Delete
               </button>
             </div>
           </div>

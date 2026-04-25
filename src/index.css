@@ -45,3 +45,9 @@ tr:first-child th:last-child {
   animation: l1 1s steps(4) infinite;
 }
 @keyframes l1 {to{clip-path: inset(0 -34% 0 0)}}
+
+input::-webkit-inner-spin-button,
+input::-webkit-outer-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+}

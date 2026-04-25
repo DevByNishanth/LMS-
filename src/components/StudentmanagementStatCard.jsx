@@ -13,7 +13,7 @@ const StudentmanagementStatCard = () => {
             <Users size={22} />
           </div>
           <h2 className="">Total Students</h2>
-        <p className="text-lg">600</p>
+        <p className="text-lg">260</p>
         </div>
       </div>
 
@@ -27,7 +27,7 @@ const StudentmanagementStatCard = () => {
             </div>
           <div>
               <h3 className="font-medium">First year</h3>
-             <p className="text-lg font-medium">200</p>
+             <p className="text-lg font-medium">64</p>
           </div>
           </div>
          
@@ -41,7 +41,7 @@ const StudentmanagementStatCard = () => {
             </div>
           <div>
               <h3 className="font-medium">Second year</h3>
-             <p className="text-lg font-medium">200</p>
+             <p className="text-lg font-medium">68</p>
           </div>
           </div>
          
@@ -55,7 +55,7 @@ const StudentmanagementStatCard = () => {
             </div>
           <div>
               <h3 className="font-medium">Third year</h3>
-             <p className="text-lg font-medium">200</p>
+             <p className="text-lg font-medium">63</p>
           </div>
           </div>
          
@@ -69,7 +69,7 @@ const StudentmanagementStatCard = () => {
             </div>
           <div>
               <h3 className="font-medium">Fourth year</h3>
-             <p className="text-lg font-medium">200</p>
+             <p className="text-lg font-medium">65</p>
           </div>
           </div>
          

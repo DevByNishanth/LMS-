@@ -162,7 +162,7 @@ const CoPoMapping = ({
 
                   <div className="flex items-center gap-2 px-3 h-12 bg-white border-l border-gray-200">
                     <span className="text-[10px] uppercase font-bold text-gray-400">
-                      Credit
+                      Mapping
                     </span>
                     <select
                       value={mappingEntry.credit}

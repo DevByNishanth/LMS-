@@ -8,6 +8,7 @@ import ClassRoomClassworkComponent from "../components/ClassRoomClassworkCompone
 import ClassroompeopleContainer from "../components/ClassroompeopleContainer";
 import ClassroomSubjectPlanningComponent from "../components/ClassroomSubjectPlanningComponent";
 import ClassroomAttendanceComponent from "../components/ClassroomAttendanceComponent";
+import ClassroomGradesContainer from "../components/ClassroomGradesContainer";
 import axios from "axios";
 
 const Classpage = () => {
@@ -72,6 +73,11 @@ const Classpage = () => {
                 <ClassroomSubjectPlanningComponent
                   activeTab={activeTab}
                   subjectId={classId}
+                />
+              )}
+              {activeTab === "grades" && (
+                <ClassroomGradesContainer
+                  activeTab={activeTab}
                 />
               )}
               {activeTab === "attendance" && (

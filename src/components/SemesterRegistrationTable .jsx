@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { Search, Plus, Trash2, Pencil } from "lucide-react";
 import AddSubjectCanvas from "./AddSubjectCanvas";
 import axios from "axios";
-import noData from '../assets/nodata.svg'
+import noData from '../assets/noData.svg'
 import { useLocation } from "react-router-dom";
 
 const SemesterRegistrationTable = () => {

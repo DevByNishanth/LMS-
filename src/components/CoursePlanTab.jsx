@@ -18,7 +18,11 @@ const ProgressRing = ({ percentage, isActive }) => {
           strokeWidth="4"
           viewBox="0 0 24 24"
         >
-          <path d="M5 13l4 4L19 7" strokeLinecap="round" strokeLinejoin="round" />
+          <path
+            d="M5 13l4 4L19 7"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
         </svg>
       </div>
     );
@@ -27,7 +31,6 @@ const ProgressRing = ({ percentage, isActive }) => {
   return (
     <div className="relative flex items-center justify-center w-5 h-5">
       <svg height="20" width="20" className="transform -rotate-90">
-        {/* Background Track */}
         <circle
           stroke={isActive ? "rgba(255,255,255,0.2)" : "#D1D5DB"}
           fill="transparent"
@@ -36,7 +39,6 @@ const ProgressRing = ({ percentage, isActive }) => {
           cx="10"
           cy="10"
         />
-        {/* Progress Fill - Vibrant Blue/Cyan */}
         <circle
           stroke={isActive ? "#38BDF8" : "#0EA5E9"}
           fill="transparent"
@@ -60,6 +62,7 @@ const CoursePlanTab = ({
   setActiveTab,
   tabProgress,
   overallProgress,
+  courseType = "", // Recieve courseType as prop
 }) => {
   return (
     <div className="w-full py-4 px-4 bg-white rounded-md h-full overflow-auto hide-scrollbar">
@@ -73,8 +76,12 @@ const CoursePlanTab = ({
 
       <div className="mb-6 bg-gray-50 p-3 rounded-lg border border-gray-100">
         <div className="flex justify-between items-center mb-1.5">
-            <span className="text-[11px] uppercase tracking-wider font-bold text-gray-400">Overall Progress</span>
-            <span className="text-[12px] text-[#08384f] font-bold">{overallProgress}%</span>
+          <span className="text-[11px] uppercase tracking-wider font-bold text-gray-400">
+            Overall Progress
+          </span>
+          <span className="text-[12px] text-[#08384f] font-bold">
+            {overallProgress}%
+          </span>
         </div>
         <div className="w-full bg-gray-200 rounded-full h-2">
           <div
@@ -88,38 +95,60 @@ const CoursePlanTab = ({
         {tabs.map((tab, index) => {
           const isActive = activeTab === index;
           const progress = tabProgress[index] || 0;
+          const label = tab.toLowerCase();
+
+          // Filtering Logic
+          // 1. If type is T, hide Lab/Practical tabs
+          if (
+            courseType === "T" &&
+            (label.includes("lab") || label.includes("practical"))
+          ) {
+            return null;
+          }
+          // 2. If type is P or PJ (Practical only), hide Theory tabs
+          if (
+            (courseType === "P" || courseType === "PJ") &&
+            (label.includes("theory") || label.includes("lecture"))
+          ) {
+            return null;
+          }
+          // 3. For TP, TPJ etc, show everything (both Theory and Lab)
 
           return (
             <div
               key={index}
               onClick={() => setActiveTab(index)}
               className={`flex items-center justify-between px-4 py-3.5 rounded-xl cursor-pointer transition-all duration-300 group
-                ${isActive 
-                  ? "bg-[#08384F] text-white shadow-lg shadow-blue-900/20 translate-x-1" 
-                  : "bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50/30"}`}
+                ${
+                  isActive
+                    ? "bg-[#08384F] text-white shadow-lg shadow-blue-900/20 translate-x-1"
+                    : "bg-white border border-gray-100 text-gray-600 hover:border-blue-200 hover:bg-blue-50/30"
+                }`}
             >
               <div className="flex items-center gap-3">
                 <ProgressRing percentage={progress} isActive={isActive} />
-                <span className={`text-[14px] font-semibold transition-colors ${isActive ? "text-white" : "text-gray-700 group-hover:text-[#08384F]"}`}>
-                    {tab}
+                <span
+                  className={`text-[14px] font-semibold transition-colors ${isActive ? "text-white" : "text-gray-700 group-hover:text-[#08384F]"}`}
+                >
+                  {tab}
                 </span>
               </div>
-              
+
               {isActive ? (
-                <div className="bg-white/10 p-1 rounded-lg">
-                    <img
-                        src={activeRightArrow}
-                        alt="Right Arrow"
-                        className="w-4 h-4 brightness-0 invert"
-                    />
+                <div className="p-1 rounded-lg">
+                  <img
+                    src={activeRightArrow}
+                    alt="Right Arrow"
+                    className="w-7 h-7 brightness-0 invert"
+                  />
                 </div>
               ) : (
                 <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                    <img
-                        src={activeRightArrow}
-                        alt="Right Arrow"
-                        className="w-4 h-4 opacity-30"
-                    />
+                  <img
+                    src={activeRightArrow}
+                    alt="Right Arrow"
+                    className="w-4 h-4 opacity-30"
+                  />
                 </div>
               )}
             </div>

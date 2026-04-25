@@ -12,8 +12,10 @@ import {
   Table,
   LogOut,
   Presentation,
+  MessageSquareMore,
+  Percent
+
 } from "lucide-react";
-import logo from "../assets/clgLogo.svg";
 import { Link, useLocation } from "react-router-dom";
 import { jwtDecode } from "jwt-decode";
 
@@ -36,7 +38,7 @@ const Sidebar = () => {
       label: "Dashboard",
       icon: LayoutDashboard,
       link: "/dashboard",
-      roles: ["admin", "hod", "faculty"],
+      roles: ["admin", "hod", "student", "faculty"],
     },
     {
       label: "Semester Registration",
@@ -75,9 +77,21 @@ const Sidebar = () => {
       roles: ["faculty"],
     },
     {
+      label: "Student Classroom",
+      icon: Presentation,
+      link: "/dashboard/StudentClassroom",
+      roles: ["student"],
+    },
+    {
       label: "Calendar",
       icon: CalendarDays,
       link: "/dashboard/calendar",
+      roles: ["faculty"],
+    },
+    {
+      label: "Student Attendance",
+      icon: Percent,
+      link: "/dashboard/studentAttendance",
       roles: ["faculty"],
     },
     {
@@ -91,6 +105,18 @@ const Sidebar = () => {
       icon: Table,
       link: "/dashboard/timetableManagement",
       roles: ["hod"],
+    },
+    {
+      label: "Requests",
+      icon: MessageSquareMore,
+      link: "/dashboard/hodRequests",
+      roles: ["hod"],
+    },
+    {
+      label: "Attendance",
+      icon: Percent,
+      link: "/dashboard/studentAttendance",
+      roles: ["student"],
     },
   ];
 
